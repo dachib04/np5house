@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Cupcake Pack — NP5.HOUSE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@200;300;400;500;600&family=Barlow+Condensed:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.pslider{position:relative;height:88vh;min-height:520px;background:#0a0a0a;overflow:hidden;cursor:grab}.pslider:active{cursor:grabbing}
+.pslide{position:absolute;inset:0;opacity:0;transition:opacity .9s cubic-bezier(.4,0,.2,1)}.pslide.on{opacity:1}
+.pslide img{width:100%;height:100%;object-fit:cover;filter:brightness(.8) saturate(.88)}
+.psl-ghost{position:absolute;right:-2rem;bottom:-3rem;font-family:var(--fd);font-weight:700;font-size:32vw;color:rgba(255,255,255,.028);line-height:1;pointer-events:none;z-index:1;
+.psl-arrow{position:absolute;top:50%;transform:translateY(-50%);width:56px;height:56px;background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.45);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;transition:background .25s,border-color .25s;backdrop-filter:blur(10px);font-size:1.1rem;border-radius:0}
+.psl-arrow:hover{background:rgba(0,0,0,.7);border-color:rgba(255,255,255,.5)}
+.psl-arrow-prev{left:2rem}
+.psl-arrow-next{right:2rem}
+user-select:none}
+
+.psl-progress{position:absolute;bottom:0;left:0;height:1px;background:rgba(255,255,255,.38);z-index:5;transition:width .9s cubic-bezier(.4,0,.2,1)}
+.psl-progress-track{position:absolute;bottom:0;left:0;right:0;height:1px;background:rgba(255,255,255,.08);z-index:4}
+.psl-side-nav{position:absolute;right:2.8rem;top:50%;transform:translateY(-50%);z-index:10;display:flex;flex-direction:column;gap:1.8rem;align-items:flex-end}
+.psl-sn{font-family:var(--fd);font-weight:300;font-size:.65rem;letter-spacing:.28em;color:rgba(255,255,255,.35);cursor:pointer;transition:color .4s;display:flex;align-items:center;gap:.9rem;background:none;border:none;padding:0;outline:none}
+.psl-sn::after{content:'';width:0;height:1px;background:rgba(255,255,255,.55);transition:width .45s cubic-bezier(.25,.46,.45,.94)}
+.psl-sn.on{color:#fff}
+.psl-sn.on::after{width:28px}
+.psl-sn:hover{color:rgba(255,255,255,.55)}
+.psl-bottom-nav{position:absolute;bottom:2.5rem;left:3rem;z-index:10;display:flex;align-items:center;gap:2rem}
+.psl-bn-arr{background:none;border:none;color:rgba(255,255,255,.7);font-family:var(--fb);font-weight:400;font-size:.65rem;letter-spacing:.22em;cursor:pointer;text-transform:uppercase;transition:color .2s;padding:.4rem .6rem}
+.psl-bn-arr:hover{color:#fff;opacity:1}
+.psl-bn-count{font-family:var(--fd);font-weight:200;font-size:.7rem;letter-spacing:.3em;color:rgba(255,255,255,.35)}
+
+.ph-intro{padding:9rem 5rem;display:grid;grid-template-columns:1fr 1fr;gap:9rem;align-items:start;max-width:1400px}
+.ph-eyebrow{font-family:var(--fb);font-weight:300;font-size:.56rem;letter-spacing:.38em;color:var(--tmuted);text-transform:uppercase;display:block;margin-bottom:2rem}
+.ph-title{font-family:var(--fd);font-weight:100;font-size:clamp(3.5rem,6vw,6.5rem);color:var(--navy);line-height:.9;letter-spacing:-.01em;margin-bottom:2rem}
+.ph-title strong{font-weight:600;display:block}
+.ph-body{font-family:var(--fb);font-weight:300;font-size:.92rem;line-height:2.05;color:var(--tbody)}
+.ph-keyline{width:40px;height:1px;background:var(--border-md);margin:2.5rem 0}
+.ph-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--border);margin-top:2rem}
+.ph-stat{background:var(--white);padding:1.8rem 1.5rem}
+.ph-sn{font-family:var(--fd);font-weight:200;font-size:2.2rem;color:var(--navy);line-height:1;display:block;margin-bottom:.35rem}
+.ph-sl{font-family:var(--fb);font-weight:300;font-size:.54rem;letter-spacing:.16em;color:var(--tmuted);text-transform:uppercase}
+
+.ph-3d{background:#0c0c0c;position:relative;overflow:hidden}
+.ph-3d img{width:100%;display:block;object-fit:contain;background:#0c0c0c;filter:brightness(.95);transition:transform 1.4s cubic-bezier(.25,.46,.45,.94)}
+.ph-3d:hover img{transform:scale(1.04)}
+.ph-3d-label{position:absolute;top:2.5rem;right:3rem;font-family:var(--fb);font-weight:300;font-size:.52rem;letter-spacing:.42em;color:rgba(255,255,255,.2);text-transform:uppercase;z-index:2}
+.ph-3d-corner p{font-family:var(--fd);font-weight:100;font-size:3rem;color:rgba(255,255,255,.06);line-height:1;letter-spacing:.1em}
+.ph-3d-corner{position:absolute;bottom:3rem;left:4rem;z-index:2}
+
+.ph-fp{padding:9rem 5rem;background:var(--off)}
+.ph-fp-floor{display:grid;grid-template-columns:1.1fr 1fr;gap:7rem;align-items:start;max-width:1400px;margin:0 auto 7rem}
+.ph-fp-floor:last-child{margin-bottom:0}
+.ph-fp-plan{position:relative}
+.ph-fp-plan img{width:100%;display:block;filter:brightness(.96)}
+.ph-fp-plan-label{position:absolute;top:-2.5rem;left:0;font-family:var(--fb);font-weight:300;font-size:.52rem;letter-spacing:.32em;color:var(--tmuted);text-transform:uppercase}
+.ph-fp-heading{font-family:var(--fd);font-weight:200;font-size:clamp(1.8rem,2.5vw,2.5rem);color:var(--navy);margin-bottom:2.5rem;line-height:1.1}
+.ph-fp-heading span{display:block;font-weight:600;font-size:.75em}
+.ph-fp-row{display:grid;grid-template-columns:2.2rem 1fr auto;gap:.75rem;align-items:baseline;padding:.7rem 0;border-bottom:1px solid var(--border)}
+.ph-fp-row:last-of-type{border-bottom:none}
+.ph-rnum{font-family:var(--fd);font-weight:200;font-size:.68rem;color:rgba(5,29,73,.28);text-align:right}
+.ph-rname{font-family:var(--fb);font-weight:300;font-size:.82rem;color:var(--tbody)}
+.ph-rsz{font-family:var(--fd);font-weight:400;font-size:.9rem;color:var(--navy);white-space:nowrap}
+.ph-fp-total{display:flex;justify-content:space-between;align-items:baseline;padding:1.4rem 0;margin-top:.5rem;border-top:1px solid var(--border-md)}
+.ph-tl{font-family:var(--fb);font-weight:500;font-size:.56rem;letter-spacing:.22em;color:var(--navy);text-transform:uppercase}
+.ph-tn{font-family:var(--fd);font-weight:600;font-size:1.4rem;color:var(--navy)}
+/* floor divider */
+.ph-fp-divider{max-width:1400px;margin:0 auto 7rem;border-top:1px solid var(--border-md)}
+
+.ph-specs{padding:8rem 5rem;background:var(--white)}
+.ph-specs-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);margin-top:4rem}
+.ph-spec{padding:2.8rem 2.2rem;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+.ph-spec:nth-child(4n){border-right:none}
+.ph-spec:nth-last-child(-n+4){border-bottom:none}
+.ph-sv{font-family:var(--fd);font-weight:200;font-size:2.5rem;color:var(--navy);line-height:1;margin-bottom:.45rem}
+.ph-sl2{font-family:var(--fb);font-weight:300;font-size:.54rem;letter-spacing:.18em;color:var(--tmuted);text-transform:uppercase}
+
+.ph-price{padding:6rem 5rem;background:var(--off);display:flex;align-items:flex-end;justify-content:space-between;gap:3rem;flex-wrap:wrap}
+.ph-pl{font-family:var(--fb);font-weight:300;font-size:.54rem;letter-spacing:.24em;color:var(--tmuted);text-transform:uppercase;display:block;margin-bottom:.8rem}
+.ph-pold{font-family:var(--fd);font-weight:200;font-size:1.6rem;color:rgba(5,29,73,.3);text-decoration:line-through;display:block;line-height:1;margin-bottom:.4rem}
+.ph-pnew{font-family:var(--fd);font-weight:600;font-size:5rem;color:var(--navy);line-height:1;display:block}
+.ph-pnote{font-family:var(--fb);font-weight:300;font-size:.7rem;color:var(--tmuted);margin-top:.6rem;line-height:1.7;max-width:380px}
+
+.ph-related{padding:4rem 5rem;background:var(--white);display:flex;align-items:center;gap:2.5rem;flex-wrap:wrap;border-top:1px solid var(--border)}
+.ph-rel-l{font-family:var(--fb);font-weight:300;font-size:.56rem;letter-spacing:.2em;color:var(--tmuted);text-transform:uppercase;flex-shrink:0}
+
+@media(max-width:768px){
+  .pslider{height:60vh}
+  .ph-intro{grid-template-columns:1fr;padding:5rem 1.5rem;gap:3rem}
+  .ph-stats{grid-template-columns:1fr 1fr}
+  .ph-fp{padding:5rem 1.5rem}
+  .ph-fp-floor{grid-template-columns:1fr;gap:3rem}
+  .ph-specs{padding:5rem 1.5rem}
+  .ph-specs-grid{grid-template-columns:repeat(2,1fr)}
+  .ph-spec:nth-child(4n){border-right:1px solid var(--border)}
+  .ph-spec:nth-child(2n){border-right:none}
+  .ph-spec:nth-last-child(-n+4){border-bottom:1px solid var(--border)}
+  .ph-spec:nth-last-child(-n+2){border-bottom:none}
+  .ph-price{padding:4rem 1.5rem;flex-direction:column;align-items:flex-start;gap:2rem}
+  .ph-pnew{font-size:3.5rem}
+  .ph-related{padding:3rem 1.5rem}
+}
+</style>
+</head>
+<body>
+<div class="cursor" id="cur"></div><div class="cring" id="ring"></div>
+<nav id="nav"><a href="../index.html" class="logo">NP5<span class="logo-dot">.</span>HOUSE</a><ul class="nav-links"><li><a href="../index.html#collection">Panel Villas</a></li><li><a href="../index.html#jewel">Modular Living</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="investors.html">Investors</a></li></ul><a href="../index.html#contact" class="nav-btn">Enquire</a><button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button></nav>
+<div class="nav-drawer" id="navDrawer"><a href="../index.html#collection">Panel Villas</a><a href="../index.html#jewel">Modular Living</a><a href="gallery.html">Gallery</a><a href="investors.html">Investors</a><a href="../index.html#contact" class="nd-cta">Enquire</a></div>
+
+<!-- SLIDER -->
+<div class="pslider" id="pslider">
+  <div class="pslide on"><img src="../assets/images/The_cupcake_pack.png" alt="The Cupcake Pack"></div>
+  <div class="pslide"><img src="../assets/images/The_cupcake_pack_2.png" alt="The Cupcake Pack — view 2"></div>
+  <div class="pslide"><img src="../assets/images/The_cupcake_pack_3.png" alt="The Cupcake Pack — view 3"></div>
+  <div class="pslide"><img src="../assets/images/The_cupcake_pack_4.png" alt="The Cupcake Pack — view 4"></div>
+  <button class="psl-arrow psl-arrow-prev" id="pslPrev">←</button>
+  <button class="psl-arrow psl-arrow-next" id="pslNext">→</button>
+  <div class="psl-ghost" id="pslGhost">01</div>
+  <div class="psl-side-nav">
+    <button class="psl-sn on" data-i="0">01</button>
+    <button class="psl-sn" data-i="1">02</button>
+    <button class="psl-sn" data-i="2">03</button>
+    <button class="psl-sn" data-i="3">04</button>
+  </div>
+  <div class="psl-bottom-nav">
+    <button class="psl-bn-arr" id="pslPrevB">← PREV</button>
+    <span class="psl-bn-count"><span id="pslCur">01</span> — 04</span>
+    <button class="psl-bn-arr" id="pslNextB">NEXT →</button>
+  </div>
+  <div class="psl-progress-track"></div>
+  <div class="psl-progress" id="pslProgress" style="width:25%"></div>
+</div>
+
+<!-- INTRO -->
+<section><div class="ph-intro">
+  <div class="r">
+    <span class="ph-eyebrow">Panel House · Two Floors · Gable Roof · Garage</span>
+    <h1 class="ph-title"><em style="font-style:normal;color:rgba(5,29,73,.35)">The</em><strong>Cupcake Pack</strong></h1>
+  </div>
+  <div class="r d1">
+    <p class="ph-body">Two floors, a complete family home. The Cupcake Pack rises through a 51 m² open living floor below and a fully private upper floor above. The gable roof creates an architectural attic space lit by skylights — a second floor that feels entirely different from a conventional upper level.</p>
+    <p class="ph-body" style="margin-top:1.2rem">Ground floor: kitchen-living, garage, workroom, bathroom, boiler room. Second floor: parents' bedroom, two children's rooms, a large closet, and a second bathroom. Every space is resolved independently.</p>
+    <div class="ph-keyline"></div>
+    <div class="ph-stats">
+      <div class="ph-stat"><span class="ph-sn">100<sup style="font-size:.5em;vertical-align:super">m²</sup></span><span class="ph-sl">Living Area</span></div>
+      <div class="ph-stat"><span class="ph-sn">3</span><span class="ph-sl">Bedrooms</span></div>
+      <div class="ph-stat"><span class="ph-sn">2</span><span class="ph-sl">Floors</span></div>
+      <div class="ph-stat"><span class="ph-sn">8.5<sup style="font-size:.5em;vertical-align:super">m</sup></span><span class="ph-sl">Height</span></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 3D MODEL -->
+<div class="ph-3d r">
+  <div class="ph-3d-label">3D Model</div>
+  <div class="ph-3d-corner"><p>3D</p></div>
+  <img src="../assets/images/The_cupcake_pack_3D.png" alt="The Cupcake Pack — 3D model">
+</div>
+
+<!-- FLOOR PLANS -->
+<section class="ph-fp">
+  <!-- 1ST FLOOR -->
+  <div class="ph-fp-floor r">
+    <div class="ph-fp-plan">
+      <span class="ph-fp-plan-label">1st Floor Plan</span>
+      <img src="../assets/images/The_cupcake_pack_1st_floor_plan.png" alt="Cupcake Pack — 1st floor plan">
+    </div>
+    <div class="r d1">
+      <h2 class="ph-fp-heading">First Floor<span>110.17 m²</span></h2>
+      <div class="ph-fp-row"><span class="ph-rnum">101</span><span class="ph-rname">Corridor</span><span class="ph-rsz">5.80 m²</span></div>
+      <div class="ph-fp-row"><span class="ph-rnum">102</span><span class="ph-rname">Garage</span><span class="ph-rsz">21.42 m²</span></div>
+      <div class="ph-fp-row"><span class="ph-rnum">103</span><span class="ph-rname">Boiler Room</span><span class="ph-rsz">7.29 m²</span></div>
+      <div class="ph-fp-row"><span class="ph-rnum">104</span><span class="ph-rname">Bathroom</span><span class="ph-rsz">9.30 m²</span></div>
+      <div class="ph-fp-row"><span class="ph-rnum">105</span><span class="ph-rname">Pantry</span><span class="ph-rsz">1.58 m²</span></div>
+      <div class="ph-fp-row"><span class="ph-rnum">106</span><span class="ph-rname">Hall — Corridor</span><span class="ph-rsz">3.77 m²</span></div>
+      <div class="ph-fp-row"><span class="ph-rnum">107</span><span class="ph-rname">Workroom</span><span class="ph-rsz">10.00 m²</span></div>
+      <div class="ph-fp-row"><span class="ph-rnum">108</span><span class="ph-rname">Kitchen — Living Room</span><span class="ph-rsz">51.00 m²</span></div>
+      <div class="ph-fp-total"><span class="ph-tl">Total</span><span class="ph-tn">110.17 m²</span></div>
+    </div>
+  </div>
+
+  <div class="ph-fp-divider"></div>
+
+  <!-- 2ND FLOOR -->
+  <div class="ph-fp-floor r">
+    <div class="ph-fp-plan">
+      <span class="ph-fp-plan-label">2nd Floor Plan</span>
+      <img src="../assets/images/The_cupcake_pack_2nd_floor_plan.png" alt="Cupcake Pack — 2nd floor plan">
+    </div>
+    <div class="r d1">
+      <h2 class="ph-fp-heading">Second Floor<span>61.49 m²</span></h2>
+      <div class="ph-fp-row"><span class="ph-rnum">201</span><span class="ph-rname">Hall — Staircase</span><span class="ph-rsz">17.17 m²</span></div>
+      <div class="ph-fp-row"><span class="ph-rnum">202</span><span class="ph-rname">Parents Bedroom</span><span class="ph-rsz">14.05 m²</span></div>
+      <div class="ph-fp-row"><span class="ph-rnum">203</span><span class="ph-rname">Bathroom</span><span class="ph-rsz">14.41 m²</span></div>
+      <div class="ph-fp-row"><span class="ph-rnum">204</span><span class="ph-rname">Children's Room</span><span class="ph-rsz">9.52 m²</span></div>
+      <div class="ph-fp-row"><span class="ph-rnum">205</span><span class="ph-rname">Children's Room</span><span class="ph-rsz">5.47 m²</span></div>
+      <div class="ph-fp-row"><span class="ph-rnum">206</span><span class="ph-rname">Closet</span><span class="ph-rsz">16.91 m²</span></div>
+      <div class="ph-fp-total"><span class="ph-tl">Total</span><span class="ph-tn">61.49 m²</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SPECS -->
+<section class="ph-specs r">
+  <span class="eyebrow">Technical Specifications</span>
+  <div class="ph-specs-grid">
+    <div class="ph-spec"><div class="ph-sv">100.48</div><div class="ph-sl2">Living Area m²</div></div>
+    <div class="ph-spec"><div class="ph-sv">171.66</div><div class="ph-sl2">Total Area m²</div></div>
+    <div class="ph-spec"><div class="ph-sv">192.65</div><div class="ph-sl2">Building Area m²</div></div>
+    <div class="ph-spec"><div class="ph-sv">2</div><div class="ph-sl2">Floors</div></div>
+    <div class="ph-spec"><div class="ph-sv">14.95</div><div class="ph-sl2">Length m</div></div>
+    <div class="ph-spec"><div class="ph-sv">14.87</div><div class="ph-sl2">Width m</div></div>
+    <div class="ph-spec"><div class="ph-sv">8.50</div><div class="ph-sl2">Height m</div></div>
+    <div class="ph-spec"><div class="ph-sv">40/1.4</div><div class="ph-sl2">Roof Slope</div></div>
+  </div>
+</section>
+
+<!-- PRICE -->
+<div class="ph-price r">
+  <div>
+    <span class="ph-pl">Project Documentation</span>
+    <span class="ph-pold">€ 2.928</span>
+    <span class="ph-pnew">€ 2.420</span>
+    <p class="ph-pnote">Price covers architectural documentation and blueprints. Factory production, delivery, installation, foundation, and engineering systems are priced separately upon request.</p>
+  </div>
+  <div><a href="../index.html#contact" class="btn-p" style="font-size:.72rem;padding:1.2rem 2.5rem">Begin a Conversation →</a></div>
+</div>
+
+<div class="ph-related">
+  <span class="ph-rel-l">Also in Collection</span>
+  <a href="the-box-slope.html" class="btn-g">The Box Slope</a>
+  <a href="the-dream-box.html" class="btn-g">The Dream Box</a>
+  <a href="jewel.html" class="btn-g">JEWEL Modular</a>
+</div>
+
+<footer><div class="fl">NP5<span class="dot">.</span>HOUSE</div><p class="fc">© 2026 NP5 House. Lithuania · Portugal</p><ul class="flinks"><li><a href="../index.html#collection">Collection</a></li><li><a href="gallery.html">Gallery</a></li><li><a href="../index.html#contact">Contact</a></li></ul></footer>
+
+<script src="../js/main.js" defer></script>
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('solid',window.scrollY>80),{passive:true});
+(function(){
+  const slides=document.querySelectorAll('.pslide');
+  const thumbs=document.querySelectorAll('.psl-sn');
+  const cur=document.getElementById('pslCur');
+  const ghost=document.getElementById('pslGhost');
+  const progress=document.getElementById('pslProgress');
+  const total=slides.length;let c=0;
+  function go(n){slides[c].classList.remove('on');thumbs[c].classList.remove('on');c=(n+total)%total;slides[c].classList.add('on');thumbs[c].classList.add('on');const l=String(c+1).padStart(2,'0');if(cur)cur.textContent=l;if(ghost)ghost.textContent=l;if(progress)progress.style.width=((c+1)/total*100)+'%';}
+  document.getElementById('pslPrev').addEventListener('click',()=>go(c-1));
+  document.getElementById('pslPrevB')?.addEventListener('click',()=>go(c-1));
+  document.getElementById('pslNext').addEventListener('click',()=>go(c+1));
+  document.getElementById('pslNextB')?.addEventListener('click',()=>go(c+1));
+  thumbs.forEach((t,i)=>t.addEventListener('click',()=>go(i)));
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')go(c-1);if(e.key==='ArrowRight')go(c+1);});
+  let tx=0;const sl=document.getElementById('pslider');
+  sl.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+  sl.addEventListener('touchend',e=>{const dx=tx-e.changedTouches[0].clientX;if(Math.abs(dx)>40)go(c+(dx>0?1:-1));});
+})();
+</script>
+</body>
+</html>
