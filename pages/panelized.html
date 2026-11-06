@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="panelized.title">Panelized Homes — NP5.HOUSE</title>
+<link rel="stylesheet" href="../css/style.css?v=5">
+<style>
+body { background: #0b0d12; }
+.jw-hero {
+  position: relative; min-height: 100vh; padding: 9rem 4rem 4rem;
+  display: flex; flex-direction: column; background: #0b0d12;
+}
+.jw-hero-bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.jw-hero-bg img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.4) saturate(.85); }
+.jw-hero-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(5,8,15,.5) 0%, rgba(5,8,15,.25) 40%, rgba(5,8,15,.75) 100%); }
+
+.jw-hero-top { position: relative; z-index: 1; text-align: center; }
+.jw-hero-title { font-family: var(--fd); font-weight: 300; font-size: clamp(2.4rem, 5vw, 3.6rem); color: #fff; letter-spacing: -.01em; }
+.jw-hero-note { font-family: var(--fb); font-size: .74rem; color: rgba(255,255,255,.6); margin-top: .7rem; }
+
+.jw-yard {
+  position: relative; z-index: 1; flex: 1;
+  display: flex; align-items: flex-end; justify-content: center; gap: 4rem;
+  padding: 3rem 2rem 2rem; flex-wrap: wrap;
+}
+.jw-house { text-decoration: none; display: flex; flex-direction: column; align-items: center; transition: transform .4s cubic-bezier(.25,.46,.45,.94); width: min(42vw, 480px); }
+.jw-house:hover { transform: translateY(-10px); }
+.jw-house-img { width: 100%; aspect-ratio: 4/3; overflow: hidden; border-radius: 4px; box-shadow: 0 30px 60px -20px rgba(0,0,0,.6); }
+.jw-house-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: filter .4s; filter: brightness(.96); }
+.jw-house:hover .jw-house-img img { filter: brightness(1.05); }
+.jw-house-label { font-family: var(--fd); font-weight: 400; font-size: 1.6rem; color: #fff; margin-top: 1.2rem; letter-spacing: .03em; }
+.jw-house-specs { font-family: var(--fb); font-size: .6rem; letter-spacing: .06em; color: rgba(255,255,255,.55); text-transform: uppercase; margin-top: .4rem; text-align: center; line-height: 1.6; }
+.jw-house-cta {
+  margin-top: .9rem; font-family: var(--fb); font-size: .56rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase;
+  color: #fff; opacity: 0; transform: translateY(4px); transition: opacity .3s, transform .3s;
+}
+.jw-house:hover .jw-house-cta { opacity: .85; transform: translateY(0); }
+
+@media (max-width: 900px) {
+  .jw-hero { padding: 7.5rem 2rem 3rem; }
+  .jw-yard { gap: 2.5rem; }
+  .jw-house { width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cring" id="ring"></div>
+
+<nav id="nav" class="solid">
+  <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  <a href="../index.html" class="logo"><svg class="logo-mark" viewBox="0 0 550 116" xmlns="http://www.w3.org/2000/svg" aria-label="NP5" role="img"><g fill="currentColor"><polygon points="153.9,91.4 22.1,0.1 22,0 0,0 0,116 22.2,116 22.2,24.6 154,115.9 154.1,116 176.1,116 176.1,0 153.9,0"/><path d="M543.9,52.9c-4-3.9-8.8-5.9-14.2-5.9H396.1V22H548V0H373.9v69h147.2c2.2,0,3.9,0.5,5,1.4c1,0.8,1.7,3.6,1.7,6.6v10.1c0,2.4-0.7,4.2-2,5.3c-1.4,1.1-3,1.6-4.9,1.6h-147v22h155.9c5.4,0,10.1-1.9,14.1-5.6c4-3.7,6.1-9,6.1-15.9v-26C550,62.1,548,56.8,543.9,52.9"/><polygon points="186.9,21.9 340.6,22 340.6,47 186.9,47 186.9,116 209.1,116 209.1,69 362.7,69 362.7,0 186.9,0"/></g></svg></a>
+  <div class="nav-lang-wrap">
+    <button class="nav-lang" aria-label="Language">🇬🇧</button>
+    <div class="nav-lang-menu">
+      <button class="nav-lang-opt active" data-lang="en"><span class="nav-lang-opt-flag">🇬🇧</span>English</button>
+      <button class="nav-lang-opt" data-lang="lt"><span class="nav-lang-opt-flag">🇱🇹</span>Lietuvių</button>
+    </div>
+  </div>
+</nav>
+<div class="nav-drawer" id="navDrawer">
+  <div class="nav-drawer-links">
+    <a href="houses.html" data-i18n="nav.houses">Houses</a>
+    <a href="gallery.html" data-i18n="nav.gallery">Gallery</a>
+    <a href="investors.html" data-i18n="nav.investors">Investors</a>
+  </div>
+  <div class="nav-drawer-foot">
+    <a href="../index.html#contact" class="nd-cta" data-i18n="nav.enquire">Enquire</a>
+  <span class="nav-drawer-meta" data-i18n="drawer.meta">Lithuania &middot; Portugal</span>
+  </div>
+</div>
+
+<div class="jw-hero">
+  <div class="jw-hero-bg"><img src="../assets/images/houses/panel-house-1/panel-cover-3.jpg" alt=""></div>
+
+  <div class="jw-hero-top">
+    <h1 class="jw-hero-title" data-i18n="panelized.heroTitle">Panelized Homes</h1>
+    <p class="jw-hero-note" data-i18n="panelized.heroNote">Precision-manufactured LGS building panels, assembled at the project site.</p>
+  </div>
+
+  <div class="jw-yard">
+    <a href="house-03.html" class="jw-house">
+      <div class="jw-house-img"><img src="../assets/images/houses/panel-house-1/panel-cover-3.jpg" alt="Calibre" loading="lazy"></div>
+      <h2 class="jw-house-label">Calibre</h2>
+      <p class="jw-house-specs" data-i18n="panelized.calibreNote">Prefabricated panel home</p>
+      <span class="jw-house-cta" data-i18n="common.configure">Configure →</span>
+    </a>
+    <a href="house-04.html" class="jw-house">
+      <div class="jw-house-img"><img src="../assets/images/houses/panel-house-2/panel-cover-4.jpg" alt="Escapement" loading="lazy"></div>
+      <h2 class="jw-house-label">Escapement</h2>
+      <p class="jw-house-specs" data-i18n="panelized.escapementNote">Open terrace · prefabricated panel home</p>
+      <span class="jw-house-cta" data-i18n="common.configure">Configure →</span>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="fl"><svg class="logo-mark" viewBox="0 0 550 116" xmlns="http://www.w3.org/2000/svg" aria-label="NP5" role="img"><g fill="currentColor"><polygon points="153.9,91.4 22.1,0.1 22,0 0,0 0,116 22.2,116 22.2,24.6 154,115.9 154.1,116 176.1,116 176.1,0 153.9,0"/><path d="M543.9,52.9c-4-3.9-8.8-5.9-14.2-5.9H396.1V22H548V0H373.9v69h147.2c2.2,0,3.9,0.5,5,1.4c1,0.8,1.7,3.6,1.7,6.6v10.1c0,2.4-0.7,4.2-2,5.3c-1.4,1.1-3,1.6-4.9,1.6h-147v22h155.9c5.4,0,10.1-1.9,14.1-5.6c4-3.7,6.1-9,6.1-15.9v-26C550,62.1,548,56.8,543.9,52.9"/><polygon points="186.9,21.9 340.6,22 340.6,47 186.9,47 186.9,116 209.1,116 209.1,69 362.7,69 362.7,0 186.9,0"/></g></svg><span class="logo-text"><span class="dot">.</span>HOUSE</span></div>
+  <p class="fc" data-i18n="footer.tagline">© 2026 NP5 House. Premium Prefab Architecture. Lithuania · Portugal</p>
+  <ul class="flinks">
+    <li><a href="houses.html" data-i18n="nav.houses">Houses</a></li>
+    <li><a href="gallery.html" data-i18n="nav.gallery">Gallery</a></li>
+    <li><a href="../index.html#contact" data-i18n="footer.contact">Contact</a></li>
+  </ul>
+</footer>
+
+<script src="../js/i18n-data.js?v=3"></script>
+<script src="../js/i18n.js?v=3"></script>
+<script src="../js/main.js?v=3" defer></script>
+</body>
+</html>

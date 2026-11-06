@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="about.title">About — NP5.HOUSE</title>
+<link rel="stylesheet" href="../css/style.css?v=5">
+<style>
+nav:not(.solid) .logo { color: #fff; }
+nav:not(.solid) .nav-links a { color: rgba(255,255,255,.75); }
+nav:not(.solid) .nav-links a:hover { color: #fff; }
+nav:not(.solid) .nav-btn { background: transparent; border: 1px solid rgba(255,255,255,.4); color: #fff; }
+nav:not(.solid) .nav-btn:hover { background: rgba(255,255,255,.12); border-color: #fff; }
+nav:not(.solid) .nav-toggle span { background: #fff; }
+
+.ab-hero { height: 42vh; min-height: 320px; background: var(--navy); display: flex; align-items: flex-end; padding: 4rem; position: relative; overflow: hidden; }
+.ab-hero-eyebrow { font-family: var(--fb); font-size: .6rem; font-weight: 500; letter-spacing: .3em; color: rgba(255,255,255,.75); text-transform: uppercase; display: flex; align-items: center; gap: .8rem; margin-bottom: 1rem; }
+.ab-hero-eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--copper); flex-shrink: 0; }
+.ab-hero-title { font-family: var(--fd); font-weight: 100; font-size: clamp(3rem, 7vw, 7rem); color: #fff; line-height: .95; letter-spacing: -.02em; max-width: 900px; }
+.ab-hero-title strong { font-weight: 600; }
+
+.ab-sec { max-width: 1100px; margin: 0 auto; padding: 5rem 4rem; }
+.ab-sec + .ab-sec { border-top: 1px solid var(--border); }
+.ab-sec-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 4rem; }
+.ab-sec-label { font-family: var(--fb); font-size: .56rem; font-weight: 600; letter-spacing: .26em; color: var(--copper); text-transform: uppercase; display: flex; align-items: center; gap: .8rem; }
+.ab-sec-label::before { content: ''; width: 18px; height: 1px; background: currentColor; flex-shrink: 0; }
+.ab-sec-title { font-family: var(--fd); font-weight: 300; font-size: clamp(1.8rem, 2.6vw, 2.6rem); color: var(--navy); line-height: 1.1; margin-top: .9rem; }
+.ab-sec-body p { font-family: var(--fb); font-weight: 300; font-size: .88rem; line-height: 2; color: var(--tbody); }
+.ab-sec-body p + p { margin-top: 1.3rem; }
+
+.ab-principles { max-width: 1100px; margin: 0 auto; padding: 5rem 4rem; border-top: 1px solid var(--border); }
+.ab-principles-hd { margin-bottom: 3rem; }
+.ab-principle-list { display: flex; flex-direction: column; }
+.ab-principle { display: grid; grid-template-columns: 90px 1fr; gap: 2rem; padding: 2rem 0; border-bottom: 1px solid var(--border); align-items: baseline; }
+.ab-principle:last-child { border-bottom: none; }
+.ab-principle-num { font-family: var(--fd); font-weight: 200; font-size: 2.6rem; color: rgba(5,29,73,.18); line-height: 1; }
+.ab-principle-title { font-family: var(--fd); font-weight: 500; font-size: 1.2rem; color: var(--navy); margin-bottom: .6rem; }
+.ab-principle-body { font-family: var(--fb); font-weight: 300; font-size: .85rem; line-height: 1.9; color: var(--tbody); }
+
+.ab-cta-sec { background: var(--navy); padding: 6.5rem 4rem; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+
+@media (max-width: 900px) {
+  .ab-hero { padding: 7rem 1.5rem 2rem; height: auto; min-height: 260px; }
+  .ab-sec, .ab-principles, .ab-cta-sec { padding: 3rem 1.5rem; }
+  .ab-sec-grid, .ab-cta-sec { grid-template-columns: 1fr; gap: 1.5rem; }
+  .ab-principle { grid-template-columns: 50px 1fr; gap: 1.2rem; }
+  .ab-principle-num { font-size: 1.8rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cring" id="ring"></div>
+
+<nav id="nav">
+  <a href="../index.html" class="logo"><svg class="logo-mark" viewBox="0 0 550 116" xmlns="http://www.w3.org/2000/svg" aria-label="NP5" role="img"><g fill="currentColor"><polygon points="153.9,91.4 22.1,0.1 22,0 0,0 0,116 22.2,116 22.2,24.6 154,115.9 154.1,116 176.1,116 176.1,0 153.9,0"/><path d="M543.9,52.9c-4-3.9-8.8-5.9-14.2-5.9H396.1V22H548V0H373.9v69h147.2c2.2,0,3.9,0.5,5,1.4c1,0.8,1.7,3.6,1.7,6.6v10.1c0,2.4-0.7,4.2-2,5.3c-1.4,1.1-3,1.6-4.9,1.6h-147v22h155.9c5.4,0,10.1-1.9,14.1-5.6c4-3.7,6.1-9,6.1-15.9v-26C550,62.1,548,56.8,543.9,52.9"/><polygon points="186.9,21.9 340.6,22 340.6,47 186.9,47 186.9,116 209.1,116 209.1,69 362.7,69 362.7,0 186.9,0"/></g></svg></a>
+  <ul class="nav-links">
+    <li><a href="houses.html" data-i18n="nav.houses">Houses</a></li>
+    <li><a href="gallery.html" data-i18n="nav.gallery">Gallery</a></li>
+    <li><a href="about.html" data-i18n="nav.about">About</a></li>
+    <li><a href="investors.html" data-i18n="nav.investors">Investors</a></li>
+  </ul>
+  <a href="../index.html#contact" class="nav-btn" data-i18n="nav.enquire">Enquire</a>
+  <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  <div class="nav-lang-wrap">
+    <button class="nav-lang" aria-label="Language">🇬🇧</button>
+    <div class="nav-lang-menu">
+      <button class="nav-lang-opt active" data-lang="en"><span class="nav-lang-opt-flag">🇬🇧</span>English</button>
+      <button class="nav-lang-opt" data-lang="lt"><span class="nav-lang-opt-flag">🇱🇹</span>Lietuvių</button>
+    </div>
+  </div>
+</nav>
+<div class="nav-drawer" id="navDrawer">
+  <div class="nav-drawer-links">
+    <a href="houses.html" data-i18n="nav.houses">Houses</a>
+    <a href="gallery.html" data-i18n="nav.gallery">Gallery</a>
+    <a href="about.html" data-i18n="nav.about">About</a>
+    <a href="investors.html" data-i18n="nav.investors">Investors</a>
+  </div>
+  <div class="nav-drawer-foot">
+    <a href="../index.html#contact" class="nd-cta" data-i18n="nav.enquire">Enquire</a>
+  <span class="nav-drawer-meta" data-i18n="drawer.meta">Lithuania &middot; Portugal</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="ab-hero">
+  <div>
+    <span class="ab-hero-eyebrow" data-i18n="about.heroEyebrow">The Group</span>
+    <h1 class="ab-hero-title" data-i18n-html="about.heroTitle">Five companies. <strong>One ambition.</strong></h1>
+  </div>
+</div>
+
+<!-- ABOUT US -->
+<div class="ab-sec">
+  <div class="ab-sec-grid">
+    <div><span class="ab-sec-label" data-i18n="about.label">About Us</span></div>
+    <div class="ab-sec-body">
+      <p data-i18n="about.p1">NP5 is a group of companies operating in Lithuania and the Netherlands that consists of five member companies: &ldquo;NP5 Projects&rdquo;, &ldquo;NP5 Constructions&rdquo;, &ldquo;NP5 House&rdquo;, &ldquo;NP5 Technology&rdquo; and &ldquo;NP5 Innovation&rdquo;.</p>
+      <p data-i18n="about.p2">What unites all the members of the group is an underlying ambition to challenge archaic traditions in the fields of architecture and construction, where clients and customers must suffer through the tiresome, expensive, and time-consuming service-based execution of projects. Working under a paradigm of no-nonsense housing, NP5 tries to be at the forefront of the product-based revolution in the building sector. The essence of the product-based model lies in eliminating client uncertainties &mdash; architectural projects and construction solutions are packaged, purchased, and built as ready-made products.</p>
+      <p data-i18n="about.p3">NP5 Group was founded by a team of young and ambitious architects, engineers and technology experts. Although the number of employees grows naturally as the group&rsquo;s activities expand, the core has remained practically unchanged throughout the entire lifetime of the group. The team consists of top-qualification specialists responsible for the management of architectural and construction projects &mdash; this is why NP5 Group is associated with trust and quality.</p>
+      <p data-i18n="about.p4">The leaders of the company are highly-qualified experts who seek to revolutionize the construction industry. Each of them is obsessed with his or her respective line of work, setting a positive example for the growing number of NP5 employees. Motivation has never been an issue at our company, because we don&rsquo;t wake up just to go to work &mdash; we wake up every morning determined to change the world.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MISSION -->
+<div class="ab-sec">
+  <div class="ab-sec-grid">
+    <div><span class="ab-sec-label" data-i18n="about.missionLabel">Mission</span></div>
+    <div class="ab-sec-body">
+      <p data-i18n="about.missionP1">Our mission is to challenge archaic traditions in the fields of architecture and construction, where clients and customers must suffer through the tiresome, expensive, and time-consuming service-based execution of projects.</p>
+      <p data-i18n="about.missionP2">Working under a paradigm of no-nonsense housing, NP5 tries to be at the forefront of the product-based revolution in the building sector. The essence of the product-based model lies in eliminating client uncertainties. Architectural projects and construction solutions are packaged, purchased, and built as ready-made products.</p>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY -->
+<div class="ab-sec">
+  <div class="ab-sec-grid">
+    <div><span class="ab-sec-label" data-i18n="about.historyLabel">History</span></div>
+    <div class="ab-sec-body">
+      <p data-i18n="about.historyP1">The origins of the group go back to 2008, when a team of young and ambitious architects formed the architectural company NPS projektai Ltd in &Scaron;iauliai, Lithuania. Soon after, a second, construction-focused enterprise was founded &mdash; NPS statyba Ltd.</p>
+      <p data-i18n="about.historyP2">In 2018, the companies underwent a comprehensive restructuring process. To match the growing international scope of activities, NP5 Group was established. Today the group consists of five different companies: &ldquo;NP5 Constructions&rdquo;, &ldquo;NP5 Projects&rdquo;, &ldquo;NP5 House&rdquo;, &ldquo;NP5 Technology&rdquo;, and &ldquo;NP5 Innovation&rdquo;.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ADVANTAGES -->
+<div class="ab-sec">
+  <div class="ab-sec-grid">
+    <div><span class="ab-sec-label" data-i18n="about.advLabel">Advantages</span></div>
+    <div class="ab-sec-body">
+      <p data-i18n="about.advP1">When choosing to cooperate with NP5 group companies, you choose partners who are ready to help you achieve more. By implementing constant innovations and investing in the most advanced IT and construction equipment, we ensure the maximum efficiency of construction projects in the market. NP5 group develops and implements both B2B and B2C architectural and construction projects and can qualitatively control the implementation process, starting with vision and conceptual concepts, analysis, ending with complex plans and their execution.</p>
+      <p data-i18n="about.advP2">The main advantage of partnership with the NP5 group, which our customers value, is the opportunity to work according to the product cooperation model. This model makes it possible to anticipate the future outcome of the work and to avoid frequent surprises in the construction sector, including the loss of time and money. We never leave out individual decisions in the work process. On the other hand, practice shows that in many cases it is the versatility of a construction product that enables greater cost savings and an optimal result in terms of functionality, economy, energy efficiency and ecology.</p>
+      <p data-i18n="about.advP3">NP5 never loses responsibility for the final results of the work. In our group, you will meet people who do not spare their time and knowledge to create long-term value for you.</p>
+    </div>
+  </div>
+</div>
+
+<!-- PHILOSOPHY -->
+<div class="ab-sec">
+  <div class="ab-sec-grid">
+    <div><span class="ab-sec-label" data-i18n="about.philLabel">Philosophy</span></div>
+    <div class="ab-sec-body">
+      <p data-i18n="about.philP1">We believe private and commercial objects can be built at a lower cost and without unnecessary quality risks. This requires builders to be able to standardize their services and to assume responsibility for the result &mdash; the construction product. Having standardised and converted our services into products, we let our clients purchase construction products with zero stress.</p>
+      <p data-i18n="about.philP2">We rely on five criteria that are characteristic to all projects of NP5 Group: simplicity (no-nonsense), efficiency, precision, universality and the five senses. The product-based model of cooperation and the concept of no-nonsense architecture guide us in all of our activities.</p>
+    </div>
+  </div>
+</div>
+
+<!-- NO-NONSENSE ARCHITECTURE -->
+<div class="ab-principles">
+  <div class="ab-principles-hd">
+    <span class="ab-sec-label" data-i18n="about.nnaLabel">No-Nonsense Architecture</span>
+    <h2 class="ab-sec-title" data-i18n="about.nnaTitle">Five criteria guide every project</h2>
+  </div>
+  <div class="ab-principle-list">
+    <div class="ab-principle">
+      <span class="ab-principle-num">01</span>
+      <div>
+        <div class="ab-principle-title" data-i18n="about.p1Title">Simplicity (No-Nonsense)</div>
+        <p class="ab-principle-body" data-i18n="about.p1Body">The paradigm of no-nonsense architecture means always finding the simplest and, therefore, the best solution &mdash; without excessive, costly, and unnecessary architectural manipulations. Our no-nonsense approach is the key to earning the long-term trust of clients.</p>
+      </div>
+    </div>
+    <div class="ab-principle">
+      <span class="ab-principle-num">02</span>
+      <div>
+        <div class="ab-principle-title" data-i18n="about.p2Title">Efficiency</div>
+        <p class="ab-principle-body" data-i18n="about.p2Body">NP5 specializes in energy-efficient residential house projects that are in high demand in the Nordic regions. All residential house plans adhere to A, A+, and passive house standards.</p>
+      </div>
+    </div>
+    <div class="ab-principle">
+      <span class="ab-principle-num">03</span>
+      <div>
+        <div class="ab-principle-title" data-i18n="about.p3Title">Precision</div>
+        <p class="ab-principle-body" data-i18n="about.p3Body">Every architectural or construction project should be ordered with all information provided in advance and in a precise fashion. All house plans are comprehensive, highly-detailed and easy to understand &mdash; modern 3D visualizations help you make a choice without stepping away from your computer.</p>
+      </div>
+    </div>
+    <div class="ab-principle">
+      <span class="ab-principle-num">04</span>
+      <div>
+        <div class="ab-principle-title" data-i18n="about.p4Title">Universality</div>
+        <p class="ab-principle-body" data-i18n="about.p4Body">Whenever you buy a house project from NP5, you can rest assured that it is a time-tested model &mdash; the same project was ordered by other people who are now enjoying life in a home of that particular model. All of our house projects are economical, ergonomic, relatively simple, and can be built almost anywhere in the Nordic regions.</p>
+      </div>
+    </div>
+    <div class="ab-principle">
+      <span class="ab-principle-num">05</span>
+      <div>
+        <div class="ab-principle-title" data-i18n="about.p5Title">Five Senses</div>
+        <p class="ab-principle-body" data-i18n="about.p5Body">The principles of no-nonsense architecture must always be aligned with the five human senses. New buildings must not only be pleasing to the eye &mdash; they should feature excellent sound isolation, mechanical ventilation with recuperation, and top-quality natural construction materials, creating a dynamic harmony across every sense.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ECOLOGY -->
+<div class="ab-sec">
+  <div class="ab-sec-grid">
+    <div><span class="ab-sec-label" data-i18n="about.ecoLabel">Ecology</span></div>
+    <div class="ab-sec-body">
+      <p data-i18n="about.ecoP1">We live at a time when it&rsquo;s no longer enough to think of cost-efficient construction &mdash; we must also pay attention to environmental efficiency. For us, it is important that all of our buildings are friendly to the environment.</p>
+      <p data-i18n="about.ecoP2">A carefully designed object does not only preserve limited natural resources and limit air, water and soil pollution, but also promotes a healthy and sustainable lifestyle. In everything we design and construct, we make sure to use proper materials and machinery, while applying the principles of sustainable construction along the way.</p>
+      <p data-i18n="about.ecoP3">We are currently expanding our activities into the field of light gauge steel frames. The weight of modern light steel buildings is several times smaller compared to traditional buildings, which also ensures lower costs of transportation and assembly, often without the need for heavy machinery. The production of light steel frames is an environment-friendly process that does not exploit natural resources, offers outcomes that are fully recyclable, and leaves little to zero waste.</p>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="ab-cta-sec">
+  <div>
+    <h2 style="font-family:var(--fd);font-weight:200;font-size:clamp(2.2rem,4vw,3.8rem);color:#fff;line-height:.95;letter-spacing:.01em" data-i18n-html="about.ctaTitle"><strong style="font-weight:600;display:block">Let&rsquo;s build</strong>something that works.</h2>
+  </div>
+  <div>
+    <p style="font-family:var(--fb);font-weight:300;font-size:.88rem;line-height:2;color:rgba(255,255,255,.45);margin-bottom:2.2rem" data-i18n="about.ctaBody">Explore the full NP5 Group at np5.eu, or start a conversation about your own project with the NP5.HOUSE team.</p>
+    <a href="../index.html#contact" class="btn-p" data-i18n="about.ctaBtn">Start the Conversation</a>
+  </div>
+</div>
+
+<footer>
+  <div class="fl"><svg class="logo-mark" viewBox="0 0 550 116" xmlns="http://www.w3.org/2000/svg" aria-label="NP5" role="img"><g fill="currentColor"><polygon points="153.9,91.4 22.1,0.1 22,0 0,0 0,116 22.2,116 22.2,24.6 154,115.9 154.1,116 176.1,116 176.1,0 153.9,0"/><path d="M543.9,52.9c-4-3.9-8.8-5.9-14.2-5.9H396.1V22H548V0H373.9v69h147.2c2.2,0,3.9,0.5,5,1.4c1,0.8,1.7,3.6,1.7,6.6v10.1c0,2.4-0.7,4.2-2,5.3c-1.4,1.1-3,1.6-4.9,1.6h-147v22h155.9c5.4,0,10.1-1.9,14.1-5.6c4-3.7,6.1-9,6.1-15.9v-26C550,62.1,548,56.8,543.9,52.9"/><polygon points="186.9,21.9 340.6,22 340.6,47 186.9,47 186.9,116 209.1,116 209.1,69 362.7,69 362.7,0 186.9,0"/></g></svg><span class="logo-text"><span class="dot">.</span>HOUSE</span></div>
+  <p class="fc" data-i18n="footer.tagline">© 2026 NP5 House. Premium Prefab Architecture. Lithuania · Portugal</p>
+  <ul class="flinks">
+    <li><a href="houses.html" data-i18n="nav.houses">Houses</a></li>
+    <li><a href="gallery.html" data-i18n="nav.gallery">Gallery</a></li>
+    <li><a href="../index.html#contact" data-i18n="footer.contact">Contact</a></li>
+    <li><a href="https://www.np5.eu" target="_blank" data-i18n="footer.np5eu">NP5.eu &rarr;</a></li>
+  </ul>
+</footer>
+
+<script src="../js/i18n-data.js?v=3"></script>
+<script src="../js/i18n.js?v=3"></script>
+<script src="../js/main.js?v=3" defer></script>
+<script>
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('solid',window.scrollY>80),{passive:true});
+</script>
+</body>
+</html>

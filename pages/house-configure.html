@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="pageTitle">Configure — NP5.HOUSE</title>
+<link rel="stylesheet" href="../css/style.css?v=5">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+body.cfg-page { overflow: hidden; background: #f0f0ed; }
+
+.demo-banner {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 150;
+  background: var(--copper); color: #fff;
+  font-family: var(--fb); font-size: .62rem; letter-spacing: .1em;
+  text-align: center; padding: .45rem 1rem; text-transform: uppercase;
+}
+
+body.cfg-page nav.solid { background: #fff; box-shadow: 0 1px 0 rgba(5,29,73,.12); }
+body.cfg-page nav .logo { color: var(--navy); font-size: 1.15rem; }
+body.cfg-page nav .nav-links a { color: var(--tbody); }
+body.cfg-page nav .nav-btn { background: var(--navy); color: #fff; }
+
+.cfg-topbar {
+  position: fixed; top: 92px; left: 0; right: 0; height: 58px;
+  background: #fff; border-bottom: 1px solid #eceae6;
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; padding: 0 2.5rem; z-index: 90; gap: 2rem;
+}
+.cfg-back {
+  font-family: var(--fb); font-size: .57rem; font-weight: 500; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--tmuted); text-decoration: none;
+  display: inline-flex; align-items: center; gap: .55rem; transition: color .2s; width: fit-content;
+}
+.cfg-back:hover { color: var(--navy); }
+.cfg-tb-center { display: flex; align-items: center; gap: .7rem; justify-content: center; }
+.cfg-tb-name { font-family: var(--fd); font-weight: 300; font-size: 1.28rem; color: var(--navy); letter-spacing: .02em; }
+.cfg-tb-div { width: 1px; height: 15px; background: rgba(5,29,73,.15); flex-shrink: 0; }
+.cfg-tb-code { font-family: var(--fb); font-size: .6rem; letter-spacing: .17em; text-transform: uppercase; color: rgba(5,29,73,.7); }
+.cfg-tb-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: .06rem; }
+.cfg-tb-pricenote { font-family: var(--fb); font-size: .49rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--tmuted); }
+.cfg-live-price { font-family: var(--fd); font-weight: 200; font-size: 1.15rem; color: var(--navy); line-height: 1; }
+.cfg-live-price.pending { color: rgba(5,29,73,.2); }
+
+.cfg-layout { display: flex; height: 100vh; padding-top: 186px; padding-bottom: 78px; gap: 1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; }
+
+.cfg-viewer { flex: 0 0 68%; background: #f0f0ed; display: flex; flex-direction: column; position: relative; border-radius: 20px; overflow: hidden; box-shadow: 0 2px 16px rgba(5,29,73,.08); border: 1px solid rgba(5,29,73,.08); }
+.cfg-img-wrap { flex: 1; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.cfg-img-wrap img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.cfg-img-placeholder { font-family: var(--fb); font-size: .7rem; color: rgba(5,29,73,.35); text-transform: uppercase; letter-spacing: .1em; }
+.cfg-angle-rail { position: absolute; bottom: 12px; left: 0; right: 0; display: flex; justify-content: center; gap: .5rem; }
+.cfg-angle-dot { width: 26px; height: 4px; border-radius: 2px; background: rgba(5,29,73,.18); border: none; cursor: pointer; transition: background .2s; }
+.cfg-angle-dot.on { background: rgba(5,29,73,.65); }
+.cfg-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,.88); border: 1px solid rgba(5,29,73,.1); display: flex; align-items: center; justify-content: center; font-family: var(--fb); font-size: 1.2rem; color: var(--navy); cursor: pointer; transition: background .2s, box-shadow .2s, transform .2s; box-shadow: 0 2px 12px rgba(5,29,73,.1); z-index: 3; }
+.cfg-arrow:hover { background: #fff; box-shadow: 0 4px 18px rgba(5,29,73,.18); }
+.cfg-arrow-prev { left: 16px; }
+.cfg-arrow-next { right: 16px; }
+@media (max-width: 900px) { .cfg-arrow { width: 34px; height: 34px; font-size: 1rem; } .cfg-arrow-prev { left: 10px; } .cfg-arrow-next { right: 10px; } }
+.cfg-spec-bar { height: 48px; background: rgba(5,29,73,.05); border-top: 1px solid rgba(5,29,73,.08); display: flex; align-items: center; padding: 0 1.5rem; gap: 2.5rem; flex-shrink: 0; }
+.cfg-spec { font-family: var(--fb); font-size: .58rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(5,29,73,.7); line-height: 1.5; }
+.cfg-spec strong { display: block; color: var(--navy); font-size: .92rem; letter-spacing: .02em; font-weight: 600; }
+
+.cfg-options { flex: 1; overflow-y: auto; background: #fff; padding: 0 0 2.5rem; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.1) transparent; border-radius: 20px; box-shadow: 0 4px 24px rgba(0,0,0,.08); }
+.cfg-sec { border-bottom: 1px solid #ebebeb; }
+.cfg-sec-hd { width: 100%; background: none; border: none; padding: 1.35rem 2rem; display: flex; align-items: center; gap: .85rem; cursor: pointer; text-align: left; transition: background .15s; }
+.cfg-sec-hd:hover { background: rgba(0,0,0,.02); }
+.cfg-sec-arr { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: rgba(5,29,73,.4); transition: transform .25s; }
+.cfg-sec.open .cfg-sec-arr { transform: rotate(180deg); }
+.cfg-sec-title { font-family: var(--fb); font-weight: 600; font-size: .88rem; color: #1a1a1a; flex: 1; letter-spacing: .01em; }
+.cfg-sec-sel { min-width: 26px; height: 26px; border-radius: 13px; background: #ebebeb; font-family: var(--fb); font-size: .6rem; font-weight: 500; color: #555; display: flex; align-items: center; justify-content: center; padding: 0 .5rem; white-space: nowrap; flex-shrink: 0; }
+.cfg-sec-sel.has-sel { background: var(--navy); color: #fff; }
+.cfg-sec-body { display: none; padding: 0 2rem 1.75rem; }
+.cfg-sec.open .cfg-sec-body { display: block; }
+.cfg-note { font-family: var(--fb); font-size: .62rem; line-height: 1.7; color: rgba(5,29,73,.6); margin-bottom: 1.25rem; }
+
+.cfg-intro { padding: 1.5rem 2rem 1.25rem; border-bottom: 1px solid #ebebeb; }
+.cfg-intro-eyebrow { font-family: var(--fb); font-size: .48rem; letter-spacing: .3em; text-transform: uppercase; color: var(--copper); display: block; margin-bottom: .5rem; }
+.cfg-intro-text { font-family: var(--fb); font-size: .72rem; line-height: 1.8; color: rgba(5,29,73,.65); }
+
+.cfg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: .6rem; }
+.cfg-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: .6rem; }
+.cfg-card {
+  border: 2px solid #e8e8e8; border-radius: 12px; cursor: pointer;
+  overflow: hidden; position: relative; background: #fff; flex-shrink: 0;
+  transition: border-color .2s, box-shadow .2s, transform .18s;
+}
+.cfg-card:hover { border-color: #bbb; transform: scale(1.02); box-shadow: 0 4px 14px rgba(0,0,0,.1); }
+.cfg-card input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+.cfg-card.on { border-color: var(--navy); border-width: 2.5px; box-shadow: 0 0 0 1.5px var(--navy); }
+.cfg-card-tick { position: absolute; bottom: 5px; right: 5px; width: 18px; height: 18px; background: var(--navy); border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 9px; color: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+.cfg-card.on .cfg-card-tick { display: flex; }
+
+.cfg-card-img-wrap { height: 84px; overflow: hidden; background: #f0f0ed; }
+.cfg-card-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cfg-card-cap { font-size: .6rem; font-family: var(--fb); color: var(--navy); padding: .3rem .6rem .45rem; line-height: 1.3; font-weight: 500; }
+
+.cfg-card-inner { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; padding: .75rem 1rem .8rem; height: 76px; box-sizing: border-box; }
+.cfg-card-title { font-family: var(--fd); font-weight: 400; font-size: 1.05rem; color: var(--navy); line-height: 1; }
+.cfg-card-sub { font-family: var(--fb); font-size: .58rem; color: rgba(5,29,73,.5); margin-top: .22rem; line-height: 1.4; min-height: 1.7em; display: block; }
+.cfg-card-price { font-family: var(--fb); font-size: .6rem; font-weight: 600; color: var(--navy); margin-top: .3rem; display: block; }
+.cfg-card[data-facade] .cfg-card-price { padding: 0 .6rem .4rem; margin-top: -.15rem; }
+
+.cfg-sub { margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #e4e1dc; }
+.cfg-sub-lbl { font-family: var(--fb); font-size: .55rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: rgba(5,29,73,.4); margin-bottom: .7rem; }
+.cfg-sub-req { font-family: var(--fb); font-size: .58rem; font-weight: 700; letter-spacing: .02em; text-transform: none; color: var(--navy); margin-left: .5rem; }
+.wall-detail-img-wrap { border-radius: 12px; overflow: hidden; background: #f0f0ed; border: 1px solid rgba(5,29,73,.08); }
+.wall-detail-img-wrap img { width: 100%; height: 220px; object-fit: cover; display: block; }
+.cfg-layer-list { margin: .75rem 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: .45rem; }
+.cfg-layer-list li { font-family: var(--fb); font-size: .62rem; line-height: 1.5; color: rgba(5,29,73,.75); padding: .5rem .65rem; background: #f7f6f3; border-radius: 6px; border-left: 2px solid var(--copper); }
+.wall-placeholder { display: flex; align-items: center; justify-content: center; height: 160px; border: 1px dashed #ddd; border-radius: 10px; margin: 0; text-align: center; padding: 0 1.5rem; }
+.wall-detail-grid { display: grid; gap: 8px; }
+.wall-detail-cell { border-radius: 12px; overflow: hidden; background: #f0f0ed; border: 1px solid rgba(5,29,73,.08); display: flex; align-items: center; justify-content: center; }
+.wall-detail-cell img { width: 100%; height: 320px; object-fit: contain; display: block; }
+
+.cfg-finish-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.cfg-finish-card { border: 1px solid #e8e8e8; border-radius: 12px; overflow: hidden; background: #fafaf8; padding: .9rem 1rem; }
+.cfg-finish-cap { font-size: .62rem; font-family: var(--fb); color: var(--navy); line-height: 1.4; }
+.cfg-finish-cap span { display: block; font-size: .5rem; color: var(--tmuted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: .25rem; }
+
+.cfg-bottombar {
+  position: fixed; bottom: 0; left: 0; right: 0; height: 78px;
+  background: #fff; border-top: 1px solid #eceae6;
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; padding: 0 2.5rem; z-index: 90; gap: 2rem;
+  box-shadow: 0 -6px 28px rgba(5,29,73,.06);
+}
+.cfg-steps { display: flex; align-items: center; }
+.cfg-step-item { display: flex; align-items: center; }
+.cfg-step-num { font-family: var(--fd); font-weight: 400; font-size: 1.1rem; color: #b5b1ab; letter-spacing: .06em; transition: color .35s; line-height: 1; }
+.cfg-step-item.done .cfg-step-num { color: var(--navy); }
+.cfg-step-line { width: 30px; height: 1px; background: #e2dfd9; margin: 0 .55rem; transition: background .35s; }
+.cfg-step-line.done { background: var(--navy); }
+.cfg-steps-label { font-family: var(--fb); font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(5,29,73,.55); margin-left: 1.1rem; white-space: nowrap; }
+.cfg-steps-label strong { color: var(--navy); font-weight: 700; }
+.cfg-bar-price { display: flex; flex-direction: column; align-items: center; gap: .06rem; text-align: center; }
+.cfg-bar-price-label { font-family: var(--fb); font-size: .58rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: rgba(5,29,73,.6); }
+.cfg-bar-price-value { font-family: var(--fd); font-weight: 200; font-size: 1.9rem; color: var(--navy); line-height: 1; }
+.cfg-bar-price-value.pending { color: rgba(5,29,73,.22); font-size: 1.5rem; }
+.cfg-bar-actions { display: flex; align-items: center; gap: .6rem; justify-content: flex-end; }
+.btn-pdf { padding: .58rem 1.3rem; font-family: var(--fb); font-size: .55rem; letter-spacing: .1em; font-weight: 500; text-transform: uppercase; background: transparent; border: 1.5px solid rgba(5,29,73,.18); color: var(--navy); border-radius: 2px; cursor: pointer; transition: border-color .2s, background .2s; white-space: nowrap; display: inline-flex; align-items: center; gap: .45rem; }
+.btn-pdf svg { flex-shrink: 0; }
+.btn-pdf:hover { border-color: var(--navy); background: rgba(5,29,73,.03); }
+.btn-cfg-primary { padding: .62rem 2rem; font-family: var(--fb); font-size: .59rem; letter-spacing: .12em; font-weight: 500; text-transform: uppercase; background: var(--navy); border: 1.5px solid var(--navy); border-radius: 2px; color: #fff; cursor: pointer; transition: background .25s, border-color .25s; white-space: nowrap; }
+.btn-cfg-primary:hover { background: var(--copper); border-color: var(--copper); }
+.btn-cfg-primary:disabled { opacity: .55; cursor: default; }
+
+.quote-modal-backdrop { position: fixed; inset: 0; background: rgba(5,10,20,.55); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+.quote-modal-backdrop[hidden] { display: none; }
+.quote-modal { background: #fff; border-radius: 16px; width: 100%; max-width: 420px; padding: 2.2rem 2rem; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,.25); max-height: 90vh; overflow-y: auto; }
+.quote-modal-close { position: absolute; top: 1rem; right: 1rem; width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(5,29,73,.06); color: var(--navy); font-size: 1.2rem; cursor: pointer; line-height: 1; }
+.quote-modal-close:hover { background: rgba(5,29,73,.12); }
+.quote-modal-eyebrow { font-family: var(--fb); font-size: .48rem; letter-spacing: .28em; text-transform: uppercase; color: var(--copper); display: block; margin-bottom: .6rem; }
+.quote-modal-title { font-family: var(--fd); font-weight: 300; font-size: 1.8rem; color: var(--navy); line-height: 1.1; margin-bottom: .8rem; }
+.quote-modal-note { font-family: var(--fb); font-size: .72rem; line-height: 1.7; color: rgba(5,29,73,.6); margin-bottom: 1.4rem; }
+.quote-field { margin-bottom: .9rem; }
+.quote-field label { display: block; font-family: var(--fb); font-size: .58rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: rgba(5,29,73,.55); margin-bottom: .4rem; }
+.quote-field input, .quote-field textarea { width: 100%; box-sizing: border-box; padding: .65rem .8rem; border: 1.5px solid #e2dfd9; border-radius: 6px; font-family: var(--fb); font-size: .82rem; color: var(--navy); resize: vertical; }
+.quote-field input:focus, .quote-field textarea:focus { outline: none; border-color: var(--navy); }
+.quote-modal-err { font-family: var(--fb); font-size: .68rem; color: #c0392b; margin: -.4rem 0 .8rem; display: none; }
+.quote-modal-err.show { display: block; }
+
+.cfg-sec-flash { animation: cfgSecFlash 1.6s ease; }
+@keyframes cfgSecFlash {
+  0%, 100% { box-shadow: none; }
+  15%, 45% { box-shadow: 0 0 0 3px var(--copper, #c08a4a) inset; }
+}
+
+.cfg-toast { position: fixed; left: 50%; bottom: 96px; transform: translate(-50%, 12px); background: var(--navy); color: #fff; font-family: var(--fb); font-size: .74rem; line-height: 1.5; padding: .8rem 1.3rem; border-radius: 8px; max-width: 360px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.25); z-index: 180; opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; }
+.cfg-toast.show { opacity: 1; transform: translate(-50%, 0); }
+@media (max-width: 900px) { .cfg-toast { bottom: 190px; } }
+
+.cfg-pdf-sheet { display: none; }
+@media print {
+  body { visibility: hidden; overflow: visible !important; }
+  .cfg-pdf-sheet { display: block !important; visibility: visible; position: fixed; inset: 0; padding: 2cm 2cm 2cm; background: #fff; font-family: var(--fb); }
+  .cfg-pdf-sheet * { visibility: visible; }
+  @page { margin: 0; size: A4 portrait; }
+  .pdf-header { display: flex !important; align-items: baseline; justify-content: space-between; margin-bottom: 1.6rem; }
+  .pdf-logo { font-family: var(--fd); font-weight: 600; font-size: 1rem; letter-spacing: .22em; color: rgb(5,29,73); }
+  .pdf-logo-dot { color: rgb(0,0,0); }
+  .pdf-doc-label { font-family: var(--fb); font-size: .52rem; letter-spacing: .18em; text-transform: uppercase; color: rgb(140,148,162); }
+  .pdf-rule { border: none; border-top: 1px solid #e0ddd8; margin: 1.1rem 0; }
+  .pdf-meta { margin-bottom: 1.2rem; }
+  .pdf-house-title { font-family: var(--fd); font-weight: 200; font-size: 2.6rem; color: rgb(5,29,73); line-height: 1; letter-spacing: -.01em; margin: 0; }
+  .pdf-house-sub { font-family: var(--fb); font-size: .58rem; letter-spacing: .1em; color: rgb(140,148,162); text-transform: uppercase; margin-top: .25rem; }
+  .pdf-img { width: 100%; max-height: 200px; object-fit: cover; display: block !important; margin-bottom: 1.4rem; }
+  .pdf-sec-lbl { font-family: var(--fb); font-size: .5rem; letter-spacing: .2em; text-transform: uppercase; color: rgb(140,148,162); margin-bottom: .6rem; display: block; }
+  .pdf-table { width: 100%; border-collapse: collapse; }
+  .pdf-th { font-family: var(--fb); font-size: .52rem; letter-spacing: .1em; text-transform: uppercase; color: rgb(140,148,162); text-align: left; padding: .4rem .65rem; border-bottom: 1px solid #e0ddd8; }
+  .pdf-th-r { text-align: right; }
+  .pdf-opt-label { font-family: var(--fb); font-size: .68rem; color: rgb(5,29,73); padding: .55rem .65rem; border-bottom: 1px solid #f0ede8; font-weight: 500; width: 28%; }
+  .pdf-opt-value { font-family: var(--fb); font-size: .68rem; color: rgb(70,80,96); padding: .55rem .65rem; border-bottom: 1px solid #f0ede8; }
+  .pdf-opt-price { font-family: var(--fd); font-size: .85rem; color: rgb(5,29,73); padding: .55rem .65rem; border-bottom: 1px solid #f0ede8; text-align: right; width: 18%; }
+  .pdf-total-row { display: flex !important; justify-content: space-between; align-items: center; padding: .85rem .65rem; margin-top: .5rem; background: rgb(5,29,73); }
+  .pdf-total-label { font-family: var(--fb); font-size: .5rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.55); }
+  .pdf-total-value { font-family: var(--fd); font-weight: 300; font-size: 1.4rem; color: #fff; }
+  .pdf-foot { margin-top: 1.5rem; }
+  .pdf-foot-meta { font-family: var(--fb); font-size: .58rem; color: rgb(140,148,162); margin-bottom: .2rem; }
+  .pdf-foot-brand { margin-top: .8rem; font-family: var(--fb); font-size: .56rem; color: rgb(140,148,162); }
+  .pdf-foot-brand p { margin-bottom: .16rem; }
+  .pdf-foot-note { font-size: .5rem; color: rgba(5,29,73,.25); margin-top: .7rem !important; font-style: italic; line-height: 1.65; }
+}
+
+@media (max-width: 900px) {
+  body.cfg-page { overflow: auto; }
+  .cfg-layout { flex-direction: column; height: auto; padding-bottom: 170px; }
+  .cfg-viewer { flex: none; height: 55vw; min-height: 260px; }
+  .cfg-options { overflow: visible; }
+  .cfg-topbar { top: 80px; }
+  .cfg-tb-center { display: none; }
+  .wall-detail-grid { grid-template-columns: 1fr 1fr !important; }
+  .wall-detail-cell img { height: 220px; }
+  .cfg-bottombar { height: auto; grid-template-columns: 1fr; grid-template-rows: auto auto; padding: .7rem 1rem; gap: .55rem; }
+  .cfg-steps { display: none; }
+  .cfg-bar-price { flex-direction: row; gap: .5rem; }
+  .cfg-bar-actions { justify-content: center; }
+  .cfg-bar-actions .btn-pdf, .cfg-bar-actions .btn-cfg-primary { flex: 1; justify-content: center; }
+}
+</style>
+</head>
+
+<body class="cfg-page">
+<div class="cursor" id="cur"></div><div class="cring" id="ring"></div>
+
+<div class="demo-banner">Prototype — pricing pending · specifications subject to change</div>
+
+<nav class="solid" id="nav" style="top:28px">
+  <a href="../index.html" class="logo"><svg class="logo-mark" viewBox="0 0 550 116" xmlns="http://www.w3.org/2000/svg" aria-label="NP5" role="img"><g fill="currentColor"><polygon points="153.9,91.4 22.1,0.1 22,0 0,0 0,116 22.2,116 22.2,24.6 154,115.9 154.1,116 176.1,116 176.1,0 153.9,0"/><path d="M543.9,52.9c-4-3.9-8.8-5.9-14.2-5.9H396.1V22H548V0H373.9v69h147.2c2.2,0,3.9,0.5,5,1.4c1,0.8,1.7,3.6,1.7,6.6v10.1c0,2.4-0.7,4.2-2,5.3c-1.4,1.1-3,1.6-4.9,1.6h-147v22h155.9c5.4,0,10.1-1.9,14.1-5.6c4-3.7,6.1-9,6.1-15.9v-26C550,62.1,548,56.8,543.9,52.9"/><polygon points="186.9,21.9 340.6,22 340.6,47 186.9,47 186.9,116 209.1,116 209.1,69 362.7,69 362.7,0 186.9,0"/></g></svg></a>
+  <ul class="nav-links">
+    <li><a href="houses.html">Houses</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="about.html" data-i18n="nav.about">About</a></li>
+    <li><a href="investors.html" data-i18n="nav.investors">Investors</a></li>
+  </ul>
+  <a href="../index.html#contact" class="nav-btn" data-i18n="nav.enquire">Enquire</a>
+  <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+  <div class="nav-lang-wrap">
+    <button class="nav-lang" aria-label="Language">🇬🇧</button>
+    <div class="nav-lang-menu">
+      <button class="nav-lang-opt active" data-lang="en"><span class="nav-lang-opt-flag">🇬🇧</span>English</button>
+      <button class="nav-lang-opt" data-lang="lt"><span class="nav-lang-opt-flag">🇱🇹</span>Lietuvių</button>
+    </div>
+  </div>
+</nav>
+<div class="nav-drawer" id="navDrawer">
+  <div class="nav-drawer-links">
+    <a href="houses.html" data-i18n="nav.houses">Houses</a>
+    <a href="gallery.html" data-i18n="nav.gallery">Gallery</a>
+    <a href="about.html" data-i18n="nav.about">About</a>
+    <a href="investors.html" data-i18n="nav.investors">Investors</a>
+  </div>
+  <div class="nav-drawer-foot">
+    <a href="../index.html#contact" class="nd-cta" data-i18n="nav.enquire">Enquire</a>
+  <span class="nav-drawer-meta" data-i18n="drawer.meta">Lithuania &middot; Portugal</span>
+  </div>
+</div>
+
+<div class="cfg-topbar">
+  <a href="houses.html" class="cfg-back">
+    <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M13 5H1M1 5L5 1M1 5L5 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Houses
+  </a>
+  <div class="cfg-tb-center">
+    <span class="cfg-tb-name" id="tbName">—</span>
+    <div class="cfg-tb-div"></div>
+    <span class="cfg-tb-code" id="tbCode">NP5 · Home</span>
+  </div>
+</div>
+
+<div class="cfg-layout" id="cfgLayout" style="display:none">
+
+  <!-- VIEWER -->
+  <div class="cfg-viewer">
+    <div class="cfg-img-wrap">
+      <img id="houseRender" src="" alt="" style="display:none">
+      <span class="cfg-img-placeholder" id="imgPlaceholder">Select a facade colour to view renders</span>
+      <button class="cfg-arrow cfg-arrow-prev" onclick="stepAngle(-1)" aria-label="Previous image">&#8249;</button>
+      <button class="cfg-arrow cfg-arrow-next" onclick="stepAngle(1)" aria-label="Next image">&#8250;</button>
+      <div class="cfg-angle-rail" id="angleRail"></div>
+    </div>
+    <div class="cfg-spec-bar" id="specBar"></div>
+  </div>
+
+  <!-- OPTIONS PANEL -->
+  <div class="cfg-options">
+
+    <div class="cfg-intro">
+      <span class="cfg-intro-eyebrow">NP5.HOUSE</span>
+      <p class="cfg-intro-text" id="introText">Configure this home to your preferences — choose the facade, insulation, windows and roof below. The render and price update as you go.</p>
+    </div>
+
+    <!-- 01 · FACADE SYSTEM -->
+    <div class="cfg-sec open" id="sec-1">
+      <button class="cfg-sec-hd" onclick="toggleSec('sec-1')">
+        <span class="cfg-sec-title">Facade System</span>
+        <span class="cfg-sec-sel" id="sel-1">— Select</span>
+        <span class="cfg-sec-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="cfg-sec-body">
+        <p class="cfg-note">Choose the facade construction system — this determines the available colours.</p>
+        <div class="cfg-grid" id="systemGrid"></div>
+      </div>
+    </div>
+
+    <!-- 02 · FACADE COLOUR -->
+    <div class="cfg-sec" id="sec-2">
+      <button class="cfg-sec-hd" onclick="toggleSec('sec-2')">
+        <span class="cfg-sec-title">Facade Colour</span>
+        <span class="cfg-sec-sel" id="sel-2">— Select</span>
+        <span class="cfg-sec-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="cfg-sec-body">
+        <p class="cfg-note">Select the exterior colour — the render updates immediately.</p>
+        <div class="cfg-grid" id="facadeGrid"></div>
+        <div class="cfg-sub" id="subframe-sub" style="display:none">
+          <p class="cfg-sub-lbl"><span>Subframe</span><span class="cfg-sub-req" id="subframeReq">— required to continue</span></p>
+          <div class="cfg-grid" id="subframeGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 03 · INSULATION -->
+    <div class="cfg-sec" id="sec-3">
+      <button class="cfg-sec-hd" onclick="toggleSec('sec-3')">
+        <span class="cfg-sec-title">Insulation</span>
+        <span class="cfg-sec-sel" id="sel-3">— Select</span>
+        <span class="cfg-sec-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="cfg-sec-body">
+        <p class="cfg-note">First choose the insulation material, then the thickness.</p>
+        <div class="cfg-grid-3" id="insMaterialGrid"></div>
+        <div class="cfg-sub" id="insul-thick-sub" style="display:none">
+          <p class="cfg-sub-lbl">Thickness</p>
+          <div class="cfg-grid" id="insThickGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WALL ASSEMBLY DETAIL (auto) -->
+    <div class="cfg-sec" id="sec-6">
+      <button class="cfg-sec-hd" onclick="toggleSec('sec-6')">
+        <span class="cfg-sec-title">Wall Assembly Detail</span>
+        <span class="cfg-sec-sel" id="sel-6">— Auto</span>
+        <span class="cfg-sec-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="cfg-sec-body">
+        <p class="cfg-note">Generated automatically from your facade system and insulation selection above.</p>
+        <div class="wall-detail-grid" id="wallImgGrid" style="display:none"></div>
+        <p class="cfg-note wall-placeholder" id="wallPlaceholder">Select a facade system and material above to view the wall build-up.</p>
+        <p class="cfg-note" id="wallCaption" style="margin-top:.75rem;margin-bottom:0;font-weight:600;color:var(--navy)"></p>
+      </div>
+    </div>
+
+    <!-- 04 · INTERIOR FINISHING -->
+    <div class="cfg-sec" id="sec-4">
+      <button class="cfg-sec-hd" onclick="toggleSec('sec-4')">
+        <span class="cfg-sec-title">Interior Finishing</span>
+        <span class="cfg-sec-sel has-sel" id="sel-4">Included</span>
+        <span class="cfg-sec-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="cfg-sec-body">
+        <p class="cfg-note">Standard interior finishes included.</p>
+        <div class="cfg-finish-grid">
+          <div class="cfg-finish-card"><div class="cfg-finish-cap"><span>Walls</span>Oak Veneer Panel</div></div>
+          <div class="cfg-finish-card"><div class="cfg-finish-cap"><span>Floors</span>Vinyl Flooring</div></div>
+          <div class="cfg-finish-card"><div class="cfg-finish-cap"><span>Ceiling</span>Cewood Barcode</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 05 · WINDOWS -->
+    <div class="cfg-sec" id="sec-5">
+      <button class="cfg-sec-hd" onclick="toggleSec('sec-5')">
+        <span class="cfg-sec-title">Windows</span>
+        <span class="cfg-sec-sel" id="sel-5">— Select</span>
+        <span class="cfg-sec-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="cfg-sec-body">
+        <div class="cfg-grid" id="windowsGrid"></div>
+      </div>
+    </div>
+
+    <!-- FLOOR ASSEMBLY (fixed spec, modular only) -->
+    <div class="cfg-sec" id="sec-7" style="display:none">
+      <button class="cfg-sec-hd" onclick="toggleSec('sec-7')">
+        <span class="cfg-sec-title">Floor Assembly</span>
+        <span class="cfg-sec-sel has-sel" id="sel-7">Standard</span>
+        <span class="cfg-sec-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="cfg-sec-body">
+        <p class="cfg-note">Standard floor build-up for the modular range.</p>
+        <div class="wall-detail-img-wrap"><img src="../assets/images/houses/3d/floor-modular.jpg" alt="Floor build-up"></div>
+        <ul class="cfg-layer-list">
+          <li>Floor finish (parquet, carpet, etc.) — 20 mm</li>
+          <li>Intermediate layer — 10 mm</li>
+          <li>MFP board — 22 mm</li>
+          <li>Sandwich panel with polyisocyanurate (PIR) core, λD ≤ 0.022 W/(m·K) — 80-200 mm</li>
+          <li>Light-gauge steel profile frame / 100 × 100 mm steel SHS frame (see structural section) — 100 mm</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ROOF TYPE -->
+    <div class="cfg-sec" id="sec-8">
+      <button class="cfg-sec-hd" onclick="toggleSec('sec-8')">
+        <span class="cfg-sec-title">Roof Type</span>
+        <span class="cfg-sec-sel" id="sel-8">— Select</span>
+        <span class="cfg-sec-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="cfg-sec-body">
+        <p class="cfg-note">Choose the roof construction — the build-up diagram updates below.</p>
+        <div class="cfg-grid" id="roofGrid"></div>
+        <div class="cfg-sub" id="roofDetailWrap" style="display:none">
+          <p class="cfg-sub-lbl">Build-up</p>
+          <div class="wall-detail-img-wrap"><img id="roofImg" src="" alt="Roof build-up"></div>
+          <ul class="cfg-layer-list" id="roofLayerList"></ul>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /cfg-options -->
+</div><!-- /cfg-layout -->
+
+<p id="notFoundMsg" style="display:none; padding:200px 2.5rem 2rem; font-family:var(--fb); font-size:.9rem; color:var(--navy); text-align:center;">House not found.</p>
+
+<div class="cfg-bottombar">
+  <div class="cfg-steps">
+    <div class="cfg-step-item" id="step-1"><span class="cfg-step-num">01</span></div>
+    <div class="cfg-step-line" id="line-1"></div>
+    <div class="cfg-step-item" id="step-2"><span class="cfg-step-num">02</span></div>
+    <div class="cfg-step-line" id="line-2"></div>
+    <div class="cfg-step-item" id="step-3"><span class="cfg-step-num">03</span></div>
+    <div class="cfg-step-line" id="line-3"></div>
+    <div class="cfg-step-item" id="step-4"><span class="cfg-step-num">04</span></div>
+    <span class="cfg-steps-label"><strong id="selCount">0</strong>&nbsp;<span>of 4 configured</span></span>
+  </div>
+  <div class="cfg-bar-price">
+    <span class="cfg-bar-price-label">Estimated Price</span>
+    <span class="cfg-bar-price-value pending" id="price-display">—</span>
+  </div>
+  <div class="cfg-bar-actions">
+    <button class="btn-pdf" onclick="downloadPDF()">
+      <svg width="11" height="13" viewBox="0 0 11 13" fill="none"><path d="M5.5 1v8M5.5 9l-3-3M5.5 9l3-3M1 12h9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Save PDF</span>
+    </button>
+    <button class="btn-cfg-primary" onclick="openQuoteModal()">Request Quote →</button>
+  </div>
+</div>
+
+<!-- QUOTE REQUEST MODAL -->
+<div class="cfg-toast" id="cfgToast"></div>
+
+<div class="quote-modal-backdrop" id="quoteModalBackdrop" hidden onclick="if(event.target===this) closeQuoteModal()">
+  <div class="quote-modal">
+    <button class="quote-modal-close" onclick="closeQuoteModal()" aria-label="Close">&times;</button>
+    <div id="quoteFormView">
+      <span class="quote-modal-eyebrow">Request a Quote</span>
+      <h2 class="quote-modal-title" id="quoteModalHouseName">—</h2>
+      <p class="quote-modal-note">We'll follow up with pricing and next steps based on exactly what you've configured.</p>
+      <div class="quote-field"><label>Name *</label><input type="text" id="qName" placeholder="Your full name" maxlength="200"></div>
+      <div class="quote-field"><label>Email *</label><input type="email" id="qEmail" placeholder="you@example.com" maxlength="320"></div>
+      <div class="quote-field"><label>Phone</label><input type="tel" id="qPhone" placeholder="Optional" maxlength="40"></div>
+      <div class="quote-field"><label>Message</label><textarea id="qMessage" rows="3" placeholder="Anything else we should know? (optional)" maxlength="4000"></textarea></div>
+      <!-- Honeypot: invisible to real visitors, but a bot filling every field will fill
+           this too. Any non-empty value here means the submission is rejected as spam. -->
+      <div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+        <label>Leave this field empty<input type="text" id="qWebsite" name="website" tabindex="-1" autocomplete="off"></label>
+      </div>
+      <p class="quote-modal-err" id="quoteModalErr"></p>
+      <button class="btn-cfg-primary" id="quoteSubmitBtn" onclick="submitQuoteRequest()" style="width:100%;margin-top:.5rem">Send Request</button>
+    </div>
+    <div id="quoteSuccessView" hidden>
+      <span class="quote-modal-eyebrow">Request Sent</span>
+      <h2 class="quote-modal-title">Thank you.</h2>
+      <p class="quote-modal-note">We've received your configuration for <strong id="quoteSuccessHouseName"></strong> and will be in touch shortly.</p>
+      <button class="btn-cfg-primary" onclick="closeQuoteModal()" style="width:100%;margin-top:1rem">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- PDF SHEET -->
+<div class="cfg-pdf-sheet" id="pdfSheet">
+  <div class="pdf-header">
+    <div class="pdf-logo">NP5<span class="pdf-logo-dot">.</span>HOUSE</div>
+    <div class="pdf-doc-label" id="pdfDocLabel">Configuration Summary</div>
+  </div>
+  <hr class="pdf-rule">
+  <div class="pdf-meta">
+    <h1 class="pdf-house-title" id="pdfHouseTitle">—</h1>
+    <p class="pdf-house-sub" id="pdfHouseSub">NP5 · Premium Prefab Architecture</p>
+  </div>
+  <img id="pdf-img" src="" class="pdf-img" alt="Configuration Render">
+  <span class="pdf-sec-lbl" id="pdfSecLabel">Selected Configuration</span>
+  <table class="pdf-table">
+    <thead>
+      <tr><th class="pdf-th" id="pdfThOption">Option</th><th class="pdf-th" id="pdfThSelection">Selection</th><th class="pdf-th pdf-th-r" id="pdfThPrice">Price</th></tr>
+    </thead>
+    <tbody id="pdf-rows"></tbody>
+  </table>
+  <div class="pdf-total-row">
+    <span class="pdf-total-label" id="pdfTotalLabel">Estimated Total</span>
+    <span class="pdf-total-value" id="pdfTotalValue">Price on request</span>
+  </div>
+  <div class="pdf-foot">
+    <p class="pdf-foot-meta"><span id="pdfDateLabel">Configuration Date</span>: <span id="pdf-date"></span></p>
+    <p class="pdf-foot-meta"><span id="pdfRefLabel">Reference</span>: <span id="pdf-ref"></span></p>
+    <div class="pdf-foot-brand">
+      <p id="pdfBrandLine1">NP5.HOUSE · Premium Prefab Architecture · Lithuania · Portugal</p>
+      <p id="pdfBrandLine2">For enquiries: info@np5.house</p>
+      <p class="pdf-foot-note" id="pdfFootNote">This document is a preliminary configuration summary. Prices are indicative and subject to final specification, site conditions, and prevailing market rates. A formal quotation will be issued upon enquiry.</p>
+    </div>
+  </div>
+</div>
+
+<script src="../js/i18n-data.js?v=3"></script>
+<script src="../js/i18n.js?v=3"></script>
+<script src="../js/main.js?v=3"></script>
+<script>
+const sbClient = supabase.createClient('https://cupuevlvbzcuzpfzgmuu.supabase.co', 'sb_publishable_LLu929NAaOhX9wzVQVULNg_j1Zf-Nz9');
+
+const S = { facade: null, viewIdx: 0, system: null, insulMaterial: null, insulThick: null, windows: null, subframe: null, roof: null, facades: [], houseType: null };
+
+// Per-house option control: which catalog items this house is allowed to offer, and
+// any compatibility rules (one selection excluding/requiring another), set in the admin panel.
+let ENABLED = null; // Set of "category::key", e.g. "windows::aluminium"
+let RULES = [];
+const CATEGORY_MAP = {
+  'facade-system': { stateKey: 'system', dataAttr: 'system' },
+  'subframe': { stateKey: 'subframe', dataAttr: 'subframe' },
+  'insulation-material': { stateKey: 'insulMaterial', dataAttr: 'insmaterial' },
+  'insulation-thickness': { stateKey: 'insulThick', dataAttr: 'insthick' },
+  'windows': { stateKey: 'windows', dataAttr: 'win' },
+  'roof': { stateKey: 'roof', dataAttr: 'roof' }
+};
+
+function isEnabled(category, key) {
+  if (!ENABLED) return true; // no rows saved yet for this house = treat as "everything available" (back-compat)
+  return ENABLED.has(category + '::' + key);
+}
+
+// The option catalog (which subframe/insulation/window/roof types exist at all) lives
+// in `catalog_items`, not hardcoded here, so the admin can add brand-new options without
+// a code change. Each house's own enabled set (ENABLED) then filters which ones it offers.
+let CATALOG = {};
+const GRID_CONFIG = [
+  { cat: 'subframe', gridId: 'subframeGrid', attr: 'subframe', fn: 'pickSubframe' },
+  { cat: 'insulation-material', gridId: 'insMaterialGrid', attr: 'insmaterial', fn: 'pickInsMaterial' },
+  { cat: 'insulation-thickness', gridId: 'insThickGrid', attr: 'insthick', fn: 'pickInsThick' },
+  { cat: 'windows', gridId: 'windowsGrid', attr: 'win', fn: 'pickWin' },
+  { cat: 'roof', gridId: 'roofGrid', attr: 'roof', fn: 'pickRoof' }
+];
+
+async function loadCatalog() {
+  const { data } = await sbClient.from('catalog_items').select('*').order('sort_order', { ascending: true });
+  CATALOG = {};
+  (data || []).forEach(item => {
+    if (!CATALOG[item.category]) CATALOG[item.category] = [];
+    CATALOG[item.category].push({ key: item.item_key, name: item.name, note: item.note || '' });
+  });
+}
+
+// All catalog/facade data below is admin-entered and goes through innerHTML or an
+// inline onclick attribute — escape (or, for *keys* embedded inside onclick, strictly
+// sanitize to the safe slug characters they're always supposed to be) before using
+// it. RLS controls WHO can write this data, not WHAT shape it's in, so the page
+// itself can't assume it's safe just because it only came from "an admin".
+function escapeHtml(str) {
+  return String(str == null ? '' : str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function safeKey(key) {
+  return String(key == null ? '' : key).replace(/[^a-zA-Z0-9_-]/g, '');
+}
+
+// Builds every option card from the catalog, keeping only what this house has enabled —
+// a disabled option is never rendered at all, not just greyed out.
+function renderOptionCards() {
+  GRID_CONFIG.forEach(cfg => {
+    const grid = document.getElementById(cfg.gridId);
+    if (!grid) return;
+    const items = (CATALOG[cfg.cat] || []).filter(it => isEnabled(cfg.cat, it.key));
+    grid.innerHTML = items.map(it => {
+      const key = safeKey(it.key);
+      const name = escapeHtml(it.name);
+      const note = escapeHtml(it.note);
+      return '<label class="cfg-card" data-' + cfg.attr + '="' + key + '" onclick="' + cfg.fn + '(\'' + key + '\')">' +
+        '<input type="radio" name="' + cfg.attr + '" value="' + key + '">' +
+        '<div class="cfg-card-tick">✓</div>' +
+        '<div class="cfg-card-inner"><span class="cfg-card-title">' + name + '</span>' + (note ? '<span class="cfg-card-sub">' + note + '</span>' : '') + '</div>' +
+      '</label>';
+    }).join('');
+  });
+  // Hide whole sections that ended up with zero options.
+  if (!document.querySelector('[data-subframe]')) document.getElementById('subframe-sub').style.display = 'none';
+  if (!document.querySelector('[data-insmaterial]')) document.getElementById('sec-3').style.display = 'none';
+  if (!document.querySelector('[data-win]')) document.getElementById('sec-5').style.display = 'none';
+  if (!document.querySelector('[data-roof]')) document.getElementById('sec-8').style.display = 'none';
+}
+
+// Compatibility rules: re-applied after every selection change. "excludes" hides the
+// target option (and clears it if it was selected); "requires" forces the target option
+// and hides its siblings in that category, auto-selecting it if nothing else is chosen yet.
+function applyCompatRules() {
+  if (!RULES.length) return;
+  document.querySelectorAll('.cfg-card[data-rule-hidden]').forEach(el => { el.style.display = ''; delete el.dataset.ruleHidden; });
+
+  RULES.forEach(rule => {
+    const ifMap = CATEGORY_MAP[rule.if_category];
+    const thenMap = CATEGORY_MAP[rule.then_category];
+    if (!ifMap || !thenMap) return;
+    if (S[ifMap.stateKey] !== rule.if_key) return;
+
+    if (rule.relation === 'excludes') {
+      const el = document.querySelector('[data-' + thenMap.dataAttr + '="' + rule.then_key + '"]');
+      if (!el) return;
+      el.style.display = 'none';
+      el.dataset.ruleHidden = '1';
+      if (S[thenMap.stateKey] === rule.then_key) {
+        el.classList.remove('on');
+        S[thenMap.stateKey] = null;
+        if (rule.then_category === 'insulation-material') {
+          S.insulThick = null;
+          document.getElementById('insul-thick-sub').style.display = 'none';
+          document.querySelectorAll('[data-insthick]').forEach(t => t.classList.remove('on'));
+          updateInsLabel();
+        }
+      }
+    } else if (rule.relation === 'requires') {
+      document.querySelectorAll('[data-' + thenMap.dataAttr + ']').forEach(el => {
+        if (el.dataset[thenMap.dataAttr] !== rule.then_key) {
+          el.style.display = 'none';
+          el.dataset.ruleHidden = '1';
+        }
+      });
+      if (S[thenMap.stateKey] !== rule.then_key) {
+        const target = document.querySelector('[data-' + thenMap.dataAttr + '="' + rule.then_key + '"]');
+        if (target) target.click();
+      }
+    }
+  });
+}
+
+const WALL_IMGS = {
+  'etics-eps': ['../assets/images/houses/facade/wall-etics-eps.jpg'],
+  'etics-mineral-wool': ['../assets/images/houses/facade/wall-etics-mineral.jpg'],
+  'etics-phenolic': ['../assets/images/houses/facade/wall-etics-phenolic.jpg'],
+  'vent-generic': ['../assets/images/houses/facade/wall-vent-a-1.jpg', '../assets/images/houses/facade/wall-vent-a-2.jpg']
+};
+const WALL_LABELS = {
+  'etics-eps': 'ETICS — Caparol Render · EPS Core',
+  'etics-mineral-wool': 'ETICS — Caparol Render · Mineral Wool Core',
+  'etics-phenolic': 'ETICS — Caparol Render · Phenolic Foam (PF) Core',
+  'vent-generic': 'Ventilated Cladding'
+};
+const ROOF_IMGS = { slope: '../assets/images/houses/3d/roof-slope.jpg', flat: '../assets/images/houses/3d/roof-flat.jpg' };
+const ROOF_LAYERS = {
+  slope: [
+    'Roof covering (smooth concrete tiles, clay tiles, fibre-cement slates or natural slate) — approx. 10–30 mm',
+    'Timber battens 50 × 25 mm at 600 mm centres — 25 mm',
+    'Breathable roofing membrane, with taped joints',
+    'Finnfoam FF-PIR AL polyurethane insulation board, λD = 0.022 W/(m·K) — 100-200 mm',
+    'Light-gauge steel truss, insulated with mineral wool / open-cell polyurethane foam',
+    'CEWOOD acoustic wood wool panels — 20 mm'
+  ],
+  flat: [
+    'Firestone EPDM LSFR membrane / "Mida" torch-on roofing membrane',
+    'Thermal insulation, λ = 0.038 W/(m·K): ROCKWOOL ROOFROCK 80 — 20 mm',
+    'Finnfoam FF-PIR ALK polyurethane insulation board — 100–240 mm',
+    'Light-gauge steel profile truss (see structural section), service void for building services',
+    'CEWOOD acoustic wood wool panels — 20 mm'
+  ]
+};
+
+let HOUSE = null;
+let PRICE_HOUSE_KEY = null;
+let PRICES_DATA = null;
+
+function getParam(name) {
+  return new URLSearchParams(window.location.search).get(name);
+}
+
+async function init() {
+  const slug = getParam('house');
+  if (!slug) { showNotFound(); return; }
+
+  const { data: house, error } = await sbClient.from('houses').select('*').eq('slug', slug).maybeSingle();
+  if (error || !house || house.published === false || house.deleted_at) { showNotFound(); return; }
+  HOUSE = house;
+  PRICE_HOUSE_KEY = house.slug;
+  S.houseType = house.type;
+
+  const { data: facadeRows } = await sbClient.from('house_facades').select('*, house_facade_images(*)').eq('house_id', house.id).order('sort_order', { ascending: true });
+  S.facades = (facadeRows || []).map(f => ({
+    key: f.key, name: f.name, system: f.system,
+    images: (f.house_facade_images || []).sort((a, b) => a.sort_order - b.sort_order).map(i => i.url).filter(Boolean)
+  })).filter(f => f.images.length);
+
+  document.getElementById('pageTitle').textContent = 'Configure — ' + house.name + ' · NP5.HOUSE';
+  document.getElementById('tbName').textContent = house.name;
+  document.getElementById('tbCode').textContent = 'NP5 · ' + (house.type === 'modular' ? 'Modular Home' : 'Panelised Home');
+  document.getElementById('pdfHouseTitle').textContent = house.name;
+  document.getElementById('pdfHouseSub').textContent = 'NP5 · ' + (house.type === 'modular' ? 'Modular Home' : 'Panelised Home') + ' · Premium Prefab Architecture';
+
+  const { data: enabledRows } = await sbClient.from('house_option_enabled').select('*').eq('house_id', house.id);
+  ENABLED = (enabledRows && enabledRows.length) ? new Set(enabledRows.map(o => o.category + '::' + o.item_key)) : null;
+  const { data: ruleRows } = await sbClient.from('house_compat_rules').select('*').eq('house_id', house.id);
+  RULES = ruleRows || [];
+  await loadCatalog();
+
+  renderSpecBar();
+  renderOptionCards();
+  renderSystemGrid();
+  if (house.type === 'modular') document.getElementById('sec-7').style.display = '';
+
+  document.getElementById('cfgLayout').style.display = '';
+  document.getElementById('notFoundMsg').style.display = 'none';
+
+  sbClient.from('prices').select('*').then(({ data, error }) => {
+    if (error || !data) return;
+    const prices = {};
+    data.forEach(row => { prices[row.id] = row.price; });
+    PRICES_DATA = { prices };
+    updatePriceDisplay();
+    renderCardPrices();
+  });
+
+  updateProgress();
+}
+
+function showNotFound() {
+  document.getElementById('cfgLayout').style.display = 'none';
+  document.getElementById('notFoundMsg').style.display = 'block';
+}
+
+function renderSpecBar() {
+  const bar = document.getElementById('specBar');
+  const bits = [];
+  if (HOUSE.living_area) bits.push(['<strong>' + HOUSE.living_area + ' m²</strong>', 'Living Area']);
+  if (HOUSE.total_area) bits.push(['<strong>' + HOUSE.total_area + ' m²</strong>', 'Total']);
+  if (HOUSE.floors) bits.push(['<strong>' + HOUSE.floors + '</strong>', 'Floor' + (HOUSE.floors > 1 ? 's' : '')]);
+  if (HOUSE.modules) bits.push(['<strong>' + HOUSE.modules + '</strong>', 'Modules']);
+  bar.innerHTML = bits.map(b => '<div class="cfg-spec">' + b[0] + '<span>' + b[1] + '</span></div>').join('');
+}
+
+function availableSystems() {
+  const set = new Set(S.facades.map(f => f.system));
+  return Array.from(set);
+}
+
+function renderSystemGrid() {
+  const systems = availableSystems();
+  const grid = document.getElementById('systemGrid');
+  const labels = { ventilated: ['Ventilated', 'Timber or steel subframe cladding'], 'non-ventilated': ['Non-Ventilated', 'Render / clinker finish'] };
+  grid.innerHTML = systems.map(sys => {
+    const [title, sub] = labels[sys] || [sys, ''];
+    return '<label class="cfg-card" data-system="' + sys + '" onclick="pickSystem(\'' + sys + '\')">' +
+      '<input type="radio" name="system" value="' + sys + '">' +
+      '<div class="cfg-card-tick">✓</div>' +
+      '<div class="cfg-card-inner"><span class="cfg-card-title">' + title + '</span><span class="cfg-card-sub">' + sub + '</span></div>' +
+      '</label>';
+  }).join('');
+  if (systems.length) pickSystem(systems[0]);
+}
+
+function facadesForSystem(sys) {
+  return S.facades.filter(f => f.system === sys);
+}
+
+function renderFacadeGrid() {
+  const grid = document.getElementById('facadeGrid');
+  const list = facadesForSystem(S.system);
+  grid.innerHTML = list.map(f => {
+    const thumb = f.images[0] || '';
+    const key = safeKey(f.key);
+    const name = escapeHtml(f.name);
+    return '<label class="cfg-card" data-facade="' + key + '" onclick="pickFacade(\'' + key + '\')">' +
+      '<input type="radio" name="facade" value="' + key + '">' +
+      '<div class="cfg-card-tick">✓</div>' +
+      '<div class="cfg-card-img-wrap">' + (thumb ? '<img src="' + escapeHtml(thumb) + '" alt="' + name + '">' : '') + '</div>' +
+      '<div class="cfg-card-cap">' + name + '</div>' +
+      '</label>';
+  }).join('');
+}
+
+function facadeByKey(key) {
+  return S.facades.find(f => f.key === key);
+}
+
+function renderAngleRail(count) {
+  const rail = document.getElementById('angleRail');
+  rail.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const dot = document.createElement('button');
+    dot.className = 'cfg-angle-dot' + (i === 0 ? ' on' : '');
+    dot.onclick = () => setAngle(i);
+    rail.appendChild(dot);
+  }
+}
+
+function stepAngle(dir) {
+  const total = document.querySelectorAll('.cfg-angle-dot').length;
+  if (!total) return;
+  const next = (S.viewIdx + dir + total) % total;
+  setAngle(next);
+}
+
+function setAngle(i) {
+  S.viewIdx = i;
+  document.querySelectorAll('.cfg-angle-dot').forEach((d, idx) => d.classList.toggle('on', idx === i));
+  const f = facadeByKey(S.facade);
+  if (!f) return;
+  const render = document.getElementById('houseRender');
+  render.src = f.images[i] || f.images[0];
+  render.style.display = '';
+  document.getElementById('imgPlaceholder').style.display = 'none';
+}
+
+function toggleSec(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function pickFacade(key) {
+  S.facade = key;
+  S.viewIdx = 0;
+  document.querySelectorAll('[data-facade]').forEach(el => el.classList.remove('on'));
+  const card = document.querySelector('[data-facade="' + key + '"]');
+  if (card) card.classList.add('on');
+  const badge = document.getElementById('sel-2');
+  const f = facadeByKey(key);
+  badge.textContent = f.name; badge.classList.add('has-sel');
+  renderAngleRail(f.images.length);
+  setAngle(0);
+  updateWallDetail();
+  updateProgress();
+}
+
+function pickSubframe(key) {
+  S.subframe = key;
+  const req = document.getElementById('subframeReq');
+  if (req) req.style.display = 'none';
+  document.querySelectorAll('[data-subframe]').forEach(el => el.classList.remove('on'));
+  document.querySelector('[data-subframe="' + key + '"]').classList.add('on');
+  updateProgress();
+}
+
+function pickSystem(key) {
+  S.system = key;
+  document.querySelectorAll('[data-system]').forEach(el => el.classList.remove('on'));
+  const card = document.querySelector('[data-system="' + key + '"]');
+  if (card) card.classList.add('on');
+  const badge = document.getElementById('sel-1');
+  badge.textContent = key === 'ventilated' ? 'Ventilated' : 'Non-Ventilated';
+  badge.classList.add('has-sel');
+
+  renderFacadeGrid();
+  const list = facadesForSystem(key);
+  if (list.length) pickFacade(list[0].key);
+
+  document.getElementById('subframe-sub').style.display = key === 'ventilated' ? 'block' : 'none';
+  if (key === 'ventilated') {
+    document.getElementById('sec-2').classList.add('open');
+    const req = document.getElementById('subframeReq');
+    if (req) req.style.display = S.subframe ? 'none' : 'inline';
+  } else {
+    S.subframe = null;
+    document.querySelectorAll('[data-subframe]').forEach(el => el.classList.remove('on'));
+  }
+
+  // Which insulation materials are valid for this facade system is now entirely driven
+  // by compatibility rules (applyCompatRules, called from updateProgress below) instead
+  // of a hardcoded list — so a newly-added material works without a code change.
+  updateInsLabel();
+  updateWallDetail();
+  updateProgress();
+  renderCardPrices();
+}
+
+function pickInsMaterial(key) {
+  S.insulMaterial = key;
+  S.insulThick = null;
+  document.querySelectorAll('[data-insmaterial]').forEach(el => el.classList.remove('on'));
+  document.querySelector('[data-insmaterial="' + key + '"]').classList.add('on');
+  document.querySelectorAll('[data-insthick]').forEach(el => el.classList.remove('on'));
+  document.getElementById('insul-thick-sub').style.display = 'block';
+  updateInsLabel();
+  updateWallDetail();
+  updateProgress();
+}
+
+function wallKey() {
+  if (S.system === 'non-ventilated') {
+    if (!S.insulMaterial) return null;
+    if (S.insulMaterial === 'eps') return 'etics-eps';
+    if (S.insulMaterial === 'mineral-wool') return 'etics-mineral-wool';
+    if (S.insulMaterial === 'phenolic') return 'etics-phenolic';
+    return null;
+  }
+  if (S.system === 'ventilated' && S.facade) return 'vent-generic';
+  return null;
+}
+function updateWallDetail() {
+  const key = wallKey();
+  const grid = document.getElementById('wallImgGrid');
+  const placeholder = document.getElementById('wallPlaceholder');
+  const badge = document.getElementById('sel-6');
+  const caption = document.getElementById('wallCaption');
+  if (!key) {
+    grid.style.display = 'none';
+    grid.innerHTML = '';
+    placeholder.style.display = 'flex';
+    caption.textContent = '';
+    badge.textContent = '— Auto';
+    badge.classList.remove('has-sel');
+    return;
+  }
+  const imgs = WALL_IMGS[key];
+  grid.style.display = 'grid';
+  grid.style.gridTemplateColumns = imgs.length > 1 ? '1fr 1fr' : '1fr';
+  grid.innerHTML = imgs.map(src => '<div class="wall-detail-cell"><img src="' + src + '" alt="Wall build-up"></div>').join('');
+  placeholder.style.display = 'none';
+  caption.textContent = WALL_LABELS[key];
+  badge.textContent = 'Auto';
+  badge.classList.add('has-sel');
+}
+function catalogItemName(cat, key) {
+  const it = (CATALOG[cat] || []).find(i => i.key === key);
+  return it ? it.name : key;
+}
+
+function pickRoof(key) {
+  S.roof = key;
+  document.querySelectorAll('[data-roof]').forEach(el => el.classList.remove('on'));
+  document.querySelector('[data-roof="' + key + '"]').classList.add('on');
+  const badge = document.getElementById('sel-8');
+  badge.textContent = catalogItemName('roof', key); badge.classList.add('has-sel');
+  // Detailed build-up diagrams only exist for the original Slope/Flat roof types — a
+  // newly-added roof type just skips this section rather than crashing on missing data.
+  if (ROOF_IMGS[key] && ROOF_LAYERS[key]) {
+    document.getElementById('roofImg').src = ROOF_IMGS[key];
+    document.getElementById('roofLayerList').innerHTML = ROOF_LAYERS[key].map(l => '<li>' + l + '</li>').join('');
+    document.getElementById('roofDetailWrap').style.display = 'block';
+  } else {
+    document.getElementById('roofDetailWrap').style.display = 'none';
+  }
+  updateProgress();
+}
+
+function pickInsThick(key) {
+  S.insulThick = key;
+  document.querySelectorAll('[data-insthick]').forEach(el => el.classList.remove('on'));
+  document.querySelector('[data-insthick="' + key + '"]').classList.add('on');
+  updateInsLabel();
+  updateProgress();
+}
+
+function updateInsLabel() {
+  const badge = document.getElementById('sel-3');
+  if (S.insulMaterial && S.insulThick) {
+    badge.textContent = catalogItemName('insulation-material', S.insulMaterial) + ' · ' + catalogItemName('insulation-thickness', S.insulThick);
+    badge.classList.add('has-sel');
+  } else if (S.insulMaterial) {
+    badge.textContent = catalogItemName('insulation-material', S.insulMaterial);
+    badge.classList.add('has-sel');
+  } else {
+    badge.textContent = '— Select';
+    badge.classList.remove('has-sel');
+  }
+}
+
+function pickWin(key) {
+  S.windows = key;
+  document.querySelectorAll('[data-win]').forEach(el => el.classList.remove('on'));
+  document.querySelector('[data-win="' + key + '"]').classList.add('on');
+  const badge = document.getElementById('sel-5');
+  badge.textContent = catalogItemName('windows', key); badge.classList.add('has-sel');
+  updateProgress();
+}
+
+function priceTagText(key, isBase) {
+  if (!PRICES_DATA) return null;
+  const p = PRICES_DATA.prices[key];
+  if (p === undefined || p === null) return null;
+  const formatted = '€' + Number(p).toLocaleString('en-GB');
+  return isBase ? ('From ' + formatted) : ('+' + formatted);
+}
+
+function setCardPriceTag(cardEl, text) {
+  let tag = cardEl.querySelector('.cfg-card-price');
+  if (!text) { if (tag) tag.remove(); return; }
+  if (!tag) {
+    tag = document.createElement('span');
+    tag.className = 'cfg-card-price';
+    const inner = cardEl.querySelector('.cfg-card-inner');
+    if (inner) inner.appendChild(tag);
+    else {
+      const cap = cardEl.querySelector('.cfg-card-cap');
+      if (cap) cap.insertAdjacentElement('afterend', tag);
+    }
+  }
+  tag.textContent = text;
+}
+
+function renderCardPrices() {
+  if (!PRICE_HOUSE_KEY) return;
+  document.querySelectorAll('[data-system]').forEach(el => {
+    setCardPriceTag(el, priceTagText(PRICE_HOUSE_KEY + '__' + el.dataset.system, true));
+  });
+  document.querySelectorAll('[data-facade]').forEach(el => {
+    setCardPriceTag(el, priceTagText('facade__' + PRICE_HOUSE_KEY + '__' + el.dataset.facade, false));
+  });
+  document.querySelectorAll('[data-subframe]').forEach(el => {
+    setCardPriceTag(el, priceTagText('addon__subframe__' + el.dataset.subframe, false));
+  });
+  document.querySelectorAll('[data-insmaterial]').forEach(el => {
+    setCardPriceTag(el, priceTagText('addon__insulation-material__' + el.dataset.insmaterial, false));
+  });
+  document.querySelectorAll('[data-insthick]').forEach(el => {
+    setCardPriceTag(el, priceTagText('addon__insulation-thickness__' + el.dataset.insthick, false));
+  });
+  document.querySelectorAll('[data-win]').forEach(el => {
+    setCardPriceTag(el, priceTagText('addon__windows__' + el.dataset.win, false));
+  });
+  document.querySelectorAll('[data-roof]').forEach(el => {
+    setCardPriceTag(el, priceTagText('addon__roof__' + el.dataset.roof, false));
+  });
+}
+
+function updatePriceDisplay() {
+  const el = document.getElementById('price-display');
+  if (!el) return;
+  if (!S.system || !PRICES_DATA) { el.textContent = '—'; el.classList.add('pending'); return; }
+  const P = PRICES_DATA.prices;
+  const base = P[PRICE_HOUSE_KEY + '__' + S.system];
+  if (!base) { el.textContent = 'On request'; el.classList.add('pending'); return; }
+
+  let total = base;
+  let incomplete = false;
+  function addIfChosen(value, priceKey) {
+    if (!value) return;
+    const p = P[priceKey];
+    if (p === null || p === undefined) { incomplete = true; return; }
+    total += p;
+  }
+
+  addIfChosen(S.facade, 'facade__' + PRICE_HOUSE_KEY + '__' + S.facade);
+  if (S.system === 'ventilated') addIfChosen(S.subframe, 'addon__subframe__' + S.subframe);
+  addIfChosen(S.insulMaterial, 'addon__insulation-material__' + S.insulMaterial);
+  addIfChosen(S.insulThick, 'addon__insulation-thickness__' + S.insulThick);
+  addIfChosen(S.windows, 'addon__windows__' + S.windows);
+  addIfChosen(S.roof, 'addon__roof__' + S.roof);
+
+  const interiorP = P['addon__included__interior-finishing'];
+  const floorP = P['addon__included__floor-assembly'];
+  if (interiorP === null || interiorP === undefined) incomplete = true; else total += interiorP;
+  if (S.houseType === 'modular') {
+    if (floorP === null || floorP === undefined) incomplete = true; else total += floorP;
+  }
+
+  if (incomplete) {
+    el.textContent = 'On request';
+    el.classList.add('pending');
+  } else {
+    el.textContent = '€' + Number(total).toLocaleString('en-GB');
+    el.classList.remove('pending');
+  }
+}
+
+function updateProgress() {
+  const facadeDone = !!S.system && !!S.facade && (S.system !== 'ventilated' || !!S.subframe);
+  const steps = [facadeDone, !!(S.insulMaterial && S.insulThick), !!S.windows, !!S.roof];
+  const count = steps.filter(Boolean).length;
+  document.getElementById('selCount').textContent = count;
+  steps.forEach((done, i) => {
+    const item = document.getElementById('step-' + (i + 1));
+    if (item) item.classList.toggle('done', done);
+  });
+  [1, 2, 3].forEach(n => {
+    const line = document.getElementById('line-' + n);
+    if (line) line.classList.toggle('done', steps[n - 1]);
+  });
+  updatePriceDisplay();
+  renderCardPrices();
+  applyCompatRules();
+}
+
+function buildConfigRows() {
+  const SYS = { ventilated: 'Ventilated', 'non-ventilated': 'Non-Ventilated' };
+  const insulStr = S.insulMaterial ? (catalogItemName('insulation-material', S.insulMaterial) + (S.insulThick ? ' · ' + catalogItemName('insulation-thickness', S.insulThick) : '')) : '—';
+  const f = S.facade ? facadeByKey(S.facade) : null;
+  return [
+    ['Facade System', S.system ? SYS[S.system] : '—'],
+    ['Facade Colour', f ? f.name : '—'],
+    ['Subframe', S.system === 'ventilated' ? (S.subframe ? catalogItemName('subframe', S.subframe) : '—') : 'N/A'],
+    ['Insulation', insulStr],
+    ['Roof Type', S.roof ? catalogItemName('roof', S.roof) : '—'],
+    ['Windows', S.windows ? catalogItemName('windows', S.windows) : '—']
+  ];
+}
+
+// PDF chrome text + the row labels in buildConfigRows() are fixed English strings
+// used elsewhere (e.g. stored with quote requests) — this is the translation layer
+// applied only when rendering the downloadable PDF, so the file matches whichever
+// language (en/lt) the visitor currently has the site set to.
+const PDF_LABELS = {
+  en: {
+    docLabel: 'Configuration Summary', secLabel: 'Selected Configuration',
+    thOption: 'Option', thSelection: 'Selection', thPrice: 'Price',
+    totalLabel: 'Estimated Total', totalValue: 'Price on request',
+    dateLabel: 'Configuration Date', refLabel: 'Reference',
+    brandLine1: 'NP5.HOUSE · Premium Prefab Architecture · Lithuania · Portugal',
+    brandLine2: 'For enquiries: info@np5.house',
+    footNote: 'This document is a preliminary configuration summary. Prices are indicative and subject to final specification, site conditions, and prevailing market rates. A formal quotation will be issued upon enquiry.',
+    houseSub: 'NP5 · Premium Prefab Architecture',
+    rowLabels: { 'Facade System': 'Facade System', 'Facade Colour': 'Facade Colour', 'Subframe': 'Subframe', 'Insulation': 'Insulation', 'Roof Type': 'Roof Type', 'Windows': 'Windows' },
+    na: 'N/A', dash: '—', ventilated: 'Ventilated', nonVentilated: 'Non-Ventilated',
+    dateLocale: 'en-GB'
+  },
+  lt: {
+    docLabel: 'Konfigūracijos Suvestinė', secLabel: 'Pasirinkta Konfigūracija',
+    thOption: 'Parinktis', thSelection: 'Pasirinkimas', thPrice: 'Kaina',
+    totalLabel: 'Numatoma Kaina', totalValue: 'Kaina pagal užklausą',
+    dateLabel: 'Konfigūracijos Data', refLabel: 'Nuoroda',
+    brandLine1: 'NP5.HOUSE · Aukščiausios klasės surenkama architektūra · Lietuva · Portugalija',
+    brandLine2: 'Dėl užklausų: info@np5.house',
+    footNote: 'Šis dokumentas yra preliminari konfigūracijos suvestinė. Kainos yra orientacinės ir priklauso nuo galutinės specifikacijos, statybvietės sąlygų bei rinkos kainų. Oficialus pasiūlymas bus pateiktas gavus užklausą.',
+    houseSub: 'NP5 · Aukščiausios klasės surenkama architektūra',
+    rowLabels: { 'Facade System': 'Fasado Sistema', 'Facade Colour': 'Fasado Spalva', 'Subframe': 'Potinklis', 'Insulation': 'Izoliacija', 'Roof Type': 'Stogo Tipas', 'Windows': 'Langai' },
+    na: 'Netaikoma', dash: '—', ventilated: 'Vėdinamas', nonVentilated: 'Nevėdinamas',
+    dateLocale: 'lt-LT'
+  }
+};
+
+// Fetches an image and returns it as a base64 data URL, so jsPDF can embed it —
+// jsPDF can't draw directly from a remote <img src>, it needs the raw image data.
+// Returns null (rather than throwing) on any failure, so a broken/blocked image
+// never prevents the rest of the PDF from generating.
+async function imageUrlToDataUrl(url) {
+  if (!url) return null;
+  try {
+    const res = await fetch(url, { mode: 'cors' });
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (e) {
+    return null;
+  }
+}
+
+// The PDF is drawn natively with jsPDF's own text/shape API rather than
+// screenshotting the on-page HTML sheet (an earlier version used html2canvas for
+// that, which produced a blank page — html2canvas doesn't reliably rasterize this
+// site's custom @font-face fonts and CSS custom properties). Native drawing only
+// uses jsPDF's built-in fonts, so it renders identically and reliably everywhere.
+async function downloadPDF() {
+  const lang = (window.NP5_I18N && window.NP5_I18N.currentLang()) || 'en';
+  const L = PDF_LABELS[lang] || PDF_LABELS.en;
+
+  const rows = buildConfigRows().map(r => [
+    L.rowLabels[r[0]] || r[0],
+    r[1] === 'N/A' ? L.na : (r[1] === '—' ? L.dash : r[1].replace('Ventilated', L.ventilated).replace('Non-' + L.ventilated, L.nonVentilated))
+  ]);
+  const f = S.facade ? facadeByKey(S.facade) : null;
+  const now = new Date();
+  const ref = 'NP5-' + (HOUSE ? HOUSE.slug.toUpperCase() : 'H') + '-' + now.getFullYear().toString().slice(2) + Math.random().toString(36).substr(2, 5).toUpperCase();
+  const dateStr = now.toLocaleDateString(L.dateLocale, { day: 'numeric', month: 'long', year: 'numeric' });
+  const houseSub = (HOUSE && HOUSE.type)
+    ? ('NP5 · ' + (HOUSE.type === 'modular' ? (lang === 'lt' ? 'Modulinis Namas' : 'Modular Home') : (lang === 'lt' ? 'Paneliniai Namai' : 'Panelised Home')))
+    : L.houseSub;
+
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    // CDN failed to load — fall back to the browser's print dialog using the
+    // hidden print-only sheet, which needs populating since we normally skip it.
+    document.getElementById('pdfDocLabel').textContent = L.docLabel;
+    document.getElementById('pdfSecLabel').textContent = L.secLabel;
+    document.getElementById('pdfThOption').textContent = L.thOption;
+    document.getElementById('pdfThSelection').textContent = L.thSelection;
+    document.getElementById('pdfThPrice').textContent = L.thPrice;
+    document.getElementById('pdfTotalLabel').textContent = L.totalLabel;
+    document.getElementById('pdfTotalValue').textContent = L.totalValue;
+    document.getElementById('pdfDateLabel').textContent = L.dateLabel;
+    document.getElementById('pdfRefLabel').textContent = L.refLabel;
+    document.getElementById('pdfBrandLine1').textContent = L.brandLine1;
+    document.getElementById('pdfBrandLine2').textContent = L.brandLine2;
+    document.getElementById('pdfFootNote').textContent = L.footNote;
+    document.getElementById('pdfHouseSub').textContent = houseSub;
+    document.getElementById('pdfHouseTitle').textContent = HOUSE ? HOUSE.name : '—';
+    document.getElementById('pdf-rows').innerHTML = rows.map(r =>
+      '<tr><td class="pdf-opt-label">' + escapeHtml(r[0]) + '</td><td class="pdf-opt-value">' + escapeHtml(r[1]) + '</td><td class="pdf-opt-price">—</td></tr>'
+    ).join('');
+    document.getElementById('pdf-date').textContent = dateStr;
+    document.getElementById('pdf-ref').textContent = ref;
+    document.getElementById('pdf-img').src = f && f.images.length ? f.images[0] : '';
+    window.print();
+    return;
+  }
+  const { jsPDF } = window.jspdf;
+
+  const imgDataUrl = await imageUrlToDataUrl(f && f.images.length ? f.images[0] : null);
+
+  const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+  const pageW = 210, marginX = 20, rightX = pageW - marginX;
+  let y = 20;
+
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(5, 29, 73);
+  doc.text('NP5.HOUSE', marginX, y);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(140, 148, 162);
+  doc.text(L.docLabel, rightX, y, { align: 'right' });
+  y += 4;
+  doc.setDrawColor(224, 221, 216);
+  doc.line(marginX, y, rightX, y);
+  y += 12;
+
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(26); doc.setTextColor(5, 29, 73);
+  doc.text(HOUSE ? HOUSE.name : '—', marginX, y);
+  y += 6;
+  doc.setFontSize(9); doc.setTextColor(140, 148, 162);
+  doc.text(houseSub, marginX, y);
+  y += 10;
+
+  if (imgDataUrl) {
+    try {
+      const imgProps = doc.getImageProperties(imgDataUrl);
+      const imgH = Math.min(80, (170 * imgProps.height) / imgProps.width);
+      doc.addImage(imgDataUrl, marginX, y, 170, imgH, undefined, 'FAST');
+      y += imgH + 10;
+    } catch (e) { /* unsupported image format or decode failure — skip it, rest of the PDF still renders */ }
+  }
+
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(140, 148, 162);
+  doc.text(L.secLabel.toUpperCase(), marginX, y);
+  y += 3;
+  doc.setDrawColor(224, 221, 216);
+  doc.line(marginX, y, rightX, y);
+  y += 8;
+
+  rows.forEach((r, i) => {
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(5, 29, 73);
+    doc.text(r[0], marginX + 2, y);
+    doc.setTextColor(70, 80, 96);
+    doc.text(r[1], marginX + 70, y);
+    y += 6;
+    if (i < rows.length - 1) {
+      doc.setDrawColor(240, 237, 232);
+      doc.line(marginX, y - 4, rightX, y - 4);
+    }
+  });
+  y += 4;
+
+  doc.setFillColor(5, 29, 73);
+  doc.rect(marginX, y, rightX - marginX, 14, 'F');
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(255, 255, 255);
+  doc.text(L.totalLabel.toUpperCase(), marginX + 4, y + 8.5);
+  doc.setFontSize(11);
+  doc.text(L.totalValue, rightX - 4, y + 9, { align: 'right' });
+  y += 24;
+
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(140, 148, 162);
+  doc.text(L.dateLabel + ': ' + dateStr, marginX, y); y += 5;
+  doc.text(L.refLabel + ': ' + ref, marginX, y); y += 10;
+  doc.text(L.brandLine1, marginX, y); y += 4;
+  doc.text(L.brandLine2, marginX, y); y += 7;
+  doc.setFont('helvetica', 'italic'); doc.setFontSize(6); doc.setTextColor(180, 183, 195);
+  const noteLines = doc.splitTextToSize(L.footNote, rightX - marginX);
+  doc.text(noteLines, marginX, y);
+
+  doc.save(ref + '.pdf');
+}
+
+function sectionHasOptions(gridId) {
+  const grid = document.getElementById(gridId);
+  return !!(grid && grid.children.length);
+}
+
+// What's still unchosen, in display order — skips any category this house doesn't
+// offer at all (e.g. a house with no roof options enabled shouldn't block on roof).
+function getMissingSteps() {
+  const missing = [];
+  if (!S.system) { missing.push({ label: 'Facade System', sectionId: 'sec-1' }); return missing; }
+  if (!S.facade) { missing.push({ label: 'Facade Colour', sectionId: 'sec-2' }); return missing; }
+  if (S.system === 'ventilated' && sectionHasOptions('subframeGrid') && !S.subframe) {
+    missing.push({ label: 'Subframe', sectionId: 'sec-2' });
+  }
+  if (sectionHasOptions('insMaterialGrid') && (!S.insulMaterial || !S.insulThick)) {
+    missing.push({ label: 'Insulation', sectionId: 'sec-3' });
+  }
+  if (sectionHasOptions('windowsGrid') && !S.windows) {
+    missing.push({ label: 'Windows', sectionId: 'sec-5' });
+  }
+  if (sectionHasOptions('roofGrid') && !S.roof) {
+    missing.push({ label: 'Roof Type', sectionId: 'sec-8' });
+  }
+  return missing;
+}
+
+function flagMissingSteps(missing) {
+  const first = missing[0];
+  const sec = document.getElementById(first.sectionId);
+  if (sec) {
+    sec.classList.add('open');
+    sec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    sec.classList.add('cfg-sec-flash');
+    setTimeout(() => sec.classList.remove('cfg-sec-flash'), 1600);
+  }
+  const toast = document.getElementById('cfgToast');
+  toast.textContent = 'Please choose ' + missing.map(m => m.label).join(', ') + ' before requesting a quote.';
+  toast.classList.add('show');
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+}
+
+function openQuoteModal() {
+  const missing = getMissingSteps();
+  if (missing.length) { flagMissingSteps(missing); return; }
+  document.getElementById('quoteModalHouseName').textContent = HOUSE ? HOUSE.name : '—';
+  document.getElementById('quoteFormView').hidden = false;
+  document.getElementById('quoteSuccessView').hidden = true;
+  document.getElementById('quoteModalErr').classList.remove('show');
+  document.getElementById('quoteModalBackdrop').hidden = false;
+}
+
+function closeQuoteModal() {
+  document.getElementById('quoteModalBackdrop').hidden = true;
+}
+
+// Single source of truth for what a valid quote request looks like. Both the form
+// (below) and the database (quote_requests CHECK constraints + rate-limit trigger,
+// see supabase-migration-hardening.sql) enforce these rules independently — the form
+// gives a fast, specific error; the database is the real backstop if this JS is ever
+// bypassed (a direct API call, a modified page, a future bug). Neither layer trusts
+// the other to have already validated anything.
+const QUOTE_SCHEMA = {
+  name: { required: true, maxLength: 200 },
+  email: { required: true, maxLength: 320, pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/ },
+  phone: { required: false, maxLength: 40, pattern: /^[+\d][\d\s()-]{5,39}$/ },
+  message: { required: false, maxLength: 4000 }
+};
+
+/**
+ * Validates one field against QUOTE_SCHEMA. Returns a human-readable error string,
+ * or null if the field is valid. Kept separate from the DOM so it can be unit-tested
+ * without a browser.
+ */
+function validateQuoteField(key, rawValue) {
+  const rule = QUOTE_SCHEMA[key];
+  const value = (rawValue || '').trim();
+  if (rule.required && !value) return 'Please enter your ' + key + '.';
+  if (!rule.required && !value) return null; // optional and empty — nothing to check
+  if (value.length > rule.maxLength) return 'That ' + key + ' is too long (max ' + rule.maxLength + ' characters).';
+  if (rule.pattern && !rule.pattern.test(value)) return 'Please enter a valid ' + key + '.';
+  return null;
+}
+
+/** Validates the whole quote form. Returns the first error found, or null if all valid. */
+function validateQuoteForm(fields) {
+  for (const key of Object.keys(QUOTE_SCHEMA)) {
+    const error = validateQuoteField(key, fields[key]);
+    if (error) return error;
+  }
+  return null;
+}
+
+let quoteSubmitInFlight = false; // guards against double-submit from rapid double-click/Enter
+
+async function submitQuoteRequest() {
+  if (quoteSubmitInFlight) return;
+
+  // Defense in depth: the modal shouldn't be open with an incomplete configuration
+  // (openQuoteModal already blocks it), but re-check here too in case the modal was
+  // reached some other way — never submit a request for an incomplete configuration.
+  const stillMissing = getMissingSteps();
+  if (stillMissing.length) {
+    closeQuoteModal();
+    flagMissingSteps(stillMissing);
+    return;
+  }
+
+  // Honeypot: real visitors never see or fill this field, so any value means a bot did.
+  // Silently pretend success instead of telling the bot what tripped it.
+  if (document.getElementById('qWebsite').value.trim()) {
+    document.getElementById('quoteSuccessHouseName').textContent = HOUSE ? HOUSE.name : 'this house';
+    document.getElementById('quoteFormView').hidden = true;
+    document.getElementById('quoteSuccessView').hidden = false;
+    return;
+  }
+
+  const fields = {
+    name: document.getElementById('qName').value.trim(),
+    email: document.getElementById('qEmail').value.trim().toLowerCase(),
+    phone: document.getElementById('qPhone').value.trim(),
+    message: document.getElementById('qMessage').value.trim()
+  };
+  const err = document.getElementById('quoteModalErr');
+
+  const validationError = validateQuoteForm(fields);
+  if (validationError) {
+    err.textContent = validationError;
+    err.classList.add('show');
+    return;
+  }
+  err.classList.remove('show');
+
+  quoteSubmitInFlight = true;
+  const btn = document.getElementById('quoteSubmitBtn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+
+  const priceEl = document.getElementById('price-display');
+  const estimatedPrice = priceEl && !priceEl.classList.contains('pending')
+    ? Number(priceEl.textContent.replace(/[^\d]/g, '')) || null
+    : null;
+
+  const quotePayload = {
+    house_id: HOUSE ? HOUSE.id : null,
+    house_name: HOUSE ? HOUSE.name : null,
+    house_slug: HOUSE ? HOUSE.slug : null,
+    name: fields.name, email: fields.email, phone: fields.phone || null, message: fields.message || null,
+    configuration: buildConfigRows(),
+    estimated_price: estimatedPrice
+  };
+
+  const { error } = await sbClient.from('quote_requests').insert(quotePayload);
+
+  quoteSubmitInFlight = false;
+  btn.disabled = false; btn.textContent = 'Send Request';
+
+  if (error) {
+    // The rate-limit trigger raises a friendly message — surface that one directly,
+    // otherwise fall back to a generic message rather than leaking raw DB errors.
+    const friendly = /wait a couple of minutes|too many requests/i.test(error.message);
+    err.textContent = friendly ? error.message : 'Something went wrong — please try again, or email us directly.';
+    err.classList.add('show');
+    return;
+  }
+
+  // Best-effort email notification — the request is already safely saved above
+  // (and visible in the admin's Quote Requests tab) regardless of whether this
+  // succeeds, so a failure here never blocks the customer's success message.
+  sbClient.functions.invoke('send-quote-email', { body: quotePayload }).catch(() => {});
+
+  document.getElementById('quoteSuccessHouseName').textContent = HOUSE ? HOUSE.name : 'this house';
+  document.getElementById('quoteFormView').hidden = true;
+  document.getElementById('quoteSuccessView').hidden = false;
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

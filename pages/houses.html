@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="houses.title">Houses — NP5.HOUSE</title>
+<link rel="stylesheet" href="../css/style.css?v=5">
+<style>
+.hh-hero { padding: 10rem 4rem 2rem; max-width: 1500px; margin: 0 auto; }
+.hh-eyebrow { font-family: var(--fb); font-weight: 400; font-size: .58rem; letter-spacing: .32em; color: var(--tmuted); text-transform: uppercase; display: block; margin-bottom: 1.4rem; }
+.hh-title { font-family: var(--fd); font-weight: 200; font-size: clamp(3rem, 6vw, 5.5rem); color: var(--navy); line-height: .95; letter-spacing: -.02em; }
+.hh-title strong { font-weight: 600; }
+
+.hh-sec { padding: 2.5rem 4rem 4.5rem; max-width: 1500px; margin: 0 auto; }
+
+.hh-cat-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem; margin-bottom: 2.2rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.hh-cat-title { font-family: var(--fd); font-weight: 500; font-size: 1.5rem; letter-spacing: .01em; color: var(--navy); text-transform: uppercase; }
+.hh-cat-note { font-family: var(--fb); font-weight: 300; font-size: .76rem; color: var(--tmuted); }
+
+.hh-subcat { margin-bottom: 1.5rem; }
+.hh-sec-label { font-family: var(--fb); font-size: .56rem; font-weight: 600; letter-spacing: .26em; color: var(--copper); text-transform: uppercase; display: flex; align-items: center; gap: .8rem; margin-bottom: 1.4rem; }
+.hh-sec-label::before { content: ''; width: 18px; height: 1px; background: currentColor; flex-shrink: 0; }
+.hh-sec-note { font-family: var(--fb); font-weight: 300; font-size: .76rem; color: var(--tmuted); }
+
+.hh-grid { display: grid; gap: 1.4rem; }
+.hh-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.hh-grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+.hh-card { position: relative; aspect-ratio: 4/5; overflow: hidden; display: block; text-decoration: none; border-radius: 14px; }
+.hh-grid-2 .hh-card { aspect-ratio: 5/4; }
+.hh-card-img { position: absolute; inset: 0; }
+.hh-card-img img { width: 100%; height: 100%; object-fit: cover; filter: brightness(.6) saturate(.8); transition: transform 1.2s cubic-bezier(.25,.46,.45,.94), filter .8s; }
+.hh-card:hover .hh-card-img img { transform: scale(1.06); filter: brightness(.45) saturate(.7); }
+.hh-card-ov { position: absolute; inset: 0; background: linear-gradient(to top, rgba(5,10,20,.92) 0%, rgba(5,10,20,.15) 55%, transparent 80%); }
+.hh-card-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 1.8rem; z-index: 2; }
+.hh-card-spec { font-family: var(--fb); font-size: .5rem; letter-spacing: .18em; color: rgba(255,255,255,.45); text-transform: uppercase; display: block; margin-bottom: .5rem; }
+.hh-card-name { font-family: var(--fd); font-weight: 300; font-size: 1.7rem; color: #fff; line-height: 1; letter-spacing: -.01em; }
+.hh-card-cta { font-family: var(--fb); font-size: .54rem; letter-spacing: .14em; color: rgba(255,255,255,.55); text-transform: uppercase; display: inline-block; margin-top: .8rem; padding-bottom: .2rem; border-bottom: 1px solid rgba(255,255,255,.25); transition: color .3s, border-color .3s; }
+.hh-card:hover .hh-card-cta { color: #fff; border-color: rgba(255,255,255,.65); }
+
+@media (max-width: 1000px) {
+  .hh-grid-3 { grid-template-columns: 1fr; }
+  .hh-grid-2 { grid-template-columns: 1fr; }
+  .hh-card { aspect-ratio: 4/3; }
+}
+@media (max-width: 900px) {
+  .hh-hero { padding: 8rem 2rem 1.5rem; }
+  .hh-sec { padding: 2rem 2rem 3.5rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cring" id="ring"></div>
+
+<nav id="nav" class="solid">
+  <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  <a href="../index.html" class="logo"><svg class="logo-mark" viewBox="0 0 550 116" xmlns="http://www.w3.org/2000/svg" aria-label="NP5" role="img"><g fill="currentColor"><polygon points="153.9,91.4 22.1,0.1 22,0 0,0 0,116 22.2,116 22.2,24.6 154,115.9 154.1,116 176.1,116 176.1,0 153.9,0"/><path d="M543.9,52.9c-4-3.9-8.8-5.9-14.2-5.9H396.1V22H548V0H373.9v69h147.2c2.2,0,3.9,0.5,5,1.4c1,0.8,1.7,3.6,1.7,6.6v10.1c0,2.4-0.7,4.2-2,5.3c-1.4,1.1-3,1.6-4.9,1.6h-147v22h155.9c5.4,0,10.1-1.9,14.1-5.6c4-3.7,6.1-9,6.1-15.9v-26C550,62.1,548,56.8,543.9,52.9"/><polygon points="186.9,21.9 340.6,22 340.6,47 186.9,47 186.9,116 209.1,116 209.1,69 362.7,69 362.7,0 186.9,0"/></g></svg></a>
+  <div class="nav-lang-wrap">
+    <button class="nav-lang" aria-label="Language">🇬🇧</button>
+    <div class="nav-lang-menu">
+      <button class="nav-lang-opt active" data-lang="en"><span class="nav-lang-opt-flag">🇬🇧</span>English</button>
+      <button class="nav-lang-opt" data-lang="lt"><span class="nav-lang-opt-flag">🇱🇹</span>Lietuvių</button>
+    </div>
+  </div>
+</nav>
+<div class="nav-drawer" id="navDrawer">
+  <div class="nav-drawer-links">
+    <a href="houses.html" data-i18n="nav.houses">Houses</a>
+    <a href="gallery.html" data-i18n="nav.gallery">Gallery</a>
+    <a href="about.html" data-i18n="nav.about">About</a>
+    <a href="investors.html" data-i18n="nav.investors">Investors</a>
+  </div>
+  <div class="nav-drawer-foot">
+    <a href="../index.html#contact" class="nd-cta" data-i18n="nav.enquire">Enquire</a>
+  <span class="nav-drawer-meta" data-i18n="drawer.meta">Lithuania &middot; Portugal</span>
+  </div>
+</div>
+
+<div class="hh-hero">
+  <span class="hh-eyebrow" data-i18n="houses.eyebrow">The Collection</span>
+  <h1 class="hh-title" data-i18n-html="houses.heroTitle">Two collections. <strong>Different ways to live.</strong></h1>
+</div>
+
+<div class="hh-sec" id="modularSec">
+  <div class="hh-cat-head">
+    <span class="hh-cat-title" data-i18n="houses.modularCat">Modular Homes</span>
+    <span class="hh-cat-note" data-i18n="houses.modularNote">Factory-built modules, delivered complete</span>
+  </div>
+
+  <div class="hh-subcat" data-model="jewel">
+    <span class="hh-sec-label">Jewel</span>
+    <div class="hh-grid hh-grid-3" id="jewelGrid">
+      <a href="house-configure.html?house=jewel-2x" class="hh-card">
+        <div class="hh-card-img"><img src="../assets/images/houses/modular-jewel-2x/jewel-2x-cover-1.jpg" alt="Jewel 2X" loading="lazy"></div>
+        <div class="hh-card-ov"></div>
+        <div class="hh-card-info">
+          <span class="hh-card-spec" data-i18n="houses.jewel2xSpec">22 m² Living &middot; 2 Modules</span>
+          <h2 class="hh-card-name">Jewel 2X</h2>
+          <span class="hh-card-cta" data-i18n="common.configure">Configure →</span>
+        </div>
+      </a>
+      <a href="house-configure.html?house=jewel-4x" class="hh-card">
+        <div class="hh-card-img"><img src="../assets/images/houses/modular-jewel-4x/jewel-4x-cover-1.jpg" alt="Jewel 4X" loading="lazy"></div>
+        <div class="hh-card-ov"></div>
+        <div class="hh-card-info">
+          <span class="hh-card-spec" data-i18n="houses.jewel4xSpec">44 m² Living &middot; 4 Modules</span>
+          <h2 class="hh-card-name">Jewel 4X</h2>
+          <span class="hh-card-cta" data-i18n="common.configure">Configure →</span>
+        </div>
+      </a>
+      <a href="house-configure.html?house=jewel-4xl" class="hh-card">
+        <div class="hh-card-img"><img src="../assets/images/houses/modular-jewel-4xl/jewel-4xl-cover-1.jpg" alt="Jewel 4X XL" loading="lazy"></div>
+        <div class="hh-card-ov"></div>
+        <div class="hh-card-info">
+          <span class="hh-card-spec" data-i18n="houses.jewel4xlSpec">46 m² Living &middot; 4 XL Modules</span>
+          <h2 class="hh-card-name">Jewel 4X XL</h2>
+          <span class="hh-card-cta" data-i18n="common.configure">Configure →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="hh-sec" id="panelSec">
+  <div class="hh-cat-head">
+    <span class="hh-cat-title" data-i18n="houses.panelCat">Panelised Homes</span>
+    <span class="hh-cat-note" data-i18n="houses.panelNote">LGS panel systems, assembled on site</span>
+  </div>
+
+  <div class="hh-subcat">
+    <div class="hh-grid hh-grid-2" id="panelGrid">
+      <a href="house-configure.html?house=calibre" class="hh-card">
+        <div class="hh-card-img"><img src="../assets/images/houses/panel-house-1/panel-cover-3.jpg" alt="Calibre" loading="lazy"></div>
+        <div class="hh-card-ov"></div>
+        <div class="hh-card-info">
+          <span class="hh-card-spec" data-i18n="houses.calibreSpec">Prefabricated panel home</span>
+          <h2 class="hh-card-name">Calibre</h2>
+          <span class="hh-card-cta" data-i18n="common.configure">Configure →</span>
+        </div>
+      </a>
+      <a href="house-configure.html?house=escapement" class="hh-card">
+        <div class="hh-card-img"><img src="../assets/images/houses/panel-house-2/panel-cover-4.jpg" alt="Escapement" loading="lazy"></div>
+        <div class="hh-card-ov"></div>
+        <div class="hh-card-info">
+          <span class="hh-card-spec" data-i18n="houses.escapementSpec">Open terrace &middot; panel home</span>
+          <h2 class="hh-card-name">Escapement</h2>
+          <span class="hh-card-cta" data-i18n="common.configure">Configure →</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="fl"><svg class="logo-mark" viewBox="0 0 550 116" xmlns="http://www.w3.org/2000/svg" aria-label="NP5" role="img"><g fill="currentColor"><polygon points="153.9,91.4 22.1,0.1 22,0 0,0 0,116 22.2,116 22.2,24.6 154,115.9 154.1,116 176.1,116 176.1,0 153.9,0"/><path d="M543.9,52.9c-4-3.9-8.8-5.9-14.2-5.9H396.1V22H548V0H373.9v69h147.2c2.2,0,3.9,0.5,5,1.4c1,0.8,1.7,3.6,1.7,6.6v10.1c0,2.4-0.7,4.2-2,5.3c-1.4,1.1-3,1.6-4.9,1.6h-147v22h155.9c5.4,0,10.1-1.9,14.1-5.6c4-3.7,6.1-9,6.1-15.9v-26C550,62.1,548,56.8,543.9,52.9"/><polygon points="186.9,21.9 340.6,22 340.6,47 186.9,47 186.9,116 209.1,116 209.1,69 362.7,69 362.7,0 186.9,0"/></g></svg><span class="logo-text"><span class="dot">.</span>HOUSE</span></div>
+  <p class="fc" data-i18n="footer.tagline">© 2026 NP5 House. Premium Prefab Architecture. Lithuania · Portugal</p>
+  <ul class="flinks">
+    <li><a href="houses.html" data-i18n="nav.houses">Houses</a></li>
+    <li><a href="gallery.html" data-i18n="nav.gallery">Gallery</a></li>
+    <li><a href="about.html" data-i18n="nav.about">About</a></li>
+    <li><a href="../index.html#contact" data-i18n="footer.contact">Contact</a></li>
+  </ul>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0"></script>
+<script src="../js/i18n-data.js?v=3"></script>
+<script src="../js/i18n.js?v=3"></script>
+<script src="../js/main.js?v=3" defer></script>
+<script>
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('solid', window.scrollY > 10);
+}, { passive: true });
+</script>
+<script>
+(async function renderDynamicHouses() {
+  const KNOWN_SLUGS = ['jewel-2x', 'jewel-4x', 'jewel-4xl', 'calibre', 'escapement'];
+  const sb = supabase.createClient('https://cupuevlvbzcuzpfzgmuu.supabase.co', 'sb_publishable_LLu929NAaOhX9wzVQVULNg_j1Zf-Nz9');
+
+  const { data: houses, error } = await sb.from('houses').select('*').order('created_at', { ascending: true });
+  if (error || !houses) return;
+  const newHouses = houses.filter(h => h.published !== false && !h.deleted_at && !KNOWN_SLUGS.includes(h.slug));
+  if (!newHouses.length) return;
+
+  const { data: facadeRows } = await sb.from('house_facades').select('*').order('sort_order', { ascending: true });
+  const firstImageByHouse = {};
+  (facadeRows || []).forEach(f => {
+    if (!firstImageByHouse[f.house_id] && f.image_url) firstImageByHouse[f.house_id] = f.image_url;
+  });
+
+  // Houses come from the database, and a house's name/image are admin-entered —
+  // escape them before touching innerHTML. Without this, a malicious house name
+  // (even one squeezed in by a compromised or rogue account bypassing the admin
+  // UI, since RLS checks WHO can write, not WHAT they write) would run as real
+  // HTML/script for every visitor who loads this page.
+  function escapeHtml(str) {
+    return String(str == null ? '' : str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  function buildCard(h) {
+    const img = firstImageByHouse[h.id] || '';
+    const name = escapeHtml(h.name);
+    const specBits = [];
+    if (h.living_area) specBits.push(h.living_area + ' m² Living');
+    if (h.modules) specBits.push(h.modules + ' Modules');
+    const spec = specBits.join(' · ');
+
+    const card = document.createElement('a');
+    card.href = 'house-configure.html?house=' + encodeURIComponent(h.slug);
+    card.className = 'hh-card';
+    card.innerHTML =
+      '<div class="hh-card-img">' + (img ? '<img src="' + escapeHtml(img) + '" alt="' + name + '" loading="lazy">' : '') + '</div>' +
+      '<div class="hh-card-ov"></div>' +
+      '<div class="hh-card-info">' +
+        (spec ? '<span class="hh-card-spec">' + spec + '</span>' : '') +
+        '<h2 class="hh-card-name">' + name + '</h2>' +
+        '<span class="hh-card-cta">Configure &rarr;</span>' +
+      '</div>';
+    return card;
+  }
+
+  // Panel homes: appended flat into the existing Panelised Homes grid, no model grouping.
+  const panelHouses = newHouses.filter(h => h.type === 'panel');
+  const panelGrid = document.getElementById('panelGrid');
+  panelHouses.forEach(h => panelGrid.appendChild(buildCard(h)));
+
+  // Modular homes: grouped by `model` — each distinct model gets its own labelled
+  // subsection (like the existing "Jewel" one), matching multiple sizes under one heading.
+  const modularHouses = newHouses.filter(h => h.type === 'modular');
+  const byModel = {};
+  modularHouses.forEach(h => {
+    const key = (h.model || 'Other').trim();
+    if (!byModel[key]) byModel[key] = [];
+    byModel[key].push(h);
+  });
+
+  const modularSec = document.getElementById('modularSec');
+  Object.keys(byModel).forEach(model => {
+    const modelKey = model.toLowerCase();
+    const existingSubcat = modularSec.querySelector('.hh-subcat[data-model="' + modelKey + '"]');
+    if (existingSubcat) {
+      // A subsection for this model already exists on the page (e.g. the static "Jewel"
+      // block) — append new houses into its grid instead of creating a duplicate heading.
+      const grid = existingSubcat.querySelector('.hh-grid');
+      byModel[model].forEach(h => grid.appendChild(buildCard(h)));
+      return;
+    }
+    const subcat = document.createElement('div');
+    subcat.className = 'hh-subcat';
+    subcat.dataset.model = modelKey;
+    const label = document.createElement('span');
+    label.className = 'hh-sec-label';
+    label.textContent = model;
+    subcat.appendChild(label);
+    const grid = document.createElement('div');
+    grid.className = 'hh-grid hh-grid-3';
+    byModel[model].forEach(h => grid.appendChild(buildCard(h)));
+    subcat.appendChild(grid);
+    modularSec.appendChild(subcat);
+  });
+
+  // Content just got inserted above the Panel section (and possibly above wherever
+  // the page already auto-scrolled to on load) — if the URL points at an anchor,
+  // jump to it again now that the layout has settled, so e.g. #panelSec still lands
+  // correctly instead of drifting out of view as Modular grew taller.
+  // `instant` (not the page's default smooth) avoids fighting the browser's own
+  // native hash-scroll animation, which may still be finishing when this runs. The
+  // repeat after a short delay catches any late shift from web-font swap-in, which
+  // changes text metrics (and therefore section heights) after the font finishes
+  // loading — a one-time scroll can land correctly and still drift once that happens.
+  function resyncHashScroll() {
+    if (!window.location.hash) return;
+    const target = document.querySelector(window.location.hash);
+    if (target) target.scrollIntoView({ behavior: 'instant', block: 'start' });
+  }
+  resyncHashScroll();
+  setTimeout(resyncHashScroll, 400);
+})();
+</script>
+</body>
+</html>

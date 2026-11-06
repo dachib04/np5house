@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-i18n="cfg.titleCalibre">Configure — House 03 · NP5.HOUSE</title>
+<link rel="stylesheet" href="../css/style.css?v=5">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0"></script>
+<style>
+body.cfg-page { overflow: hidden; background: #f0f0ed; }
+
+.demo-banner {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 150;
+  background: var(--copper); color: #fff;
+  font-family: var(--fb); font-size: .62rem; letter-spacing: .1em;
+  text-align: center; padding: .45rem 1rem; text-transform: uppercase;
+}
+
+/* Nav — ensure visibility on cfg pages */
+body.cfg-page nav.solid { background: #fff; box-shadow: 0 1px 0 rgba(5,29,73,.12); }
+body.cfg-page nav .logo { color: var(--navy); font-size: 1.15rem; }
+body.cfg-page nav .nav-links a { color: var(--tbody); }
+body.cfg-page nav .nav-btn { background: var(--navy); color: #fff; }
+
+/* TOP BAR */
+.cfg-topbar {
+  position: fixed; top: 92px; left: 0; right: 0; height: 58px;
+  background: #fff; border-bottom: 1px solid #eceae6;
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; padding: 0 2.5rem; z-index: 90; gap: 2rem;
+}
+.cfg-back {
+  font-family: var(--fb); font-size: .57rem; font-weight: 500; letter-spacing: .13em;
+  text-transform: uppercase; color: var(--tmuted); text-decoration: none;
+  display: inline-flex; align-items: center; gap: .55rem;
+  transition: color .2s; width: fit-content;
+}
+.cfg-back:hover { color: var(--navy); }
+.cfg-tb-center { display: flex; align-items: center; gap: .7rem; justify-content: center; }
+.cfg-tb-name { font-family: var(--fd); font-weight: 300; font-size: 1.28rem; color: var(--navy); letter-spacing: .02em; }
+.cfg-tb-div { width: 1px; height: 15px; background: rgba(5,29,73,.15); flex-shrink: 0; }
+.cfg-tb-code { font-family: var(--fb); font-size: .6rem; letter-spacing: .17em; text-transform: uppercase; color: rgba(5,29,73,.7); }
+.cfg-tb-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: .06rem; }
+.cfg-tb-pricenote { font-family: var(--fb); font-size: .49rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--tmuted); }
+.cfg-live-price { font-family: var(--fd); font-weight: 200; font-size: 1.15rem; color: var(--navy); line-height: 1; }
+.cfg-live-price.pending { color: rgba(5,29,73,.2); }
+
+.cfg-layout { display: flex; height: 100vh; padding-top: 186px; padding-bottom: 78px; gap: 1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; }
+
+.cfg-viewer { flex: 0 0 68%; background: #f0f0ed; display: flex; flex-direction: column; position: relative; border-radius: 20px; overflow: hidden; box-shadow: 0 2px 16px rgba(5,29,73,.08); border: 1px solid rgba(5,29,73,.08); }
+.cfg-img-wrap { flex: 1; position: relative; overflow: hidden; }
+.cfg-img-wrap img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.cfg-angle-rail { position: absolute; bottom: 12px; left: 0; right: 0; display: flex; justify-content: center; gap: .5rem; }
+.cfg-angle-dot { width: 26px; height: 4px; border-radius: 2px; background: rgba(5,29,73,.18); border: none; cursor: pointer; transition: background .2s; }
+.cfg-angle-dot.on { background: rgba(5,29,73,.65); }
+.cfg-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,.88); border: 1px solid rgba(5,29,73,.1); display: flex; align-items: center; justify-content: center; font-family: var(--fb); font-size: 1.2rem; color: var(--navy); cursor: pointer; transition: background .2s, box-shadow .2s, transform .2s; box-shadow: 0 2px 12px rgba(5,29,73,.1); z-index: 3; }
+.cfg-arrow:hover { background: #fff; box-shadow: 0 4px 18px rgba(5,29,73,.18); }
+.cfg-arrow-prev { left: 16px; }
+.cfg-arrow-next { right: 16px; }
+@media (max-width: 900px) { .cfg-arrow { width: 34px; height: 34px; font-size: 1rem; } .cfg-arrow-prev { left: 10px; } .cfg-arrow-next { right: 10px; } }
+.cfg-spec-bar { height: 48px; background: rgba(5,29,73,.05); border-top: 1px solid rgba(5,29,73,.08); display: flex; align-items: center; padding: 0 1.5rem; gap: 2.5rem; flex-shrink: 0; }
+.cfg-spec { font-family: var(--fb); font-size: .58rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(5,29,73,.7); line-height: 1.5; }
+.cfg-spec strong { display: block; color: var(--navy); font-size: .92rem; letter-spacing: .02em; font-weight: 600; }
+
+.cfg-options { flex: 1; overflow-y: auto; background: #fff; padding: 0 0 2.5rem; scrollbar-width: thin; scrollbar-color: rgba(0,0,0,.1) transparent; border-radius: 20px; box-shadow: 0 4px 24px rgba(0,0,0,.08); }
+.cfg-sec { border-bottom: 1px solid #ebebeb; }
+.cfg-sec-hd { width: 100%; background: none; border: none; padding: 1.35rem 2rem; display: flex; align-items: center; gap: .85rem; cursor: pointer; text-align: left; transition: background .15s; }
+.cfg-sec-hd:hover { background: rgba(0,0,0,.02); }
+.cfg-sec-arr { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: rgba(5,29,73,.4); transition: transform .25s; }
+.cfg-sec.open .cfg-sec-arr { transform: rotate(180deg); }
+.cfg-sec-title { font-family: var(--fb); font-weight: 600; font-size: .88rem; color: #1a1a1a; flex: 1; letter-spacing: .01em; }
+.cfg-sec-sel { min-width: 26px; height: 26px; border-radius: 13px; background: #ebebeb; font-family: var(--fb); font-size: .6rem; font-weight: 500; color: #555; display: flex; align-items: center; justify-content: center; padding: 0 .5rem; white-space: nowrap; flex-shrink: 0; }
+.cfg-sec-sel.has-sel { background: var(--navy); color: #fff; }
+.cfg-sec-body { display: none; padding: 0 2rem 1.75rem; }
+.cfg-sec.open .cfg-sec-body { display: block; }
+.cfg-note { font-family: var(--fb); font-size: .62rem; line-height: 1.7; color: rgba(5,29,73,.6); margin-bottom: 1.25rem; }
+.cfg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: .6rem; }
+.cfg-card { border: 2px solid #e8e8e8; border-radius: 12px; cursor: pointer; overflow: hidden; position: relative; background: #fff; flex-shrink: 0; transition: border-color .2s, box-shadow .2s, transform .18s; }
+.cfg-card:hover { border-color: #bbb; transform: scale(1.02); box-shadow: 0 4px 14px rgba(0,0,0,.1); }
+.cfg-card input[type="radio"] { position: absolute; opacity: 0; pointer-events: none; }
+.cfg-card.on { border-color: var(--navy); border-width: 2.5px; box-shadow: 0 0 0 1.5px var(--navy); }
+.cfg-card-tick { position: absolute; bottom: 5px; right: 5px; width: 18px; height: 18px; background: var(--navy); border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 9px; color: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+.cfg-card.on .cfg-card-tick { display: flex; }
+.cfg-card-img-wrap { height: 84px; overflow: hidden; }
+.cfg-card-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cfg-card-cap { font-size: .6rem; font-family: var(--fb); color: var(--navy); padding: .3rem .6rem .45rem; line-height: 1.3; font-weight: 500; }
+.cfg-card-inner { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; padding: .75rem 1rem .8rem; height: 76px; box-sizing: border-box; }
+.cfg-card-title { font-family: var(--fd); font-weight: 400; font-size: 1.05rem; color: var(--navy); line-height: 1; }
+.cfg-card-sub { font-family: var(--fb); font-size: .58rem; color: rgba(5,29,73,.5); margin-top: .22rem; line-height: 1.4; min-height: 1.7em; display: block; }
+.cfg-card-price { font-family: var(--fb); font-size: .6rem; font-weight: 600; color: var(--navy); margin-top: .3rem; display: block; }
+.cfg-card[data-facade] .cfg-card-price { padding: 0 .6rem .4rem; margin-top: -.15rem; }
+.cfg-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: .6rem; }
+.cfg-sub { margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed #e4e1dc; }
+.cfg-sub-lbl { font-family: var(--fb); font-size: .55rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: rgba(5,29,73,.4); margin-bottom: .7rem; }
+.cfg-sub-req { font-family: var(--fb); font-size: .58rem; font-weight: 700; letter-spacing: .02em; text-transform: none; color: var(--navy); margin-left: .5rem; }
+.wall-detail-img-wrap { border-radius: 12px; overflow: hidden; background: #f0f0ed; border: 1px solid rgba(5,29,73,.08); }
+.wall-detail-img-wrap img { width: 100%; height: 220px; object-fit: cover; display: block; }
+.wall-angle-rail { display: flex; justify-content: center; gap: .5rem; margin-top: .6rem; }
+.cfg-layer-list { margin: .75rem 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: .45rem; }
+.cfg-layer-list li { font-family: var(--fb); font-size: .62rem; line-height: 1.5; color: rgba(5,29,73,.75); padding: .5rem .65rem; background: #f7f6f3; border-radius: 6px; border-left: 2px solid var(--copper); }
+.wall-placeholder { display: flex; align-items: center; justify-content: center; height: 160px; border: 1px dashed #ddd; border-radius: 10px; margin: 0; text-align: center; padding: 0 1.5rem; }
+.wall-detail-grid { display: grid; gap: 8px; }
+.wall-detail-cell { border-radius: 12px; overflow: hidden; background: #f0f0ed; border: 1px solid rgba(5,29,73,.08); display: flex; align-items: center; justify-content: center; }
+.wall-detail-cell img { width: 100%; height: 320px; object-fit: contain; display: block; }
+
+/* BOTTOM BAR */
+.cfg-bottombar {
+  position: fixed; bottom: 0; left: 0; right: 0; height: 78px;
+  background: #fff; border-top: 1px solid #eceae6;
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  align-items: center; padding: 0 2.5rem; z-index: 90; gap: 2rem;
+  box-shadow: 0 -6px 28px rgba(5,29,73,.06);
+}
+.cfg-steps { display: flex; align-items: center; }
+.cfg-step-item { display: flex; align-items: center; }
+.cfg-step-num { font-family: var(--fd); font-weight: 400; font-size: 1.1rem; color: #b5b1ab; letter-spacing: .06em; transition: color .35s; line-height: 1; }
+.cfg-step-item.done .cfg-step-num { color: var(--navy); }
+.cfg-step-line { width: 30px; height: 1px; background: #e2dfd9; margin: 0 .55rem; transition: background .35s; }
+.cfg-step-line.done { background: var(--navy); }
+.cfg-steps-label { font-family: var(--fb); font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(5,29,73,.55); margin-left: 1.1rem; white-space: nowrap; }
+.cfg-steps-label strong { color: var(--navy); font-weight: 700; }
+.cfg-bar-price { display: flex; flex-direction: column; align-items: center; gap: .06rem; text-align: center; }
+.cfg-bar-price-label { font-family: var(--fb); font-size: .58rem; font-weight: 600; letter-spacing: .15em; text-transform: uppercase; color: rgba(5,29,73,.6); }
+.cfg-bar-price-value { font-family: var(--fd); font-weight: 200; font-size: 1.9rem; color: var(--navy); line-height: 1; }
+.cfg-bar-price-value.pending { color: rgba(5,29,73,.22); font-size: 1.5rem; }
+.cfg-bar-actions { display: flex; align-items: center; gap: .6rem; justify-content: flex-end; }
+.btn-pdf { padding: .58rem 1.3rem; font-family: var(--fb); font-size: .55rem; letter-spacing: .1em; font-weight: 500; text-transform: uppercase; background: transparent; border: 1.5px solid rgba(5,29,73,.18); color: var(--navy); border-radius: 2px; cursor: pointer; transition: border-color .2s, background .2s; white-space: nowrap; display: inline-flex; align-items: center; gap: .45rem; }
+.btn-pdf svg { flex-shrink: 0; }
+.btn-pdf:hover { border-color: var(--navy); background: rgba(5,29,73,.03); }
+.btn-cfg-primary { padding: .62rem 2rem; font-family: var(--fb); font-size: .59rem; letter-spacing: .12em; font-weight: 500; text-transform: uppercase; background: var(--navy); border: 1.5px solid var(--navy); border-radius: 2px; color: #fff; cursor: pointer; transition: background .25s, border-color .25s; white-space: nowrap; }
+.btn-cfg-primary:hover { background: var(--copper); border-color: var(--copper); }
+
+/* PDF PRINT SHEET */
+.cfg-pdf-sheet { display: none; }
+@media print {
+  body { visibility: hidden; overflow: visible !important; }
+  .cfg-pdf-sheet { display: block !important; visibility: visible; position: fixed; inset: 0; padding: 2cm 2cm 2cm; background: #fff; font-family: var(--fb); }
+  .cfg-pdf-sheet * { visibility: visible; }
+  @page { margin: 0; size: A4 portrait; }
+  .pdf-header { display: flex !important; align-items: baseline; justify-content: space-between; margin-bottom: 1.6rem; }
+  .pdf-logo { font-family: var(--fd); font-weight: 600; font-size: 1rem; letter-spacing: .22em; color: rgb(5,29,73); }
+  .pdf-logo-dot { color: rgb(0,0,0); }
+  .pdf-doc-label { font-family: var(--fb); font-size: .52rem; letter-spacing: .18em; text-transform: uppercase; color: rgb(140,148,162); }
+  .pdf-rule { border: none; border-top: 1px solid #e0ddd8; margin: 1.1rem 0; }
+  .pdf-meta { margin-bottom: 1.2rem; }
+  .pdf-house-title { font-family: var(--fd); font-weight: 200; font-size: 2.6rem; color: rgb(5,29,73); line-height: 1; letter-spacing: -.01em; margin: 0; }
+  .pdf-house-sub { font-family: var(--fb); font-size: .58rem; letter-spacing: .1em; color: rgb(140,148,162); text-transform: uppercase; margin-top: .25rem; }
+  .pdf-img { width: 100%; max-height: 200px; object-fit: cover; display: block !important; margin-bottom: 1.4rem; }
+  .pdf-sec-lbl { font-family: var(--fb); font-size: .5rem; letter-spacing: .2em; text-transform: uppercase; color: rgb(140,148,162); margin-bottom: .6rem; display: block; }
+  .pdf-table { width: 100%; border-collapse: collapse; }
+  .pdf-th { font-family: var(--fb); font-size: .52rem; letter-spacing: .1em; text-transform: uppercase; color: rgb(140,148,162); text-align: left; padding: .4rem .65rem; border-bottom: 1px solid #e0ddd8; }
+  .pdf-th-r { text-align: right; }
+  .pdf-opt-label { font-family: var(--fb); font-size: .68rem; color: rgb(5,29,73); padding: .55rem .65rem; border-bottom: 1px solid #f0ede8; font-weight: 500; width: 28%; }
+  .pdf-opt-value { font-family: var(--fb); font-size: .68rem; color: rgb(70,80,96); padding: .55rem .65rem; border-bottom: 1px solid #f0ede8; }
+  .pdf-opt-price { font-family: var(--fd); font-size: .85rem; color: rgb(5,29,73); padding: .55rem .65rem; border-bottom: 1px solid #f0ede8; text-align: right; width: 18%; }
+  .pdf-total-row { display: flex !important; justify-content: space-between; align-items: center; padding: .85rem .65rem; margin-top: .5rem; background: rgb(5,29,73); }
+  .pdf-total-label { font-family: var(--fb); font-size: .5rem; letter-spacing: .2em; text-transform: uppercase; color: rgba(255,255,255,.55); }
+  .pdf-total-value { font-family: var(--fd); font-weight: 300; font-size: 1.4rem; color: #fff; }
+  .pdf-foot { margin-top: 1.5rem; }
+  .pdf-foot-meta { font-family: var(--fb); font-size: .58rem; color: rgb(140,148,162); margin-bottom: .2rem; }
+  .pdf-foot-brand { margin-top: .8rem; font-family: var(--fb); font-size: .56rem; color: rgb(140,148,162); }
+  .pdf-foot-brand p { margin-bottom: .16rem; }
+  .pdf-foot-note { font-size: .5rem; color: rgba(5,29,73,.25); margin-top: .7rem !important; font-style: italic; line-height: 1.65; }
+}
+
+@media (max-width: 900px) {
+  body.cfg-page { overflow: auto; }
+  .cfg-layout { flex-direction: column; height: auto; padding-bottom: 170px; }
+  .cfg-viewer { flex: none; height: 55vw; min-height: 260px; }
+  .cfg-options { overflow: visible; }
+  .cfg-topbar { top: 80px; }
+  .cfg-tb-center { display: none; }
+  .wall-detail-grid { grid-template-columns: 1fr 1fr !important; }
+  .wall-detail-cell img { height: 220px; }
+  .cfg-bottombar { height: auto; grid-template-columns: 1fr; grid-template-rows: auto auto; padding: .7rem 1rem; gap: .55rem; }
+  .cfg-steps { display: none; }
+  .cfg-bar-price { flex-direction: row; gap: .5rem; }
+  .cfg-bar-actions { justify-content: center; }
+  .cfg-bar-actions .btn-pdf, .cfg-bar-actions .btn-cfg-primary { flex: 1; justify-content: center; }
+}
+</style>
+</head>
+
+<body class="cfg-page">
+<div class="cursor" id="cur"></div><div class="cring" id="ring"></div>
+<div class="demo-banner" data-i18n="cfg.demoBanner">Prototype — pricing pending · specifications subject to change</div>
+
+<nav class="solid" id="nav" style="top:28px">
+  <a href="../index.html" class="logo"><svg class="logo-mark" viewBox="0 0 550 116" xmlns="http://www.w3.org/2000/svg" aria-label="NP5" role="img"><g fill="currentColor"><polygon points="153.9,91.4 22.1,0.1 22,0 0,0 0,116 22.2,116 22.2,24.6 154,115.9 154.1,116 176.1,116 176.1,0 153.9,0"/><path d="M543.9,52.9c-4-3.9-8.8-5.9-14.2-5.9H396.1V22H548V0H373.9v69h147.2c2.2,0,3.9,0.5,5,1.4c1,0.8,1.7,3.6,1.7,6.6v10.1c0,2.4-0.7,4.2-2,5.3c-1.4,1.1-3,1.6-4.9,1.6h-147v22h155.9c5.4,0,10.1-1.9,14.1-5.6c4-3.7,6.1-9,6.1-15.9v-26C550,62.1,548,56.8,543.9,52.9"/><polygon points="186.9,21.9 340.6,22 340.6,47 186.9,47 186.9,116 209.1,116 209.1,69 362.7,69 362.7,0 186.9,0"/></g></svg></a>
+  <ul class="nav-links">
+    <li><a href="houses.html">Houses</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="investors.html" data-i18n="nav.investors">Investors</a></li>
+  </ul>
+  <a href="../index.html#contact" class="nav-btn" data-i18n="nav.enquire">Enquire</a>
+  <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+  <div class="nav-lang-wrap">
+    <button class="nav-lang" aria-label="Language">🇬🇧</button>
+    <div class="nav-lang-menu">
+      <button class="nav-lang-opt active" data-lang="en"><span class="nav-lang-opt-flag">🇬🇧</span>English</button>
+      <button class="nav-lang-opt" data-lang="lt"><span class="nav-lang-opt-flag">🇱🇹</span>Lietuvių</button>
+    </div>
+  </div>
+</nav>
+<div class="nav-drawer" id="navDrawer">
+  <div class="nav-drawer-links">
+    <a href="houses.html" data-i18n="nav.houses">Houses</a>
+    <a href="gallery.html" data-i18n="nav.gallery">Gallery</a>
+    <a href="investors.html" data-i18n="nav.investors">Investors</a>
+  </div>
+  <div class="nav-drawer-foot">
+    <a href="../index.html#contact" class="nd-cta" data-i18n="nav.enquire">Enquire</a>
+  <span class="nav-drawer-meta" data-i18n="drawer.meta">Lithuania &middot; Portugal</span>
+  </div>
+</div>
+
+<div class="cfg-topbar">
+  <a href="panelized.html" class="cfg-back">
+    <svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M13 5H1M1 5L5 1M1 5L5 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Panelized Homes
+  </a>
+  <div class="cfg-tb-center">
+    <span class="cfg-tb-name">Calibre</span>
+    <div class="cfg-tb-div"></div>
+    <span class="cfg-tb-code" data-i18n="cfg.panelHome">NP5 · Prefabricated Panel Home</span>
+  </div>
+</div>
+
+<div class="cfg-layout">
+  <div class="cfg-viewer">
+    <div class="cfg-img-wrap">
+      <img id="houseRender" src="../houses/panel-house-1/without_cover/Caparol%20Light/9_Interactive%20LightMix0004.png" alt="House 03">
+      <button class="cfg-arrow cfg-arrow-prev" onclick="stepAngle(-1)" aria-label="Previous image">&#8249;</button>
+      <button class="cfg-arrow cfg-arrow-next" onclick="stepAngle(1)" aria-label="Next image">&#8250;</button>
+      <div class="cfg-angle-rail">
+        <button class="cfg-angle-dot on" onclick="setAngle(0)"></button>
+        <button class="cfg-angle-dot" onclick="setAngle(1)"></button>
+        <button class="cfg-angle-dot" onclick="setAngle(2)"></button>
+        <button class="cfg-angle-dot" onclick="setAngle(3)"></button>
+      </div>
+    </div>
+    <div class="cfg-spec-bar">
+      <div class="cfg-spec"><strong>— m²</strong>Living Area</div>
+      <div class="cfg-spec"><strong>— m²</strong>Total</div>
+      <div class="cfg-spec"><strong>1</strong><span data-i18n="cfg.specFloor">Floor</span></div>
+      <div class="cfg-spec"><strong>2</strong><span data-i18n="cfg.specModules">Modules</span></div>
+    </div>
+  </div>
+
+  <div class="cfg-options">
+
+    <div class="cfg-sec open" id="sec-1">
+      <button class="cfg-sec-hd" onclick="toggleSec('sec-1')">
+        <span class="cfg-sec-title" data-i18n="cfg.secFacadeSystem">Facade System</span>
+        <span class="cfg-sec-sel" id="sel-1" data-i18n="cfg.selSelect">— Select</span>
+        <span class="cfg-sec-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="cfg-sec-body">
+        <p class="cfg-note" data-i18n="cfg.facadeSystemNote">Choose the facade construction system — this determines the available colours.</p>
+        <div class="cfg-grid">
+          <label class="cfg-card" data-system="ventilated" onclick="pickSystem('ventilated')">
+            <input type="radio" name="system" value="ventilated">
+            <div class="cfg-card-tick">✓</div>
+            <div class="cfg-card-inner"><span class="cfg-card-title" data-i18n="cfg.ventilatedTitle">Ventilated</span><span class="cfg-card-sub" data-i18n="cfg.ventilatedSubWoodDark">Wood Light or Wood Dark cladding</span></div>
+          </label>
+          <label class="cfg-card" data-system="clinker" onclick="pickSystem('clinker')">
+            <input type="radio" name="system" value="clinker">
+            <div class="cfg-card-tick">✓</div>
+            <div class="cfg-card-inner"><span class="cfg-card-title" data-i18n="cfg.nonVentTitle">Non-Ventilated</span><span class="cfg-card-sub" data-i18n="cfg.nonVentSub">Clinker finish</span></div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="cfg-sec" id="sec-2">
+      <button class="cfg-sec-hd" onclick="toggleSec('sec-2')">
+        <span class="cfg-sec-title" data-i18n="cfg.secFacadeColour">Facade Colour</span>
+        <span class="cfg-sec-sel has-sel" id="sel-2">Clinker</span>
+        <span class="cfg-sec-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="cfg-sec-body">
+        <p class="cfg-note" data-i18n="cfg.facadeColourNote">Select the exterior colour — the render updates immediately.</p>
+        <div class="cfg-grid">
+          <label class="cfg-card" data-facade="caparol-light" data-group="clinker" onclick="pickFacade('caparol-light')">
+            <input type="radio" name="facade" value="caparol-light">
+            <div class="cfg-card-tick">✓</div>
+            <div class="cfg-card-img-wrap"><img src="../houses/panel-house-1/without_cover/Caparol%20Light/9_Interactive%20LightMix0004.png" alt="Clinker"></div>
+            <div class="cfg-card-cap">Clinker</div>
+          </label>
+          <label class="cfg-card" data-facade="wood-light" data-group="ventilated" onclick="pickFacade('wood-light')" style="display:none">
+            <input type="radio" name="facade" value="wood-light">
+            <div class="cfg-card-tick">✓</div>
+            <div class="cfg-card-img-wrap"><img src="../houses/panel-house-1/without_cover/wood_Light/9_Interactive%20LightMix0004.png" alt="Wood Light"></div>
+            <div class="cfg-card-cap">Wood Light</div>
+          </label>
+          <label class="cfg-card" data-facade="wood-black" data-group="ventilated" onclick="pickFacade('wood-black')" style="display:none">
+            <input type="radio" name="facade" value="wood-black">
+            <div class="cfg-card-tick">✓</div>
+            <div class="cfg-card-img-wrap"><img src="../houses/panel-house-1/without_cover/Wood_Black/9_Interactive%20LightMix0004.png" alt="Wood Black"></div>
+            <div class="cfg-card-cap">Wood Dark</div>
+          </label>
+        </div>
+        <div class="cfg-sub" id="subframe-sub" style="display:none">
+          <p class="cfg-sub-lbl"><span data-i18n="cfg.subframe">Subframe</span><span class="cfg-sub-req" id="subframeReq" data-i18n="cfg.subframeReq">— required to continue</span></p>
+          <div class="cfg-grid">
+            <label class="cfg-card" data-subframe="timber" onclick="pickSubframe('timber')">
+              <input type="radio" name="subframe" value="timber">
+              <div class="cfg-card-tick">✓</div>
+              <div class="cfg-card-inner"><span class="cfg-card-title" data-i18n="cfg.timberTitle">Timber</span><span class="cfg-card-sub" data-i18n="cfg.timberSub">Double ventilated timber subframe</span></div>
+            </label>
+            <label class="cfg-card" data-subframe="steel" onclick="pickSubframe('steel')">
+              <input type="radio" name="subframe" value="steel">
+              <div class="cfg-card-tick">✓</div>
+              <div class="cfg-card-inner"><span class="cfg-card-title" data-i18n="cfg.steelTitle">Steel Omega</span><span class="cfg-card-sub" data-i18n="cfg.steelSub">Galvanized steel Omega subframe</span></div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cfg-sec" id="sec-3">
+      <button class="cfg-sec-hd" onclick="toggleSec('sec-3')">
+        <span class="cfg-sec-title" data-i18n="cfg.secInsulation">Insulation</span>
+        <span class="cfg-sec-sel" id="sel-3" data-i18n="cfg.selSelect">— Select</span>
+        <span class="cfg-sec-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="cfg-sec-body">
+        <p class="cfg-note" data-i18n="cfg.insulationNote">First choose the insulation material, then the thickness.</p>
+        <div class="cfg-grid-3">
+          <label class="cfg-card" data-insmaterial="eps" onclick="pickInsMaterial('eps')">
+            <input type="radio" name="insmaterial" value="eps">
+            <div class="cfg-card-tick">✓</div>
+            <div class="cfg-card-inner"><span class="cfg-card-title" data-i18n="cfg.epsTitle">EPS</span><span class="cfg-card-sub" data-i18n="cfg.epsSub">Expanded polystyrene</span></div>
+          </label>
+          <label class="cfg-card" data-insmaterial="pir" onclick="pickInsMaterial('pir')">
+            <input type="radio" name="insmaterial" value="pir">
+            <div class="cfg-card-tick">✓</div>
+            <div class="cfg-card-inner"><span class="cfg-card-title" data-i18n="cfg.pirTitle">PIR</span><span class="cfg-card-sub" data-i18n="cfg.pirSub">Premium rigid foam</span></div>
+          </label>
+          <label class="cfg-card" data-insmaterial="mineral-wool" onclick="pickInsMaterial('mineral-wool')">
+            <input type="radio" name="insmaterial" value="mineral-wool">
+            <div class="cfg-card-tick">✓</div>
+            <div class="cfg-card-inner"><span class="cfg-card-title" data-i18n="cfg.mineralTitle">Mineral</span><span class="cfg-card-sub" data-i18n="cfg.mineralSub">Mineral wool</span></div>
+          </label>
+          <label class="cfg-card" data-insmaterial="phenolic" onclick="pickInsMaterial('phenolic')">
+            <input type="radio" name="insmaterial" value="phenolic">
+            <div class="cfg-card-tick">✓</div>
+            <div class="cfg-card-inner"><span class="cfg-card-title" data-i18n="cfg.phenolicTitle">Phenolic</span><span class="cfg-card-sub" data-i18n="cfg.phenolicSub">Phenolic foam (PF) · ETICS only</span></div>
+          </label>
+        </div>
+        <div class="cfg-sub" id="insul-thick-sub" style="display:none">
+          <p class="cfg-sub-lbl" data-i18n="cfg.thickness">Thickness</p>
+          <div class="cfg-grid">
+            <label class="cfg-card" data-insthick="12cm" onclick="pickInsThick('12cm')">
+              <input type="radio" name="insthick" value="12cm">
+              <div class="cfg-card-tick">✓</div>
+              <div class="cfg-card-inner"><span class="cfg-card-title" data-i18n="cfg.thick12">12 cm</span><span class="cfg-card-sub" data-i18n="cfg.thick12sub">Standard · U ≤ 0.28 W/m²K</span></div>
+            </label>
+            <label class="cfg-card" data-insthick="20cm" onclick="pickInsThick('20cm')">
+              <input type="radio" name="insthick" value="20cm">
+              <div class="cfg-card-tick">✓</div>
+              <div class="cfg-card-inner"><span class="cfg-card-title" data-i18n="cfg.thick20">20 cm</span><span class="cfg-card-sub" data-i18n="cfg.thick20sub">Enhanced · U ≤ 0.18 W/m²K</span></div>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cfg-sec" id="sec-5">
+      <button class="cfg-sec-hd" onclick="toggleSec('sec-5')">
+        <span class="cfg-sec-title" data-i18n="cfg.secWallDetail">Wall Assembly Detail</span>
+        <span class="cfg-sec-sel" id="sel-5" data-i18n="cfg.selAuto">— Auto</span>
+        <span class="cfg-sec-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="cfg-sec-body">
+        <p class="cfg-note" data-i18n="cfg.wallDetailGenerated">Generated automatically from your facade system and insulation selection above.</p>
+        <div class="wall-detail-grid" id="wallImgGrid" style="display:none"></div>
+        <p class="cfg-note wall-placeholder" id="wallPlaceholder" data-i18n="cfg.wallPlaceholder">Select a facade system and material above to view the wall build-up.</p>
+        <p class="cfg-note" id="wallCaption" style="margin-top:.75rem;margin-bottom:0;font-weight:600;color:var(--navy)"></p>
+      </div>
+    </div>
+
+    <div class="cfg-sec" id="sec-4">
+      <button class="cfg-sec-hd" onclick="toggleSec('sec-4')">
+        <span class="cfg-sec-title" data-i18n="cfg.secWindows">Windows</span>
+        <span class="cfg-sec-sel" id="sel-4" data-i18n="cfg.selSelect">— Select</span>
+        <span class="cfg-sec-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="cfg-sec-body">
+        <div class="cfg-grid">
+          <label class="cfg-card" data-win="aluminium" onclick="pickWin('aluminium')">
+            <input type="radio" name="windows" value="aluminium">
+            <div class="cfg-card-tick">✓</div>
+            <div class="cfg-card-inner"><span class="cfg-card-title" data-i18n="cfg.aluminiumTitle">Aluminium</span><span class="cfg-card-sub" data-i18n="cfg.aluminiumSub">Slim profile · premium</span></div>
+          </label>
+          <label class="cfg-card" data-win="plastic" onclick="pickWin('plastic')">
+            <input type="radio" name="windows" value="plastic">
+            <div class="cfg-card-tick">✓</div>
+            <div class="cfg-card-inner"><span class="cfg-card-title" data-i18n="cfg.plasticTitle">Plastic</span><span class="cfg-card-sub" data-i18n="cfg.plasticSub">PVC · standard</span></div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="cfg-sec" id="sec-6">
+      <button class="cfg-sec-hd" onclick="toggleSec('sec-6')">
+        <span class="cfg-sec-title" data-i18n="cfg.secRoof">Roof Type</span>
+        <span class="cfg-sec-sel" id="sel-6" data-i18n="cfg.selSelect">— Select</span>
+        <span class="cfg-sec-arr"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      </button>
+      <div class="cfg-sec-body">
+        <p class="cfg-note" data-i18n="cfg.roofNote">Choose the roof construction — the build-up diagram updates below.</p>
+        <div class="cfg-grid">
+          <label class="cfg-card" data-roof="slope" onclick="pickRoof('slope')">
+            <input type="radio" name="roof" value="slope">
+            <div class="cfg-card-tick">✓</div>
+            <div class="cfg-card-inner"><span class="cfg-card-title" data-i18n="cfg.slopeTitle">Slope Roof</span><span class="cfg-card-sub" data-i18n="cfg.slopeSub">Pitched · tiled or slate covering</span></div>
+          </label>
+          <label class="cfg-card" data-roof="flat" onclick="pickRoof('flat')">
+            <input type="radio" name="roof" value="flat">
+            <div class="cfg-card-tick">✓</div>
+            <div class="cfg-card-inner"><span class="cfg-card-title" data-i18n="cfg.flatTitle">Flat Roof</span><span class="cfg-card-sub" data-i18n="cfg.flatSub">EPDM / torch-on membrane</span></div>
+          </label>
+        </div>
+        <div class="cfg-sub" id="roofDetailWrap" style="display:none">
+          <p class="cfg-sub-lbl" data-i18n="cfg.buildUp">Build-up</p>
+          <div class="wall-detail-img-wrap"><img id="roofImg" src="" alt="Roof build-up"></div>
+          <ul class="cfg-layer-list" id="roofLayerList"></ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="cfg-bottombar">
+  <div class="cfg-steps">
+    <div class="cfg-step-item" id="step-1"><span class="cfg-step-num">01</span></div>
+    <div class="cfg-step-line" id="line-1"></div>
+    <div class="cfg-step-item" id="step-2"><span class="cfg-step-num">02</span></div>
+    <div class="cfg-step-line" id="line-2"></div>
+    <div class="cfg-step-item" id="step-3"><span class="cfg-step-num">03</span></div>
+    <div class="cfg-step-line" id="line-3"></div>
+    <div class="cfg-step-item" id="step-4"><span class="cfg-step-num">04</span></div>
+    <span class="cfg-steps-label"><strong id="selCount">0</strong>&nbsp;<span data-i18n="cfg.of4Configured">of 4 configured</span></span>
+  </div>
+  <div class="cfg-bar-price">
+    <span class="cfg-bar-price-label" data-i18n="cfg.estimatedPrice">Estimated Price</span>
+    <span class="cfg-bar-price-value pending" id="price-display">—</span>
+  </div>
+  <div class="cfg-bar-actions">
+    <button class="btn-pdf" onclick="downloadPDF()">
+      <svg width="11" height="13" viewBox="0 0 11 13" fill="none"><path d="M5.5 1v8M5.5 9l-3-3M5.5 9l3-3M1 12h9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span data-i18n="cfg.savePdf">Save PDF</span>
+    </button>
+    <button class="btn-cfg-primary" onclick="window.location.href='../index.html#contact'"><span data-i18n="cfg.requestQuote">Request Quote →</span></button>
+  </div>
+</div>
+
+<!-- PDF SHEET (hidden, visible only on print) -->
+<div class="cfg-pdf-sheet" id="pdfSheet">
+  <div class="pdf-header">
+    <div class="pdf-logo">NP5<span class="pdf-logo-dot">.</span>HOUSE</div>
+    <div class="pdf-doc-label">Configuration Summary</div>
+  </div>
+  <hr class="pdf-rule">
+  <div class="pdf-meta">
+    <h1 class="pdf-house-title">Calibre</h1>
+    <p class="pdf-house-sub">NP5 · Prefabricated Panel Home · Premium Prefab Architecture</p>
+  </div>
+  <img id="pdf-img" src="../houses/panel-house-1/without_cover/Caparol%20Light/9_Interactive%20LightMix0004.png" class="pdf-img" alt="House Configuration Render">
+  <span class="pdf-sec-lbl">Selected Configuration</span>
+  <table class="pdf-table">
+    <thead>
+      <tr>
+        <th class="pdf-th">Option</th>
+        <th class="pdf-th">Selection</th>
+        <th class="pdf-th pdf-th-r">Price</th>
+      </tr>
+    </thead>
+    <tbody id="pdf-rows"></tbody>
+  </table>
+  <div class="pdf-total-row">
+    <span class="pdf-total-label">Estimated Total</span>
+    <span class="pdf-total-value">Price on request</span>
+  </div>
+  <div class="pdf-foot">
+    <p class="pdf-foot-meta">Configuration Date: <span id="pdf-date"></span></p>
+    <p class="pdf-foot-meta">Reference: <span id="pdf-ref"></span></p>
+    <div class="pdf-foot-brand">
+      <p>NP5.HOUSE · Premium Prefab Architecture · Lithuania · Portugal</p>
+      <p>For enquiries: info@np5.house</p>
+      <p class="pdf-foot-note">This document is a preliminary configuration summary. Prices are indicative and subject to final specification, site conditions, and prevailing market rates. A formal quotation will be issued upon enquiry.</p>
+    </div>
+  </div>
+</div>
+
+<script src="../js/i18n-data.js?v=3"></script>
+<script src="../js/i18n.js?v=3"></script>
+<script src="../js/main.js?v=3"></script>
+<script>
+const HOUSE_IMGS = {
+  'caparol-light': [
+    '../houses/panel-house-1/without_cover/Caparol%20Light/9_Interactive%20LightMix0004.png',
+    '../houses/panel-house-1/without_cover/Caparol%20Light/10_Interactive%20LightMix0003.png',
+    '../houses/panel-house-1/without_cover/Caparol%20Light/11_Interactive%20LightMix0002.png',
+    '../houses/panel-house-1/without_cover/Caparol%20Light/12_Interactive%20LightMix0001.png'
+  ],
+  'caparol-black': [
+    '../houses/panel-house-1/without_cover/Caparol%20Black/9_Interactive%20LightMix0004.png',
+    '../houses/panel-house-1/without_cover/Caparol%20Black/10_Interactive%20LightMix0003.png',
+    '../houses/panel-house-1/without_cover/Caparol%20Black/11_Interactive%20LightMix0002.png',
+    '../houses/panel-house-1/without_cover/Caparol%20Black/12_Interactive%20LightMix0001.png'
+  ],
+  'wood-light': [
+    '../houses/panel-house-1/without_cover/wood_Light/9_Interactive%20LightMix0004.png',
+    '../houses/panel-house-1/without_cover/wood_Light/10_Interactive%20LightMix0003.png',
+    '../houses/panel-house-1/without_cover/wood_Light/11_Interactive%20LightMix0002.png',
+    '../houses/panel-house-1/without_cover/wood_Light/12_Interactive%20LightMix0001.png'
+  ],
+  'wood-black': [
+    '../houses/panel-house-1/without_cover/Wood_Black/9_Interactive%20LightMix0004.png',
+    '../houses/panel-house-1/without_cover/Wood_Black/10_Interactive%20LightMix0003.png',
+    '../houses/panel-house-1/without_cover/Wood_Black/11_Interactive%20LightMix0002.png',
+    '../houses/panel-house-1/without_cover/Wood_Black/12_Interactive%20LightMix0001.png'
+  ]
+};
+const FACADE_LABELS = { 'caparol-light': 'Clinker', 'wood-light': 'Wood Light', 'wood-black': 'Wood Dark' };
+const FACADE_SCALE = { 'caparol-light': 1, 'wood-light': 1, 'wood-black': 1 };
+const S = { facade: null, viewIdx: 0, system: null, insulMaterial: null, insulThick: null, windows: null, subframe: null, roof: null, wallIdx: 0 };
+
+const WALL_IMGS = {
+  'etics-eps': ['../assets/images/houses/facade/wall-etics-eps.jpg'],
+  'etics-mineral-wool': ['../assets/images/houses/facade/wall-etics-mineral.jpg'],
+  'etics-phenolic': ['../assets/images/houses/facade/wall-etics-phenolic.jpg'],
+  'vent-termowood': ['../assets/images/houses/facade/wall-vent-b-1.jpg', '../assets/images/houses/facade/wall-vent-b-2.jpg']
+};
+const WALL_LABELS = {
+  'etics-eps': 'ETICS — Caparol Render · EPS Core',
+  'etics-mineral-wool': 'ETICS — Caparol Render · Mineral Wool Core',
+  'etics-phenolic': 'ETICS — Caparol Render · Phenolic Foam (PF) Core',
+  'vent-termowood': 'Ventilated Facade — Termowood Cladding'
+};
+const SUBFRAME_LABELS = { timber: 'Double Ventilated Timber Subframe', steel: 'Galvanized Steel Omega Subframe' };
+const ROOF_IMGS = { slope: '../assets/images/houses/3d/roof-slope.jpg', flat: '../assets/images/houses/3d/roof-flat.jpg' };
+const ROOF_LABELS = { slope: 'Slope Roof', flat: 'Flat Roof' };
+const ROOF_LAYERS = {
+  slope: [
+    'Roof covering (smooth concrete tiles, clay tiles, fibre-cement slates or natural slate) — approx. 10–30 mm',
+    'Timber battens 50 × 25 mm at 600 mm centres — 25 mm',
+    'Longitudinal timber battens 30 × 45 mm at 600 mm centres — 30 mm',
+    'Breathable roofing membrane, with taped joints',
+    'Longitudinal timber battens 45 × 45 mm at 600 mm centres — 45 mm',
+    'Insulation strip',
+    'Finnfoam FF-PIR AL polyurethane insulation board, λD = 0.022 W/(m·K) — 100-200 mm',
+    'Insulation strip',
+    'Light-gauge steel truss, insulated with mineral wool, open-cell polyurethane foam, or 100 mm closed-cell polyurethane foam, λD = 0.022 W/(m·K) / service void for building services',
+    'CEWOOD acoustic wood wool panels — 20 mm'
+  ],
+  flat: [
+    'Firestone EPDM LSFR membrane / "Mida" torch-on roofing membrane',
+    'Thermal insulation, λ = 0.038 W/(m·K): ROCKWOOL ROOFROCK 80 — 20 mm',
+    'Finnfoam FF-PIR ALK polyurethane insulation board — 100–240 mm',
+    'Board — 18 mm',
+    'Light-gauge steel profile panel (see structural section) / mineral wool / open-cell polyurethane foam / closed-cell polyurethane foam',
+    'Light-gauge steel profile truss (see structural section), service void for building services',
+    'CEWOOD acoustic wood wool panels — 20 mm'
+  ]
+};
+
+function applyScale(key) {
+  document.getElementById('houseRender').style.transform = 'scale(' + (FACADE_SCALE[key] || 1) + ')';
+}
+function stepAngle(dir) {
+  const total = document.querySelectorAll('.cfg-angle-dot').length;
+  if (!total) return;
+  const next = (S.viewIdx + dir + total) % total;
+  setAngle(next);
+}
+
+function setAngle(i) {
+  S.viewIdx = i;
+  document.querySelectorAll('.cfg-angle-dot').forEach((d, idx) => d.classList.toggle('on', idx === i));
+  document.getElementById('houseRender').src = HOUSE_IMGS[S.facade][i];
+}
+function toggleSec(id) { document.getElementById(id).classList.toggle('open'); }
+function pickFacade(key) {
+  S.facade = key;
+  document.querySelectorAll('[data-facade]').forEach(el => el.classList.remove('on'));
+  const card = document.querySelector('[data-facade="' + key + '"]');
+  if (card) card.classList.add('on');
+  const badge = document.getElementById('sel-2');
+  badge.textContent = FACADE_LABELS[key]; badge.classList.add('has-sel');
+  document.getElementById('houseRender').src = HOUSE_IMGS[key][S.viewIdx];
+  applyScale(key);
+  updateWallDetail();
+  updateProgress();
+}
+function pickSubframe(key) {
+  S.subframe = key;
+  const req = document.getElementById('subframeReq');
+  if (req) req.style.display = 'none';
+  document.querySelectorAll('[data-subframe]').forEach(el => el.classList.remove('on'));
+  document.querySelector('[data-subframe="' + key + '"]').classList.add('on');
+  updateProgress();
+}
+function pickSystem(key) {
+  S.system = key;
+  document.querySelectorAll('[data-system]').forEach(el => el.classList.remove('on'));
+  document.querySelector('[data-system="' + key + '"]').classList.add('on');
+  const badge = document.getElementById('sel-1');
+  badge.textContent = key === 'clinker' ? 'Non-Ventilated' : 'Ventilated';
+  badge.classList.add('has-sel');
+  const clinkerGroup = ['caparol-light'];
+  const ventGroup = ['wood-light', 'wood-black'];
+  const show = key === 'clinker' ? clinkerGroup : ventGroup;
+  const hide = key === 'clinker' ? ventGroup : clinkerGroup;
+  hide.forEach(f => { const el = document.querySelector('[data-facade="' + f + '"]'); if (el) { el.style.display = 'none'; el.classList.remove('on'); } });
+  show.forEach(f => { const el = document.querySelector('[data-facade="' + f + '"]'); if (el) el.style.display = ''; });
+  pickFacade(show[0]);
+  document.getElementById('subframe-sub').style.display = key === 'ventilated' ? 'block' : 'none';
+  if (key === 'ventilated') {
+    document.getElementById('sec-2').classList.add('open');
+    const req = document.getElementById('subframeReq');
+    if (req) req.style.display = S.subframe ? 'none' : 'inline';
+  }
+  if (key !== 'ventilated') { S.subframe = null; document.querySelectorAll('[data-subframe]').forEach(el => el.classList.remove('on')); }
+  const insClinker = ['mineral-wool', 'phenolic'];
+  const insVent = ['eps', 'pir', 'mineral-wool'];
+  const insShow = key === 'clinker' ? insClinker : insVent;
+  const insHide = key === 'clinker' ? ['pir', 'eps'] : ['phenolic'];
+  insHide.forEach(m => {
+    const el = document.querySelector('[data-insmaterial="' + m + '"]');
+    if (el) { el.style.display = 'none'; el.classList.remove('on'); }
+    if (S.insulMaterial === m) { S.insulMaterial = null; S.insulThick = null; document.getElementById('insul-thick-sub').style.display = 'none'; document.querySelectorAll('[data-insthick]').forEach(t => t.classList.remove('on')); }
+  });
+  insShow.forEach(m => { const el = document.querySelector('[data-insmaterial="' + m + '"]'); if (el) el.style.display = ''; });
+  updateInsLabel();
+  updateWallDetail();
+  updateProgress();
+}
+function pickInsMaterial(key) {
+  S.insulMaterial = key;
+  S.insulThick = null;
+  document.querySelectorAll('[data-insmaterial]').forEach(el => el.classList.remove('on'));
+  document.querySelector('[data-insmaterial="' + key + '"]').classList.add('on');
+  document.querySelectorAll('[data-insthick]').forEach(el => el.classList.remove('on'));
+  document.getElementById('insul-thick-sub').style.display = 'block';
+  updateInsLabel();
+  updateWallDetail();
+  updateProgress();
+}
+function wallKey() {
+  if (S.system === 'clinker') {
+    if (!S.insulMaterial) return null;
+    if (S.insulMaterial === 'eps') return 'etics-eps';
+    if (S.insulMaterial === 'mineral-wool') return 'etics-mineral-wool';
+    if (S.insulMaterial === 'phenolic') return 'etics-phenolic';
+    return null;
+  }
+  if (S.system === 'ventilated') return 'vent-termowood';
+  return null;
+}
+function updateWallDetail() {
+  const key = wallKey();
+  const grid = document.getElementById('wallImgGrid');
+  const placeholder = document.getElementById('wallPlaceholder');
+  const badge = document.getElementById('sel-5');
+  const caption = document.getElementById('wallCaption');
+  if (!key) {
+    grid.style.display = 'none';
+    grid.innerHTML = '';
+    placeholder.style.display = 'flex';
+    caption.textContent = '';
+    badge.textContent = '— Auto';
+    badge.classList.remove('has-sel');
+    return;
+  }
+  const imgs = WALL_IMGS[key];
+  grid.style.display = 'grid';
+  grid.style.gridTemplateColumns = imgs.length > 1 ? '1fr 1fr' : '1fr';
+  grid.innerHTML = imgs.map(src => '<div class="wall-detail-cell"><img src="' + src + '" alt="Wall build-up"></div>').join('');
+  placeholder.style.display = 'none';
+  caption.textContent = WALL_LABELS[key];
+  badge.textContent = 'Auto';
+  badge.classList.add('has-sel');
+}
+function pickRoof(key) {
+  S.roof = key;
+  document.querySelectorAll('[data-roof]').forEach(el => el.classList.remove('on'));
+  document.querySelector('[data-roof="' + key + '"]').classList.add('on');
+  const badge = document.getElementById('sel-6');
+  badge.textContent = ROOF_LABELS[key]; badge.classList.add('has-sel');
+  document.getElementById('roofImg').src = ROOF_IMGS[key];
+  document.getElementById('roofLayerList').innerHTML = ROOF_LAYERS[key].map(l => '<li>' + l + '</li>').join('');
+  document.getElementById('roofDetailWrap').style.display = 'block';
+  updateProgress();
+}
+function pickInsThick(key) {
+  S.insulThick = key;
+  document.querySelectorAll('[data-insthick]').forEach(el => el.classList.remove('on'));
+  document.querySelector('[data-insthick="' + key + '"]').classList.add('on');
+  updateInsLabel();
+  updateProgress();
+}
+function updateInsLabel() {
+  const matLabels = { eps: 'EPS', pir: 'PIR', 'mineral-wool': 'Mineral Wool' };
+  const badge = document.getElementById('sel-3');
+  if (S.insulMaterial && S.insulThick) {
+    badge.textContent = matLabels[S.insulMaterial] + ' · ' + S.insulThick;
+    badge.classList.add('has-sel');
+  } else if (S.insulMaterial) {
+    badge.textContent = matLabels[S.insulMaterial];
+    badge.classList.add('has-sel');
+  } else {
+    badge.textContent = '— Select';
+    badge.classList.remove('has-sel');
+  }
+}
+function pickWin(key) {
+  S.windows = key;
+  document.querySelectorAll('[data-win]').forEach(el => el.classList.remove('on'));
+  document.querySelector('[data-win="' + key + '"]').classList.add('on');
+  const badge = document.getElementById('sel-4');
+  badge.textContent = key === 'aluminium' ? 'Aluminium' : 'Plastic'; badge.classList.add('has-sel');
+  updateProgress();
+}
+const PRICE_HOUSE_KEY = 'calibre';
+let PRICES_DATA = null;
+const sbClient = supabase.createClient('https://cupuevlvbzcuzpfzgmuu.supabase.co', 'sb_publishable_LLu929NAaOhX9wzVQVULNg_j1Zf-Nz9');
+sbClient.from('prices').select('*').then(({ data, error }) => {
+  if (error || !data) return;
+  const prices = {};
+  data.forEach(row => { prices[row.id] = row.price; });
+  PRICES_DATA = { prices };
+  updatePriceDisplay();
+  renderCardPrices();
+});
+
+function priceTagText(key, isBase) {
+  if (!PRICES_DATA) return null;
+  const p = PRICES_DATA.prices[key];
+  if (p === undefined || p === null) return null;
+  const formatted = '\u20ac' + Number(p).toLocaleString('en-GB');
+  return isBase ? ('From ' + formatted) : ('+' + formatted);
+}
+
+function setCardPriceTag(cardEl, text) {
+  let tag = cardEl.querySelector('.cfg-card-price');
+  if (!text) { if (tag) tag.remove(); return; }
+  if (!tag) {
+    tag = document.createElement('span');
+    tag.className = 'cfg-card-price';
+    const inner = cardEl.querySelector('.cfg-card-inner');
+    if (inner) inner.appendChild(tag);
+    else {
+      const cap = cardEl.querySelector('.cfg-card-cap');
+      if (cap) cap.insertAdjacentElement('afterend', tag);
+    }
+  }
+  tag.textContent = text;
+}
+
+function renderCardPrices() {
+  document.querySelectorAll('[data-system]').forEach(el => {
+    const sysKey = el.dataset.system === 'clinker' ? 'non-ventilated' : 'ventilated';
+    setCardPriceTag(el, priceTagText(PRICE_HOUSE_KEY + '__' + sysKey, true));
+  });
+  document.querySelectorAll('[data-facade]').forEach(el => {
+    setCardPriceTag(el, priceTagText('facade__' + PRICE_HOUSE_KEY + '__' + el.dataset.facade, false));
+  });
+  document.querySelectorAll('[data-subframe]').forEach(el => {
+    setCardPriceTag(el, priceTagText('addon__subframe__' + el.dataset.subframe, false));
+  });
+  document.querySelectorAll('[data-insmaterial]').forEach(el => {
+    setCardPriceTag(el, priceTagText('addon__insulation-material__' + el.dataset.insmaterial, false));
+  });
+  document.querySelectorAll('[data-insthick]').forEach(el => {
+    setCardPriceTag(el, priceTagText('addon__insulation-thickness__' + el.dataset.insthick, false));
+  });
+  document.querySelectorAll('[data-win]').forEach(el => {
+    setCardPriceTag(el, priceTagText('addon__windows__' + el.dataset.win, false));
+  });
+  document.querySelectorAll('[data-roof]').forEach(el => {
+    setCardPriceTag(el, priceTagText('addon__roof__' + el.dataset.roof, false));
+  });
+}
+
+function updatePriceDisplay() {
+  const el = document.getElementById('price-display');
+  if (!el) return;
+  if (!S.system || !PRICES_DATA) { el.textContent = '\u2014'; el.classList.add('pending'); return; }
+  const P = PRICES_DATA.prices;
+  const sysKey = S.system === 'ventilated' ? 'ventilated' : 'non-ventilated';
+  const base = P[PRICE_HOUSE_KEY + '__' + sysKey];
+  if (!base) { el.textContent = 'On request'; el.classList.add('pending'); return; }
+
+  let total = base;
+  let incomplete = false;
+  function addIfChosen(value, priceKey) {
+    if (!value) return;
+    const p = P[priceKey];
+    if (p === null || p === undefined) { incomplete = true; return; }
+    total += p;
+  }
+
+  addIfChosen(S.facade, 'facade__' + PRICE_HOUSE_KEY + '__' + S.facade);
+  if (S.system === 'ventilated') addIfChosen(S.subframe, 'addon__subframe__' + S.subframe);
+  addIfChosen(S.insulMaterial, 'addon__insulation-material__' + S.insulMaterial);
+  addIfChosen(S.insulThick, 'addon__insulation-thickness__' + S.insulThick);
+  addIfChosen(S.windows, 'addon__windows__' + S.windows);
+  addIfChosen(S.roof, 'addon__roof__' + S.roof);
+
+  const interiorP = P['addon__included__interior-finishing'];
+  const floorP = P['addon__included__floor-assembly'];
+  if (interiorP === null || interiorP === undefined) incomplete = true; else total += interiorP;
+  if (floorP === null || floorP === undefined) incomplete = true; else total += floorP;
+
+  if (incomplete) {
+    el.textContent = 'On request';
+    el.classList.add('pending');
+  } else {
+    el.textContent = '\u20ac' + Number(total).toLocaleString('en-GB');
+    el.classList.remove('pending');
+  }
+}
+
+function updateProgress() {
+  const facadeDone = !!S.system && !!S.facade && (S.system !== 'ventilated' || !!S.subframe);
+  const steps = [facadeDone, !!(S.insulMaterial && S.insulThick), !!S.windows, !!S.roof];
+  var count = steps.filter(Boolean).length;
+  document.getElementById('selCount').textContent = count;
+  steps.forEach(function(done, i) {
+    var item = document.getElementById('step-' + (i + 1));
+    if (item) item.classList.toggle('done', done);
+  });
+  [1, 2, 3].forEach(function(n) {
+    var line = document.getElementById('line-' + n);
+    if (line) line.classList.toggle('done', steps[n - 1]);
+  });
+  updatePriceDisplay();
+}
+function downloadPDF() {
+  var SYS = { clinker: 'Non-Ventilated', ventilated: 'Ventilated' };
+  var WIN = { aluminium: 'Aluminium — slim profile', plastic: 'Plastic (PVC) — standard' };
+  var INS = { eps: 'EPS', pir: 'PIR', 'mineral-wool': 'Mineral Wool', phenolic: 'Phenolic Foam (PF)' };
+  var rows = [
+    ['Facade System', S.system ? SYS[S.system] : '—'],
+    ['Facade Colour', S.facade ? FACADE_LABELS[S.facade] : '—'],
+    ['Subframe', S.system === 'ventilated' ? (S.subframe ? SUBFRAME_LABELS[S.subframe] : '—') : 'N/A'],
+    ['Insulation', S.insulMaterial ? (INS[S.insulMaterial] + (S.insulThick ? ' · ' + S.insulThick : '')) : '—'],
+    ['Roof Type', S.roof ? ROOF_LABELS[S.roof] : '—'],
+    ['Windows', S.windows ? WIN[S.windows] : '—']
+  ];
+  document.getElementById('pdf-rows').innerHTML = rows.map(function(r) {
+    return '<tr><td class="pdf-opt-label">' + r[0] + '</td><td class="pdf-opt-value">' + r[1] + '</td><td class="pdf-opt-price">—</td></tr>';
+  }).join('');
+  var now = new Date();
+  document.getElementById('pdf-date').textContent = now.toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('pdf-ref').textContent = 'NP5-H03-' + now.getFullYear().toString().slice(2) + Math.random().toString(36).substr(2,5).toUpperCase();
+  document.getElementById('pdf-img').src = (HOUSE_IMGS[S.facade] || HOUSE_IMGS['caparol-light'])[0];
+  window.print();
+}
+document.addEventListener('DOMContentLoaded', () => {
+  updateProgress();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://cupuevlvbzcuzpfzgmuu.supabase.co https://img.youtube.com; connect-src 'self' https://cupuevlvbzcuzpfzgmuu.supabase.co; frame-src https://www.youtube.com; base-uri 'self'; form-action 'self' mailto:; object-src 'none'

@@ -3,11 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Investors — NP5.HOUSE</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@200;300;400;500;600&family=Barlow+Condensed:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/style.css">
+<title data-i18n="inv.title">Investors — NP5.HOUSE</title>
+<link rel="stylesheet" href="../css/style.css?v=5">
+<style>
+nav:not(.solid) .logo { color: #fff; }
+nav:not(.solid) .nav-links a { color: rgba(255,255,255,.75); }
+nav:not(.solid) .nav-links a:hover { color: #fff; }
+nav:not(.solid) .nav-btn { background: transparent; border: 1px solid rgba(255,255,255,.4); color: #fff; }
+nav:not(.solid) .nav-btn:hover { background: rgba(255,255,255,.12); border-color: #fff; }
+nav:not(.solid) .nav-toggle span { background: #fff; }
+</style>
 </head>
 <body>
 
@@ -15,22 +20,34 @@
 <div class="cring" id="ring"></div>
 
 <nav id="nav">
-  <a href="../index.html" class="logo">NP5<span class="logo-dot">.</span>HOUSE</a>
+  <a href="../index.html" class="logo"><svg class="logo-mark" viewBox="0 0 550 116" xmlns="http://www.w3.org/2000/svg" aria-label="NP5" role="img"><g fill="currentColor"><polygon points="153.9,91.4 22.1,0.1 22,0 0,0 0,116 22.2,116 22.2,24.6 154,115.9 154.1,116 176.1,116 176.1,0 153.9,0"/><path d="M543.9,52.9c-4-3.9-8.8-5.9-14.2-5.9H396.1V22H548V0H373.9v69h147.2c2.2,0,3.9,0.5,5,1.4c1,0.8,1.7,3.6,1.7,6.6v10.1c0,2.4-0.7,4.2-2,5.3c-1.4,1.1-3,1.6-4.9,1.6h-147v22h155.9c5.4,0,10.1-1.9,14.1-5.6c4-3.7,6.1-9,6.1-15.9v-26C550,62.1,548,56.8,543.9,52.9"/><polygon points="186.9,21.9 340.6,22 340.6,47 186.9,47 186.9,116 209.1,116 209.1,69 362.7,69 362.7,0 186.9,0"/></g></svg></a>
   <ul class="nav-links">
-    <li><a href="../index.html#collection">Panel Villas</a></li>
-    <li><a href="../index.html#jewel">Modular Living</a></li>
-    <li><a href="gallery.html">Gallery</a></li>
-    <li><a href="investors.html">Investors</a></li>
+    <li><a href="houses.html" data-i18n="nav.houses">Houses</a></li>
+    <li><a href="gallery.html" data-i18n="nav.gallery">Gallery</a></li>
+    <li><a href="about.html" data-i18n="nav.about">About</a></li>
+    <li><a href="investors.html" data-i18n="nav.investors">Investors</a></li>
   </ul>
-  <a href="../index.html#contact" class="nav-btn">Enquire</a>
+  <a href="../index.html#contact" class="nav-btn" data-i18n="nav.enquire">Enquire</a>
   <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  <div class="nav-lang-wrap">
+    <button class="nav-lang" aria-label="Language">🇬🇧</button>
+    <div class="nav-lang-menu">
+      <button class="nav-lang-opt active" data-lang="en"><span class="nav-lang-opt-flag">🇬🇧</span>English</button>
+      <button class="nav-lang-opt" data-lang="lt"><span class="nav-lang-opt-flag">🇱🇹</span>Lietuvių</button>
+    </div>
+  </div>
 </nav>
 <div class="nav-drawer" id="navDrawer">
-  <a href="../index.html#collection">Panel Villas</a>
-  <a href="../index.html#jewel">Modular Living</a>
-  <a href="gallery.html">Gallery</a>
-  <a href="investors.html">Investors</a>
-  <a href="../index.html#contact" class="nd-cta">Enquire</a>
+  <div class="nav-drawer-links">
+    <a href="houses.html" data-i18n="nav.houses">Houses</a>
+    <a href="gallery.html" data-i18n="nav.gallery">Gallery</a>
+    <a href="about.html" data-i18n="nav.about">About</a>
+    <a href="investors.html" data-i18n="nav.investors">Investors</a>
+  </div>
+  <div class="nav-drawer-foot">
+    <a href="../index.html#contact" class="nd-cta" data-i18n="nav.enquire">Enquire</a>
+  <span class="nav-drawer-meta" data-i18n="drawer.meta">Lithuania &middot; Portugal</span>
+  </div>
 </div>
 
 <!-- HERO -->
@@ -38,57 +55,57 @@
   <div class="inv-hero-bg"></div>
   <div class="inv-hero-ov"></div>
   <div class="inv-hero-c">
-    <span class="eyebrow" style="color:rgba(255,255,255,.38)">Investment</span>
-    <h1 style="font-family:var(--fd);font-weight:200;font-size:clamp(4rem,8vw,8rem);color:#fff;line-height:.9;letter-spacing:-.01em;margin-bottom:1.5rem"><strong style="font-weight:600;display:block">Architecture</strong><em style="font-style:normal">that works.</em></h1>
-    <p style="font-family:var(--fb);font-weight:300;font-size:.85rem;color:rgba(255,255,255,.45);letter-spacing:.06em;max-width:480px;line-height:1.9">Fast build timelines. Premium materials. Proven export model. NP5.HOUSE projects are conceived from the start to generate return.</p>
+    <span class="eyebrow" style="color:rgba(255,255,255,.8)" data-i18n="inv.heroEyebrow">Investment</span>
+    <h1 style="font-family:var(--fd);font-weight:200;font-size:clamp(4rem,8vw,8rem);color:#fff;line-height:.9;letter-spacing:-.01em;margin-bottom:1.5rem" data-i18n-html="inv.heroTitle"><strong style="font-weight:600;display:block">Architecture</strong><em style="font-style:normal">that works.</em></h1>
+    <p style="font-family:var(--fb);font-weight:300;font-size:.85rem;color:rgba(255,255,255,.45);letter-spacing:.06em;max-width:480px;line-height:1.9" data-i18n="inv.heroBody">Fast build timelines. Premium materials. Proven export model. NP5.HOUSE projects are conceived from the start to generate return.</p>
   </div>
 </div>
 
 <!-- BODY -->
 <div class="inv-body-sec">
   <div>
-    <span class="eyebrow r">Why Invest</span>
-    <h2 class="sec-h r d1">The case for <strong>prefab architecture</strong></h2>
+    <span class="eyebrow r" data-i18n="inv.whyInvest">Why Invest</span>
+    <h2 class="sec-h r d1" data-i18n-html="inv.caseTitle">The case for <strong>prefab architecture</strong></h2>
   </div>
   <div>
-    <p class="body-t r">Traditional construction is slow, expensive, and exposed to weather, labour shortages, and site delays. NP5 panel homes are manufactured in a controlled factory environment — weatherproof from day one, structurally precise, and ready to ship.</p>
-    <p class="body-t r d1" style="margin-top:1.5rem">From factory production start to a habitable residence in as little as 90 days. Faster construction means faster rental income, faster resale, and faster return on capital — without compromising on quality or architecture.</p>
+    <p class="body-t r" data-i18n="inv.caseBody1">Traditional construction is slow, expensive, and exposed to weather, labour shortages, and site delays. NP5 panel homes are manufactured in a controlled factory environment — weatherproof from day one, structurally precise, and ready to ship.</p>
+    <p class="body-t r d1" style="margin-top:1.5rem" data-i18n="inv.caseBody2">From factory production start to a habitable residence in as little as 90 days. Faster construction means faster rental income, faster resale, and faster return on capital — without compromising on quality or architecture.</p>
   </div>
 </div>
 
 <!-- WHY GRID -->
 <div class="inv-why">
-  <span class="eyebrow r">Key Advantages</span>
+  <span class="eyebrow r" data-i18n="inv.keyAdvantages">Key Advantages</span>
   <div class="inv-why-grid">
     <div class="iw-item r">
       <div class="iw-num">01</div>
-      <h3 class="iw-title">90-Day Build</h3>
-      <p class="iw-body">From factory production to habitable residence. No site weather delays. No labour shortages. Precision factory manufacturing every time.</p>
+      <h3 class="iw-title" data-i18n="inv.adv1Title">90-Day Build</h3>
+      <p class="iw-body" data-i18n="inv.adv1Body">From factory production to habitable residence. No site weather delays. No labour shortages. Precision factory manufacturing every time.</p>
     </div>
     <div class="iw-item r d1">
       <div class="iw-num">02</div>
-      <h3 class="iw-title">A+ Energy Class</h3>
-      <p class="iw-body">PIR polyurethane insulation at U-value 0.22 W/m²K. Lower running costs drive higher asset value and appeal to premium rental markets.</p>
+      <h3 class="iw-title" data-i18n="inv.adv2Title">A+ Energy Class</h3>
+      <p class="iw-body" data-i18n="inv.adv2Body">PIR polyurethane insulation at U-value 0.22 W/m²K. Lower running costs drive higher asset value and appeal to premium rental markets.</p>
     </div>
     <div class="iw-item r d2">
       <div class="iw-num">03</div>
-      <h3 class="iw-title">Export Ready</h3>
-      <p class="iw-body">Panels ship by container from Lithuania to any European destination. The JEWEL modular system delivers by truck — site-ready anywhere on the continent.</p>
+      <h3 class="iw-title" data-i18n="inv.adv3Title">Export Ready</h3>
+      <p class="iw-body" data-i18n="inv.adv3Body">Panels ship by container from Lithuania to any European destination, ready for fast on-site assembly.</p>
     </div>
     <div class="iw-item r d1">
       <div class="iw-num">04</div>
-      <h3 class="iw-title">Portugal Golden Visa</h3>
-      <p class="iw-body">Projects developed on Madeira and in Portugal qualify under the residency-by-investment programme — opening the EU to non-EU investors through architecture.</p>
+      <h3 class="iw-title" data-i18n="inv.adv4Title">Portugal Golden Visa</h3>
+      <p class="iw-body" data-i18n="inv.adv4Body">Projects developed on Madeira and in Portugal qualify under the residency-by-investment programme — opening the EU to non-EU investors through architecture.</p>
     </div>
     <div class="iw-item r d2">
       <div class="iw-num">05</div>
-      <h3 class="iw-title">Resort Clusters</h3>
-      <p class="iw-body">The JEWEL modular system is designed for resort and short-let deployment — two to four units per cluster, each independently habitable, collectively a destination.</p>
+      <h3 class="iw-title" data-i18n="inv.adv5Title">Resort Clusters</h3>
+      <p class="iw-body" data-i18n="inv.adv5Body">Our modular system is designed for resort and short-let deployment — multiple units per cluster, each independently habitable, collectively a destination.</p>
     </div>
     <div class="iw-item r d3">
       <div class="iw-num">06</div>
-      <h3 class="iw-title">Premium Positioning</h3>
-      <p class="iw-body">Architectural design, premium facades, and precision finish command higher short-let rates and stronger resale values than standard prefab construction.</p>
+      <h3 class="iw-title" data-i18n="inv.adv6Title">Premium Positioning</h3>
+      <p class="iw-body" data-i18n="inv.adv6Body">Architectural design, premium facades, and precision finish command higher short-let rates and stronger resale values than standard prefab construction.</p>
     </div>
   </div>
 </div>
@@ -96,21 +113,21 @@
 <!-- MADEIRA -->
 <div style="padding:9rem 5rem;display:grid;grid-template-columns:1fr 1fr;gap:8rem;align-items:center;max-width:1400px;margin:0 auto" class="r">
   <div>
-    <span class="eyebrow">Madeira · Portugal</span>
-    <h2 class="sec-h r d1" style="margin-bottom:2rem">Where the Atlantic <strong>meets Architecture</strong></h2>
-    <p class="body-t r d1">Madeira combines 300+ days of sun per year with Portuguese residency advantages and a growing short-let market. NP5.HOUSE brings precision prefab architecture to Europe's most coveted island — engineered for volcanic terrain, Atlantic climate, and long-term investment value.</p>
+    <span class="eyebrow" data-i18n="inv.madeiraEyebrow">Madeira · Portugal</span>
+    <h2 class="sec-h r d1" style="margin-bottom:2rem" data-i18n-html="inv.madeiraTitle">Where the Atlantic <strong>meets Architecture</strong></h2>
+    <p class="body-t r d1" data-i18n="inv.madeiraBody">Madeira combines 300+ days of sun per year with Portuguese residency advantages and a growing short-let market. NP5.HOUSE brings precision prefab architecture to Europe's most coveted island — engineered for volcanic terrain, Atlantic climate, and long-term investment value.</p>
     <ul style="list-style:none;margin-top:2rem" class="r d2">
-      <li style="font-family:var(--fb);font-weight:300;font-size:.85rem;color:var(--tbody);padding:.7rem 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:1rem"><span style="color:var(--tmuted);flex-shrink:0">—</span>Portugal Golden Visa eligible projects</li>
-      <li style="font-family:var(--fb);font-weight:300;font-size:.85rem;color:var(--tbody);padding:.7rem 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:1rem"><span style="color:var(--tmuted);flex-shrink:0">—</span>Engineered for volcanic terrain & Atlantic climate</li>
-      <li style="font-family:var(--fb);font-weight:300;font-size:.85rem;color:var(--tbody);padding:.7rem 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:1rem"><span style="color:var(--tmuted);flex-shrink:0">—</span>Resort cluster development with JEWEL system</li>
-      <li style="font-family:var(--fb);font-weight:300;font-size:.85rem;color:var(--tbody);padding:.7rem 0;display:flex;align-items:flex-start;gap:1rem"><span style="color:var(--tmuted);flex-shrink:0">—</span>Turnkey delivery — panels exported from Lithuania</li>
+      <li style="font-family:var(--fb);font-weight:300;font-size:.85rem;color:var(--tbody);padding:.7rem 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:1rem"><span style="color:var(--tmuted);flex-shrink:0">—</span><span data-i18n="inv.madeiraLi1">Portugal Golden Visa eligible projects</span></li>
+      <li style="font-family:var(--fb);font-weight:300;font-size:.85rem;color:var(--tbody);padding:.7rem 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:1rem"><span style="color:var(--tmuted);flex-shrink:0">—</span><span data-i18n="inv.madeiraLi2">Engineered for volcanic terrain & Atlantic climate</span></li>
+      <li style="font-family:var(--fb);font-weight:300;font-size:.85rem;color:var(--tbody);padding:.7rem 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:1rem"><span style="color:var(--tmuted);flex-shrink:0">—</span><span data-i18n="inv.madeiraLi3">Resort cluster development with modular system</span></li>
+      <li style="font-family:var(--fb);font-weight:300;font-size:.85rem;color:var(--tbody);padding:.7rem 0;display:flex;align-items:flex-start;gap:1rem"><span style="color:var(--tmuted);flex-shrink:0">—</span><span data-i18n="inv.madeiraLi4">Turnkey delivery — panels exported from Lithuania</span></li>
     </ul>
   </div>
   <div style="position:relative">
-    <img src="https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=1200&q=90" alt="Madeira" style="width:100%;aspect-ratio:4/5;object-fit:cover;filter:brightness(.88) saturate(.9);display:block">
+    <img src="../assets/images/houses/modular-jewel-2x/jewel-2x-cover-1.jpg" alt="House 01" style="width:100%;aspect-ratio:4/5;object-fit:cover;filter:brightness(.88) saturate(.9);display:block">
     <div style="position:absolute;bottom:-1.5rem;right:-1.5rem;background:var(--navy);padding:1.5rem 2rem;text-align:center">
       <span style="font-family:var(--fd);font-weight:300;font-size:2.5rem;color:#fff;display:block;line-height:1">300<sup style="font-size:.9rem;vertical-align:super">+</sup></span>
-      <span style="font-family:var(--fb);font-weight:300;font-size:.52rem;letter-spacing:.18em;color:rgba(255,255,255,.4);text-transform:uppercase;display:block;margin-top:.4rem">Days of Sun</span>
+      <span style="font-family:var(--fb);font-weight:300;font-size:.52rem;letter-spacing:.18em;color:rgba(255,255,255,.4);text-transform:uppercase;display:block;margin-top:.4rem" data-i18n="inv.sunDays">Days of Sun</span>
     </div>
   </div>
 </div>
@@ -118,26 +135,28 @@
 <!-- CTA -->
 <div class="inv-cta-sec">
   <div>
-    <h2 style="font-family:var(--fd);font-weight:200;font-size:clamp(2.5rem,4.5vw,4.5rem);color:#fff;line-height:.95;letter-spacing:.01em"><strong style="font-weight:600;display:block">Discuss</strong>your investment</h2>
+    <h2 style="font-family:var(--fd);font-weight:200;font-size:clamp(2.5rem,4.5vw,4.5rem);color:#fff;line-height:.95;letter-spacing:.01em" data-i18n-html="inv.ctaTitle"><strong style="font-weight:600;display:block">Discuss</strong>your investment</h2>
   </div>
   <div>
-    <p style="font-family:var(--fb);font-weight:300;font-size:.9rem;line-height:2;color:rgba(255,255,255,.45);margin-bottom:2.5rem">Whether you are exploring a resort cluster, a private villa, or a Madeira residency project — we begin with a conversation.</p>
-    <a href="../index.html#contact" class="btn-p">Start the Conversation</a>
+    <p style="font-family:var(--fb);font-weight:300;font-size:.9rem;line-height:2;color:rgba(255,255,255,.45);margin-bottom:2.5rem" data-i18n="inv.ctaBody">Whether you are exploring a resort cluster, a private villa, or a Madeira residency project — we begin with a conversation.</p>
+    <a href="../index.html#contact" class="btn-p" data-i18n="inv.ctaBtn">Start the Conversation</a>
   </div>
 </div>
 
 <footer>
-  <div class="fl">NP5<span class="dot">.</span>HOUSE</div>
-  <p class="fc">© 2026 NP5 House. Premium Prefab Architecture. Lithuania · Portugal</p>
+  <div class="fl"><svg class="logo-mark" viewBox="0 0 550 116" xmlns="http://www.w3.org/2000/svg" aria-label="NP5" role="img"><g fill="currentColor"><polygon points="153.9,91.4 22.1,0.1 22,0 0,0 0,116 22.2,116 22.2,24.6 154,115.9 154.1,116 176.1,116 176.1,0 153.9,0"/><path d="M543.9,52.9c-4-3.9-8.8-5.9-14.2-5.9H396.1V22H548V0H373.9v69h147.2c2.2,0,3.9,0.5,5,1.4c1,0.8,1.7,3.6,1.7,6.6v10.1c0,2.4-0.7,4.2-2,5.3c-1.4,1.1-3,1.6-4.9,1.6h-147v22h155.9c5.4,0,10.1-1.9,14.1-5.6c4-3.7,6.1-9,6.1-15.9v-26C550,62.1,548,56.8,543.9,52.9"/><polygon points="186.9,21.9 340.6,22 340.6,47 186.9,47 186.9,116 209.1,116 209.1,69 362.7,69 362.7,0 186.9,0"/></g></svg><span class="logo-text"><span class="dot">.</span>HOUSE</span></div>
+  <p class="fc" data-i18n="footer.tagline">© 2026 NP5 House. Premium Prefab Architecture. Lithuania · Portugal</p>
   <ul class="flinks">
-    <li><a href="../index.html#collection">Collection</a></li>
-    <li><a href="jewel.html">JEWEL</a></li>
-    <li><a href="gallery.html">Gallery</a></li>
-    <li><a href="../index.html#contact">Contact</a></li>
+    <li><a href="../index.html#collection" data-i18n="footer.collection">Collection</a></li>
+    <li><a href="gallery.html" data-i18n="nav.gallery">Gallery</a></li>
+    <li><a href="about.html" data-i18n="nav.about">About</a></li>
+    <li><a href="../index.html#contact" data-i18n="footer.contact">Contact</a></li>
   </ul>
 </footer>
 
-<script src="../js/main.js" defer></script>
+<script src="../js/i18n-data.js?v=3"></script>
+<script src="../js/i18n.js?v=3"></script>
+<script src="../js/main.js?v=3" defer></script>
 <script>
 const nav=document.getElementById('nav');
 window.addEventListener('scroll',()=>nav.classList.toggle('solid',window.scrollY>80),{passive:true});

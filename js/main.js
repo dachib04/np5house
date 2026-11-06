@@ -28,6 +28,78 @@ function initNav(threshold = 80) {
   update();
 }
 
+function initGallerySliders() {
+  document.querySelectorAll('.gal-grid').forEach(grid => {
+    if (grid.dataset.sliderInit) return;
+    grid.dataset.sliderInit = '1';
+    const slides = Array.from(grid.children);
+    if (slides.length < 2) return;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'gal-slide-wrap';
+    grid.parentNode.insertBefore(wrap, grid);
+    wrap.appendChild(grid);
+
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'gal-arrow gal-arrow-prev';
+    prevBtn.setAttribute('aria-label', 'Previous image');
+    prevBtn.innerHTML = '&#8249;';
+
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'gal-arrow gal-arrow-next';
+    nextBtn.setAttribute('aria-label', 'Next image');
+    nextBtn.innerHTML = '&#8250;';
+
+    const counter = document.createElement('div');
+    counter.className = 'gal-counter';
+    counter.textContent = '1 / ' + slides.length;
+
+    wrap.appendChild(prevBtn);
+    wrap.appendChild(nextBtn);
+    wrap.appendChild(counter);
+
+    function currentIndex() {
+      const w = grid.clientWidth || 1;
+      return Math.round(grid.scrollLeft / w);
+    }
+    function update() {
+      counter.textContent = (currentIndex() + 1) + ' / ' + slides.length;
+    }
+    function goTo(i) {
+      const idx = Math.max(0, Math.min(slides.length - 1, i));
+      grid.scrollTo({ left: idx * grid.clientWidth, behavior: 'smooth' });
+    }
+
+    prevBtn.addEventListener('click', () => goTo(currentIndex() - 1));
+    nextBtn.addEventListener('click', () => goTo(currentIndex() + 1));
+    let scrollTimer;
+    grid.addEventListener('scroll', () => {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(update, 80);
+    }, { passive: true });
+  });
+}
+
+function initSwipeGalleries() {
+  document.querySelectorAll('.cfg-img-wrap').forEach(wrap => {
+    let startX = 0, startY = 0;
+    wrap.addEventListener('touchstart', e => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    }, { passive: true });
+    wrap.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - startX;
+      const dy = e.changedTouches[0].clientY - startY;
+      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+      const dots = Array.from(wrap.querySelectorAll('.cfg-angle-dot'));
+      const activeIdx = dots.findIndex(d => d.classList.contains('on'));
+      if (activeIdx === -1) return;
+      const nextIdx = Math.max(0, Math.min(dots.length - 1, activeIdx + (dx < 0 ? 1 : -1)));
+      if (nextIdx !== activeIdx) dots[nextIdx].click();
+    }, { passive: true });
+  });
+}
+
 function initMobileNav() {
   const toggle = document.getElementById('navToggle');
   const drawer = document.getElementById('navDrawer');
@@ -101,4 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initMobileNav();
   initScrollReveal();
   initImageSlider();
+  initSwipeGalleries();
+  initGallerySliders();
 });

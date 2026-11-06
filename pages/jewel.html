@@ -3,137 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JEWEL Modular System — NP5.HOUSE</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,200;0,300;0,400;0,500;0,600;1,300&family=Barlow+Condensed:ital,wght@0,200;0,300;0,400;0,500;0,600;1,200&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/style.css">
+<title data-i18n="jewel.title">The Jewel — NP5.HOUSE</title>
+<link rel="stylesheet" href="../css/style.css?v=5">
 <style>
-/* JEWEL-specific overrides */
-.jewel-hero{position:relative;height:100vh;min-height:680px;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.jh-bg{position:absolute;inset:0;background-image:url('../assets/images/jewel-1.jpeg');background-size:cover;background-position:center;transform:scale(1.04);animation:zoom 16s ease-out forwards;filter:brightness(.68) saturate(.85)}
-.jh-ov{position:absolute;inset:0;background:linear-gradient(135deg,rgba(5,29,73,.72) 0%,rgba(5,29,73,.3) 50%,transparent 100%)}
-.jh-c{position:relative;z-index:2;text-align:center;color:var(--white);padding:0 2rem}
-.jh-eye{font-family:var(--fb);font-weight:300;font-size:.6rem;letter-spacing:.45em;color:rgba(255,255,255,.5);text-transform:uppercase;margin-bottom:2rem;opacity:0;animation:up .9s ease .4s forwards}
-.jh-name{font-family:var(--fd);font-weight:200;font-size:clamp(5rem,14vw,13rem);line-height:.88;letter-spacing:.06em;color:var(--white);margin-bottom:1rem;opacity:0;animation:up .9s ease .65s forwards}
-.jh-sub{font-family:var(--fd);font-weight:300;font-size:clamp(1.2rem,2.5vw,2rem);letter-spacing:.2em;color:rgba(255,255,255,.45);margin-bottom:3rem;opacity:0;animation:up .9s ease .9s forwards}
-.jh-acts{display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;opacity:0;animation:up .9s ease 1.1s forwards}
-.jh-acts .btn-p{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(8px)}
-.jh-acts .btn-p:hover{background:var(--red);border-color:var(--red)}
-.jh-acts .btn-g{color:rgba(255,255,255,.65)}
-.jh-acts .btn-g:hover{color:var(--white)}
-.jh-scroll{position:absolute;bottom:3rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.6rem;opacity:0;animation:fi 1s ease 2s forwards}
-.jh-scroll span{font-family:var(--fb);font-weight:300;font-size:.55rem;letter-spacing:.4em;color:rgba(255,255,255,.35);text-transform:uppercase}
-.jh-scroll-line{width:1px;height:45px;background:linear-gradient(to bottom,rgba(255,255,255,.4),transparent);animation:pulse 2.2s ease-in-out infinite}
-
-/* FEEL */
-.feel{padding:9rem 5rem;background:var(--white);display:grid;grid-template-columns:1fr 1fr;gap:7rem;align-items:center;max-width:1400px;margin:0 auto}
-.feel-lbl{font-family:var(--fb);font-weight:400;font-size:.62rem;letter-spacing:.3em;color:var(--navy-mid);text-transform:uppercase;margin-bottom:1.5rem;display:flex;align-items:center;gap:.9rem}
-.feel-lbl::before{content:'';width:20px;height:2px;background:var(--red);flex-shrink:0}
-.feel-h{font-family:var(--fd);font-weight:200;font-size:clamp(2.5rem,5vw,4.5rem);line-height:.95;color:var(--navy);letter-spacing:-.01em;margin-bottom:1.5rem}
-.feel-h strong{font-weight:600;display:block}
-.feel-body{font-family:var(--fb);font-weight:300;font-size:.92rem;line-height:1.95;color:var(--tbody);margin-bottom:2rem}
-.feel-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2.5rem}
-.feel-tag{font-family:var(--fb);font-weight:400;font-size:.58rem;letter-spacing:.12em;color:var(--navy-mid);text-transform:uppercase;border:1px solid var(--border-md);padding:.35rem .8rem;transition:all .2s}
-.feel-tag:hover{background:var(--navy);color:var(--white);border-color:var(--navy)}
-.feel-img{position:relative}
-.feel-img img{width:100%;aspect-ratio:3/4;object-fit:cover;filter:brightness(.88)}
-.feel-badge{position:absolute;bottom:-1.5rem;left:-1.5rem;background:var(--red);padding:1.5rem 2rem;text-align:center}
-.fb-n{font-family:var(--fd);font-weight:600;font-size:2rem;color:var(--white);display:block;line-height:1;margin-bottom:.2rem}
-.fb-l{font-family:var(--fb);font-weight:300;font-size:.52rem;letter-spacing:.18em;color:rgba(255,255,255,.6);text-transform:uppercase;display:block}
-
-/* SPECS */
-.jewel-specs{background:var(--navy);padding:5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;position:relative}
-.jewel-specs::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--red)}
-.js-item{background:rgba(255,255,255,.04);padding:2.5rem;border-right:1px solid rgba(255,255,255,.07)}
-.js-item:last-child{border-right:none}
-.js-num{font-family:var(--fd);font-weight:600;font-size:3.5rem;color:rgba(255,255,255,.06);line-height:1;margin-bottom:1rem}
-.js-name{font-family:var(--fd);font-weight:500;font-size:1.15rem;color:var(--white);margin-bottom:.5rem;letter-spacing:.03em}
-.js-val{font-family:var(--fd);font-weight:300;font-size:1.5rem;color:var(--red);margin-bottom:.5rem}
-.js-desc{font-family:var(--fb);font-weight:300;font-size:.75rem;line-height:1.7;color:rgba(255,255,255,.38)}
-
-/* USE CASES */
-.uses{padding:8rem 5rem;background:var(--off)}
-.uses-hdr{margin-bottom:5rem}
-.uses-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
-.use-item{background:var(--white);padding:2.5rem;border-top:2px solid transparent;transition:border-color .3s,transform .3s}
-.use-item:hover{border-top-color:var(--red);transform:translateY(-4px)}
-.use-icon{width:44px;height:44px;border:1px solid var(--border-md);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem}
-.use-icon svg{width:18px;height:18px;fill:none;stroke:var(--navy-mid);stroke-width:1.5}
-.use-name{font-family:var(--fd);font-weight:500;font-size:1.2rem;color:var(--navy);margin-bottom:.6rem;letter-spacing:.03em}
-.use-desc{font-family:var(--fb);font-weight:300;font-size:.82rem;line-height:1.85;color:var(--tbody)}
-
-/* GALLERY SLIDER */
-.jewel-slider{background:#000;position:relative}
-.jslider-main{position:relative;aspect-ratio:16/9;overflow:hidden;cursor:grab}
-.jslider-main:active{cursor:grabbing}
-.js-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .7s ease;filter:brightness(.88)}
-.js-img.active{opacity:1}
-.js-arr{position:absolute;top:50%;transform:translateY(-50%);width:48px;height:48px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:var(--white);font-size:1.1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;transition:background .2s;backdrop-filter:blur(8px)}
-.js-arr:hover{background:rgba(255,255,255,.22)}
-.js-prev{left:1.5rem}
-.js-next{right:1.5rem}
-.js-counter{position:absolute;bottom:1.2rem;right:1.5rem;font-family:var(--fb);font-weight:300;font-size:.62rem;letter-spacing:.2em;color:rgba(255,255,255,.5);background:rgba(0,0,0,.35);padding:.3rem .7rem;backdrop-filter:blur(4px)}
-.jslider-thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:var(--border)}
-.js-thumb{overflow:hidden;aspect-ratio:4/3;border:none;padding:0;cursor:pointer;position:relative;outline:none;display:block}
-.js-thumb::after{content:'';position:absolute;inset:0;border-bottom:3px solid transparent;transition:border-color .25s}
-.js-thumb.active::after{border-bottom-color:var(--red)}
-.js-thumb img{width:100%;height:100%;object-fit:cover;display:block;transition:filter .3s;filter:brightness(.55)}
-.js-thumb.active img,.js-thumb:hover img{filter:brightness(1)}
-
-/* PROCESS */
-.process{padding:8rem 5rem;background:var(--white)}
-.process-hdr{margin-bottom:5rem}
-.process-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--border-md)}
-.ps{padding:3rem 3rem 3rem 0;border-right:1px solid var(--border)}
-.ps:last-child{border-right:none;padding-right:0}
-.ps:not(:first-child){padding-left:3rem}
-.ps-n{font-family:var(--fd);font-weight:600;font-size:4rem;color:rgba(5,29,73,.07);line-height:1;margin-bottom:.8rem}
-.ps-t{font-family:var(--fd);font-weight:500;font-size:1.2rem;color:var(--navy);margin-bottom:.6rem;letter-spacing:.03em}
-.ps-b{font-family:var(--fb);font-weight:300;font-size:.82rem;line-height:1.85;color:var(--tbody)}
-
-/* CTA dark */
-.jewel-cta{padding:9rem 5rem;background:var(--navy);position:relative;overflow:hidden;text-align:center}
-.jc-bg{position:absolute;inset:0;background-image:url('../assets/images/jewel-4.jpeg');background-size:cover;background-position:center;opacity:.08;filter:saturate(0)}
-.jc-in{position:relative;z-index:2}
-.jc-lbl{font-family:var(--fb);font-weight:400;font-size:.62rem;letter-spacing:.35em;color:rgba(178,100,60,.7);text-transform:uppercase;margin-bottom:2rem;display:flex;align-items:center;justify-content:center;gap:1.5rem}
-.jc-lbl::before,.jc-lbl::after{content:'';flex:0 0 24px;height:1px;background:var(--red);opacity:.6}
-.jc-h{font-family:var(--fd);font-weight:200;font-size:clamp(2.5rem,5vw,5rem);color:var(--white);line-height:.95;letter-spacing:.01em;margin-bottom:.5rem}
-.jc-h strong{font-weight:600;display:block}
-.jc-sub{font-family:var(--fb);font-weight:300;font-size:.88rem;color:rgba(255,255,255,.4);margin-bottom:3rem;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.8}
-.jc-acts{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap}
-.jc-acts .btn-p{background:var(--red)}
-.jc-acts .btn-p:hover{background:rgba(255,255,255,.12)}
-.jc-acts .btn-o{color:rgba(255,255,255,.6);border-color:rgba(255,255,255,.2)}
-.jc-acts .btn-o:hover{background:rgba(255,255,255,.08);color:var(--white)}
-
-/* RESPONSIVE */
-@media(max-width:1024px){
-  .feel{padding:7rem 3rem;gap:5rem}
-  .jewel-specs{padding:3.5rem;grid-template-columns:repeat(2,1fr)}
-  .js-item{border-right:none;border-bottom:1px solid rgba(255,255,255,.07)}
-  .uses{padding:6rem 3rem}
-  .uses-grid{grid-template-columns:repeat(2,1fr)}
-  .process{padding:6rem 3rem}
-  .process-steps{grid-template-columns:1fr}
-  .ps{border-right:none;border-bottom:1px solid var(--border);padding:2rem 0}
-  .ps:not(:first-child){padding-left:0}
-  .ps:last-child{border-bottom:none}
-  .jewel-cta{padding:7rem 3rem}
+body { background: #0b0d12; }
+.jw-hero {
+  position: relative; min-height: 100vh; display: flex; flex-direction: column;
+  background: #0b0d12; overflow: hidden;
 }
-@media(max-width:768px){
-  .jewel-hero .jh-c{padding:0 1.5rem}
-  .jh-name{font-size:clamp(4rem,18vw,8rem)}
-  .feel{grid-template-columns:1fr;padding:6rem 1.5rem;gap:4rem}
-  .feel-img{order:-1}
-  .feel-badge{left:0;bottom:0}
-  .jewel-specs{grid-template-columns:1fr;padding:3rem 1.5rem}
-  .uses{padding:5rem 1.5rem}
-  .uses-grid{grid-template-columns:1fr}
-  .jewel-gallery{grid-template-columns:1fr 1fr;grid-template-rows:280px 280px 200px}
-  .jg-item.wide{grid-column:span 1}
-  .process{padding:5rem 1.5rem}
-  .jewel-cta{padding:6rem 1.5rem}
+.jw-hero-bg { position: absolute; inset: 0; z-index: 0; }
+.jw-hero-bg img { width: 100%; height: 100%; object-fit: cover; object-position: center 62%; display: block; }
+.jw-hero-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(5,8,15,.55) 0%, rgba(5,8,15,.1) 22%, rgba(5,8,15,.05) 55%, rgba(5,8,15,.65) 100%); pointer-events: none; }
+
+.jw-hero-top { position: relative; z-index: 1; text-align: center; padding: 9rem 2rem 0; }
+.jw-hero-title { font-family: var(--fd); font-weight: 300; font-size: clamp(2.4rem, 5vw, 3.6rem); color: #fff; letter-spacing: -.01em; }
+.jw-hero-note { font-family: var(--fb); font-size: .74rem; color: rgba(255,255,255,.65); margin-top: .7rem; }
+
+.jw-labels {
+  position: relative; z-index: 1; flex: 1;
+  min-height: 60vh;
+}
+.jw-tag { position: absolute; bottom: 6rem; transform: translateX(-50%); text-decoration: none; display: flex; flex-direction: column; align-items: center; transition: transform .35s cubic-bezier(.25,.46,.45,.94); }
+.jw-tag:hover { transform: translateX(-50%) translateY(-8px); }
+.jw-tag-label { font-family: var(--fd); font-weight: 500; font-size: clamp(1.8rem, 3.4vw, 2.8rem); color: #fff; letter-spacing: .03em; text-shadow: 0 2px 20px rgba(0,0,0,.5); }
+.jw-tag-specs { font-family: var(--fb); font-size: .62rem; letter-spacing: .07em; color: rgba(255,255,255,.75); text-transform: uppercase; margin-top: .4rem; text-align: center; line-height: 1.7; }
+.jw-tag-cta {
+  margin-top: .8rem; font-family: var(--fb); font-size: .56rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase;
+  color: #fff; opacity: 0; transform: translateY(4px); transition: opacity .3s, transform .3s;
+  border-bottom: 1px solid rgba(255,255,255,.5); padding-bottom: .2rem;
+}
+.jw-tag:hover .jw-tag-cta { opacity: .9; transform: translateY(0); }
+
+@media (max-width: 900px) {
+  .jw-hero-top { padding: 7.5rem 1.5rem 0; }
+  .jw-labels { padding: 0 6% 3rem; flex-wrap: wrap; gap: 2rem; justify-content: center; }
 }
 </style>
 </head>
@@ -142,269 +45,68 @@
 <div class="cursor" id="cur"></div>
 <div class="cring" id="ring"></div>
 
-<!-- NAV -->
-<nav id="nav">
-  <a href="../index.html" class="logo">NP5<span class="logo-dot">.</span>HOUSE</a>
-  <ul class="nav-links">
-    <li><a href="../index.html#panel-villas">Panel Villas</a></li>
-    <li><a href="../index.html#modular-living" class="active">Modular Living</a></li>
-    <li><a href="../index.html#materials">Materials</a></li>
-    <li><a href="../index.html#delivery">Delivery</a></li>
-    <li><a href="../index.html#gallery">Gallery</a></li>
-    <li><a href="../index.html#investors">Investors</a></li>
-  </ul>
-  <a href="../index.html#contact" class="nav-btn">Enquire</a>
-  <button class="nav-toggle" id="navToggle" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
+<nav id="nav" class="solid">
+  <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  <a href="../index.html" class="logo"><svg class="logo-mark" viewBox="0 0 550 116" xmlns="http://www.w3.org/2000/svg" aria-label="NP5" role="img"><g fill="currentColor"><polygon points="153.9,91.4 22.1,0.1 22,0 0,0 0,116 22.2,116 22.2,24.6 154,115.9 154.1,116 176.1,116 176.1,0 153.9,0"/><path d="M543.9,52.9c-4-3.9-8.8-5.9-14.2-5.9H396.1V22H548V0H373.9v69h147.2c2.2,0,3.9,0.5,5,1.4c1,0.8,1.7,3.6,1.7,6.6v10.1c0,2.4-0.7,4.2-2,5.3c-1.4,1.1-3,1.6-4.9,1.6h-147v22h155.9c5.4,0,10.1-1.9,14.1-5.6c4-3.7,6.1-9,6.1-15.9v-26C550,62.1,548,56.8,543.9,52.9"/><polygon points="186.9,21.9 340.6,22 340.6,47 186.9,47 186.9,116 209.1,116 209.1,69 362.7,69 362.7,0 186.9,0"/></g></svg></a>
+  <div class="nav-lang-wrap">
+    <button class="nav-lang" aria-label="Language">🇬🇧</button>
+    <div class="nav-lang-menu">
+      <button class="nav-lang-opt active" data-lang="en"><span class="nav-lang-opt-flag">🇬🇧</span>English</button>
+      <button class="nav-lang-opt" data-lang="lt"><span class="nav-lang-opt-flag">🇱🇹</span>Lietuvių</button>
+    </div>
+  </div>
 </nav>
 <div class="nav-drawer" id="navDrawer">
-  <a href="../index.html#panel-villas">Panel Villas</a>
-  <a href="../index.html#modular-living">Modular Living</a>
-  <a href="../index.html#materials">Materials</a>
-  <a href="../index.html#delivery">Delivery</a>
-  <a href="../index.html#gallery">Gallery</a>
-  <a href="../index.html#investors">Investors</a>
-  <a href="../index.html#contact" class="nd-cta">Enquire Now</a>
-</div>
-
-<!-- HERO -->
-<section class="jewel-hero">
-  <div class="jh-bg"></div>
-  <div class="jh-ov"></div>
-  <div class="jh-c">
-    <p class="jh-eye">NP5 Modular System · Compact Luxury · Resort Living</p>
-    <h1 class="jh-name">JEWEL</h1>
-    <p class="jh-sub">A new category of architecture</p>
-    <div class="jh-acts">
-      <a href="#jewel-feel" class="btn-p">Explore the System</a>
-      <a href="../index.html#contact" class="btn-g">Request Brochure</a>
-    </div>
+  <div class="nav-drawer-links">
+    <a href="houses.html" data-i18n="nav.houses">Houses</a>
+    <a href="gallery.html" data-i18n="nav.gallery">Gallery</a>
+    <a href="investors.html" data-i18n="nav.investors">Investors</a>
   </div>
-  <div class="jh-scroll"><span>Scroll</span><div class="jh-scroll-line"></div></div>
-</section>
-
-<!-- MARQUEE -->
-<div class="mq"><div class="mq-track">
-  <span class="mi">JEWEL Modular System</span><span class="ms">·</span><span class="mi">Resort Units</span><span class="ms">·</span><span class="mi">Compact Luxury</span><span class="ms">·</span><span class="mi">Curved Roofline</span><span class="ms">·</span><span class="mi">Island Living</span><span class="ms">·</span><span class="mi">Guest Houses</span><span class="ms">·</span><span class="mi">Airbnb Investment</span><span class="ms">·</span><span class="mi">LGS Steel Frame</span><span class="ms">·</span><span class="mi">WPC Facade</span><span class="ms">·</span><span class="mi">Truck Delivery</span><span class="ms">·</span>
-  <span class="mi">JEWEL Modular System</span><span class="ms">·</span><span class="mi">Resort Units</span><span class="ms">·</span><span class="mi">Compact Luxury</span><span class="ms">·</span><span class="mi">Curved Roofline</span><span class="ms">·</span><span class="mi">Island Living</span><span class="ms">·</span><span class="mi">Guest Houses</span><span class="ms">·</span><span class="mi">Airbnb Investment</span><span class="ms">·</span><span class="mi">LGS Steel Frame</span><span class="ms">·</span><span class="mi">WPC Facade</span><span class="ms">·</span><span class="mi">Truck Delivery</span><span class="ms">·</span>
-</div></div>
-
-<!-- FEEL -->
-<section id="jewel-feel">
-  <div class="feel">
-    <div class="feel-img r">
-      <img src="../assets/images/jewel-2.jpeg" alt="JEWEL modular unit exterior">
-      <div class="feel-badge">
-        <span class="fb-n">2–4</span>
-        <span class="fb-l">Module Configuration</span>
-      </div>
-    </div>
-    <div>
-      <p class="feel-lbl r">01 — The System</p>
-      <h2 class="feel-h r d1">Curved.<br>Warm.<br><strong>Unmistakable.</strong></h2>
-      <p class="feel-body r d1">JEWEL is not a house. It is a system — a modular architecture that can be configured in clusters of two to four units, each one a complete, self-contained living space. The curved roofline, warm WPC vertical cladding, and floor-to-ceiling aluminium glazing create an aesthetic unlike anything else in prefab architecture.</p>
-      <p class="feel-body r d2">Delivered by truck to your site, assembled in days, and ready to generate income. JEWEL is designed for resort developers, island investors, and those who understand that the most valuable asset is an experience — beautifully housed.</p>
-      <div class="feel-tags r d2">
-        <span class="feel-tag">Resort Development</span>
-        <span class="feel-tag">Guest Houses</span>
-        <span class="feel-tag">Airbnb & Investment</span>
-        <span class="feel-tag">Wellness Retreats</span>
-        <span class="feel-tag">Island Clusters</span>
-        <span class="feel-tag">Glamping Premium</span>
-      </div>
-      <a href="../index.html#contact" class="btn-g r d2">Enquire About JEWEL</a>
-    </div>
-  </div>
-</section>
-
-<!-- SPECS -->
-<div class="jewel-specs">
-  <div class="js-item r">
-    <div class="js-num">01</div>
-    <div class="js-name">Structure</div>
-    <div class="js-val">LGS Steel</div>
-    <p class="js-desc">Light Gauge Steel frame — precision-engineered for modular assembly and truck delivery anywhere.</p>
-  </div>
-  <div class="js-item r d1">
-    <div class="js-num">02</div>
-    <div class="js-name">Facade</div>
-    <div class="js-val">Vertical WPC</div>
-    <p class="js-desc">Wood-Polymer Composite vertical cladding — warm, weatherproof, low maintenance. No painting ever required.</p>
-  </div>
-  <div class="js-item r d2">
-    <div class="js-num">03</div>
-    <div class="js-name">Roofline</div>
-    <div class="js-val">Curved Form</div>
-    <p class="js-desc">The signature curved roof is JEWEL's most distinctive architectural element — and its most functional, directing rainwater efficiently at every climate.</p>
-  </div>
-  <div class="js-item r d3">
-    <div class="js-num">04</div>
-    <div class="js-name">Glazing</div>
-    <div class="js-val">Floor-to-Ceiling</div>
-    <p class="js-desc">Aluminium floor-to-ceiling windows bring landscape inside. Maximum light. Maximum connection to site.</p>
+  <div class="nav-drawer-foot">
+    <a href="../index.html#contact" class="nd-cta" data-i18n="nav.enquire">Enquire</a>
+  <span class="nav-drawer-meta" data-i18n="drawer.meta">Lithuania &middot; Portugal</span>
   </div>
 </div>
 
-<!-- USE CASES -->
-<section class="uses">
-  <div class="uses-hdr">
-    <p class="lbl r">02 — Use Cases</p>
-    <h2 class="sec-h r d1">Designed for <strong>Every Vision</strong></h2>
-  </div>
-  <div class="uses-grid">
-    <div class="use-item r">
-      <div class="use-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-      <h3 class="use-name">Private Residences</h3>
-      <p class="use-desc">Single-module or dual-module configurations for minimalist primary or holiday residences. Compact footprint, maximum quality.</p>
-    </div>
-    <div class="use-item r d1">
-      <div class="use-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
-      <h3 class="use-name">Resort Clusters</h3>
-      <p class="use-desc">Two to four units arranged as a resort cluster — each unit a private retreat, together a destination. Ideal for Madeira, Portugal, and island developments.</p>
-    </div>
-    <div class="use-item r d2">
-      <div class="use-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
-      <h3 class="use-name">Airbnb & Short-Let</h3>
-      <p class="use-desc">The architectural distinctiveness of JEWEL commands premium short-let rates. Guests pay for the experience — and remember it.</p>
-    </div>
-    <div class="use-item r d1">
-      <div class="use-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-      <h3 class="use-name">Wellness Retreats</h3>
-      <p class="use-desc">Biophilic design, natural materials, and seamless indoor-outdoor connection make JEWEL ideal for wellness, yoga, and spa retreat developments.</p>
-    </div>
-    <div class="use-item r d2">
-      <div class="use-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg></div>
-      <h3 class="use-name">Island Living</h3>
-      <p class="use-desc">Engineered for Atlantic and Mediterranean climates. JEWEL's thermal envelope and weatherproof facade perform flawlessly in salt air and high humidity.</p>
-    </div>
-    <div class="use-item r d3">
-      <div class="use-icon"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-      <h3 class="use-name">Investment Units</h3>
-      <p class="use-desc">Fast construction. Premium finish. Immediate rental potential. JEWEL is engineered for investors who understand that quality is the best return on capital.</p>
-    </div>
-  </div>
-</section>
+<div class="jw-hero">
+  <div class="jw-hero-bg"><img id="jwHeroImg" src="../assets/images/houses/hero.jpeg" alt="The Jewel 2X, 4X and 4X XL, side by side"></div>
 
-<!-- GALLERY SLIDER -->
-<div class="jewel-slider">
-  <div class="jslider-main">
-    <img src="../assets/images/jewel-1.jpeg" alt="JEWEL — exterior view 1" class="js-img active">
-    <img src="../assets/images/jewel-2.jpeg" alt="JEWEL — exterior view 2" class="js-img">
-    <img src="../assets/images/jewel-3.jpeg" alt="JEWEL — detail view 3" class="js-img">
-    <img src="../assets/images/jewel-4.jpeg" alt="JEWEL — exterior view 4" class="js-img">
-    <button class="js-arr js-prev" aria-label="Previous image">←</button>
-    <button class="js-arr js-next" aria-label="Next image">→</button>
-    <div class="js-counter"><span id="jsCurrent">1</span> / 4</div>
+  <div class="jw-hero-top">
+    <h1 class="jw-hero-title" data-i18n="jewel.heroTitle">Meet The Jewel</h1>
+    <p class="jw-hero-note" data-i18n="jewel.heroNote">Compact architectural homes for living, leisure and hospitality.</p>
   </div>
-  <div class="jslider-thumbs">
-    <button class="js-thumb active"><img src="../assets/images/jewel-1.jpeg" alt="View 1"></button>
-    <button class="js-thumb"><img src="../assets/images/jewel-2.jpeg" alt="View 2"></button>
-    <button class="js-thumb"><img src="../assets/images/jewel-3.jpeg" alt="View 3"></button>
-    <button class="js-thumb"><img src="../assets/images/jewel-4.jpeg" alt="View 4"></button>
+
+  <div class="jw-labels">
+    <a href="house-01.html" class="jw-tag" style="left:9%">
+      <h2 class="jw-tag-label">2X</h2>
+      <p class="jw-tag-specs" data-i18n="jewel.2xSpec">26 m² total · 22 m² living</p>
+      <span class="jw-tag-cta" data-i18n="common.configure">Configure →</span>
+    </a>
+    <a href="house-02.html" class="jw-tag" style="left:49%">
+      <h2 class="jw-tag-label">4X</h2>
+      <p class="jw-tag-specs" data-i18n="jewel.4xSpec">53 m² total · 38 m² living</p>
+      <span class="jw-tag-cta" data-i18n="common.configure">Configure →</span>
+    </a>
+    <a href="house-05.html" class="jw-tag" style="left:84%">
+      <h2 class="jw-tag-label">4X XL</h2>
+      <p class="jw-tag-specs" data-i18n="jewel.4xlSpec">62 m² total · 46 m² living</p>
+      <span class="jw-tag-cta" data-i18n="common.configure">Configure →</span>
+    </a>
   </div>
 </div>
-
-<!-- PROCESS -->
-<section class="process">
-  <div class="process-hdr">
-    <p class="lbl r">03 — How It Works</p>
-    <h2 class="sec-h r d1">From Order <strong>to Keys</strong></h2>
-  </div>
-  <div class="process-steps">
-    <div class="ps r">
-      <div class="ps-n">01</div>
-      <h3 class="ps-t">Configuration</h3>
-      <p class="ps-b">Select your module count (2–4), orientation, and finish options. We prepare a full factory specification and production schedule.</p>
-    </div>
-    <div class="ps r d1">
-      <div class="ps-n">02</div>
-      <h3 class="ps-t">Factory Production</h3>
-      <p class="ps-b">JEWEL modules are manufactured in our Lithuania factory with complete precision. Structural, cladding, glazing — all factory-integrated before shipping.</p>
-    </div>
-    <div class="ps r d2">
-      <div class="ps-n">03</div>
-      <h3 class="ps-t">Truck Delivery & Assembly</h3>
-      <p class="ps-b">Modules are delivered by truck to your site. Assembly typically takes days, not months. Ready for interior fitting and landscaping within weeks of delivery.</p>
-    </div>
-  </div>
-</section>
-
-<!-- NUMBERS -->
-<div class="nums">
-  <div class="ni r"><div class="nv">2<span>–4</span></div><div class="nl">Module Configuration</div></div>
-  <div class="ni r d1"><div class="nv">A<span>+</span></div><div class="nl">Energy Rating</div></div>
-  <div class="ni r d2"><div class="nv">90<span>d</span></div><div class="nl">Production to Site</div></div>
-  <div class="ni r d3"><div class="nv">EU<span>+</span></div><div class="nl">Export Ready</div></div>
-</div>
-
-<!-- CTA -->
-<section class="jewel-cta">
-  <div class="jc-bg"></div>
-  <div class="jc-in">
-    <p class="jc-lbl r">Begin Your JEWEL Project</p>
-    <h2 class="jc-h r d1">Architecture<br><strong>You Can Feel</strong></h2>
-    <p class="jc-sub r d1">Whether a single unit or a resort cluster — we begin with a conversation about your vision, your site, and your timeline.</p>
-    <div class="jc-acts r d2">
-      <a href="../index.html#contact" class="btn-p">Request JEWEL Brochure</a>
-      <a href="../index.html#contact" class="btn-o">Discuss Your Project</a>
-    </div>
-  </div>
-</section>
 
 <footer>
-  <div class="fl">NP5<span class="dot">.</span>HOUSE</div>
-  <p class="fc">© 2026 NP5 House. Premium Prefab Architecture. Lithuania · Portugal</p>
+  <div class="fl"><svg class="logo-mark" viewBox="0 0 550 116" xmlns="http://www.w3.org/2000/svg" aria-label="NP5" role="img"><g fill="currentColor"><polygon points="153.9,91.4 22.1,0.1 22,0 0,0 0,116 22.2,116 22.2,24.6 154,115.9 154.1,116 176.1,116 176.1,0 153.9,0"/><path d="M543.9,52.9c-4-3.9-8.8-5.9-14.2-5.9H396.1V22H548V0H373.9v69h147.2c2.2,0,3.9,0.5,5,1.4c1,0.8,1.7,3.6,1.7,6.6v10.1c0,2.4-0.7,4.2-2,5.3c-1.4,1.1-3,1.6-4.9,1.6h-147v22h155.9c5.4,0,10.1-1.9,14.1-5.6c4-3.7,6.1-9,6.1-15.9v-26C550,62.1,548,56.8,543.9,52.9"/><polygon points="186.9,21.9 340.6,22 340.6,47 186.9,47 186.9,116 209.1,116 209.1,69 362.7,69 362.7,0 186.9,0"/></g></svg><span class="logo-text"><span class="dot">.</span>HOUSE</span></div>
+  <p class="fc" data-i18n="footer.tagline">© 2026 NP5 House. Premium Prefab Architecture. Lithuania · Portugal</p>
   <ul class="flinks">
-    <li><a href="../index.html#panel-villas">Panel Villas</a></li>
-    <li><a href="jewel.html">JEWEL</a></li>
-    <li><a href="../index.html#gallery">Gallery</a></li>
-    <li><a href="../index.html#contact">Contact</a></li>
-    <li><a href="https://www.np5.eu" target="_blank">NP5.eu →</a></li>
+    <li><a href="houses.html" data-i18n="nav.houses">Houses</a></li>
+    <li><a href="gallery.html" data-i18n="nav.gallery">Gallery</a></li>
+    <li><a href="../index.html#contact" data-i18n="footer.contact">Contact</a></li>
   </ul>
 </footer>
 
-<script src="../js/main.js" defer></script>
-<script>
-const cur=document.getElementById('cur'),ring=document.getElementById('ring');
-let mx=0,my=0,rx=0,ry=0;
-if(cur){
-  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
-  (function a(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a);})();
-  document.querySelectorAll('a,button').forEach(el=>{
-    el.addEventListener('mouseenter',()=>{cur.classList.add('h');ring.classList.add('h');});
-    el.addEventListener('mouseleave',()=>{cur.classList.remove('h');ring.classList.remove('h');});
-  });
-}
-const nav=document.getElementById('nav');
-window.addEventListener('scroll',()=>{nav.classList.toggle('solid',window.scrollY>80);});
-const toggle=document.getElementById('navToggle'),drawer=document.getElementById('navDrawer');
-toggle.addEventListener('click',()=>{toggle.classList.toggle('open');drawer.classList.toggle('open');document.body.style.overflow=drawer.classList.contains('open')?'hidden':'';});
-drawer.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{toggle.classList.remove('open');drawer.classList.remove('open');document.body.style.overflow='';}));
-const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('on');obs.unobserve(x.target);}});},{threshold:.08});
-document.querySelectorAll('.r').forEach(el=>obs.observe(el));
-// Image slider
-const jsImgs=document.querySelectorAll('.js-img');
-const jsThumbs=document.querySelectorAll('.js-thumb');
-const jsCounter=document.getElementById('jsCurrent');
-let jsCurrent=0;
-function goToSlide(n){
-  jsImgs[jsCurrent].classList.remove('active');
-  jsThumbs[jsCurrent].classList.remove('active');
-  jsCurrent=(n+jsImgs.length)%jsImgs.length;
-  jsImgs[jsCurrent].classList.add('active');
-  jsThumbs[jsCurrent].classList.add('active');
-  if(jsCounter)jsCounter.textContent=jsCurrent+1;
-}
-document.querySelector('.js-prev').addEventListener('click',()=>goToSlide(jsCurrent-1));
-document.querySelector('.js-next').addEventListener('click',()=>goToSlide(jsCurrent+1));
-jsThumbs.forEach((t,i)=>t.addEventListener('click',()=>goToSlide(i)));
-document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')goToSlide(jsCurrent-1);if(e.key==='ArrowRight')goToSlide(jsCurrent+1);});
-// Swipe support
-let tx=0;
-const sm=document.querySelector('.jslider-main');
-if(sm){sm.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});sm.addEventListener('touchend',e=>{const dx=tx-e.changedTouches[0].clientX;if(Math.abs(dx)>40)goToSlide(jsCurrent+(dx>0?1:-1));});}
-setInterval(()=>goToSlide(jsCurrent+1),5500);
-</script>
+<script src="../js/i18n-data.js?v=3"></script>
+<script src="../js/i18n.js?v=3"></script>
+<script src="../js/main.js?v=3" defer></script>
 </body>
 </html>

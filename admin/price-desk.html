@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NP5 Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0"></script>
+<style>
+@font-face{font-family:'Eurostile Next LT Pro';src:url('/_blob/be90daa6106b00b353c21ec4ac038e66') format('opentype');font-weight:100 300;font-style:normal;font-display:swap}
+@font-face{font-family:'Eurostile Next LT Pro';src:url('/_blob/27a8c31bf7e768ac6314a390e0c1f57c') format('opentype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Eurostile Next LT Pro';src:url('/_blob/a98b2917625a208dc46cbee2c7121f9c') format('opentype');font-weight:500 600;font-style:normal;font-display:swap}
+@font-face{font-family:'Eurostile Next LT Pro';src:url('/_blob/3f33d6eccdfc0826454bb339613614db') format('opentype');font-weight:700 900;font-style:normal;font-display:swap}
+:root{
+  --navy:#051D49; --navy-mid:#2E5597;
+  --ink:#051D49; --ink-soft:#465060; --muted:#8C94A2;
+  --border:rgba(5,29,73,.1); --border-md:rgba(5,29,73,.18);
+  --surface:#FFFFFF; --ground:#F7F6F3; --ground-deep:#EFEDE8;
+  --ok:#1f7a4d; --ok-bg:#e8f3ec; --err:#b3261e;
+  --pending:#8C94A2;
+  --fd:'Eurostile Next LT Pro',sans-serif; --fb:'Eurostile Next LT Pro',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--fb);font-weight:400;margin:0}
+::selection{background:var(--navy-mid);color:#fff}
+[hidden]{display:none!important}
+
+.wrap{max-width:1040px;margin:0 auto;padding:3rem 2rem 6rem}
+
+.top{display:flex;align-items:flex-end;justify-content:space-between;gap:2rem;margin-bottom:.5rem;flex-wrap:wrap}
+.brand{font-family:var(--fd);font-weight:300;font-size:.7rem;letter-spacing:.3em;color:var(--muted);text-transform:uppercase}
+h1{font-family:var(--fd);font-weight:300;font-size:clamp(2.1rem,4vw,2.8rem);letter-spacing:-.01em;margin:.3rem 0 0;color:var(--ink);text-wrap:balance}
+h1 strong{font-weight:600}
+.sub{font-family:var(--fb);font-weight:400;font-size:.82rem;color:var(--ink-soft);margin-top:.5rem;max-width:56ch;line-height:1.55}
+
+.who{display:flex;align-items:center;gap:.6rem;font-family:var(--fb);font-size:.68rem;letter-spacing:.04em;color:var(--ink-soft);background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:.45rem .9rem .45rem .6rem;white-space:nowrap}
+.who-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex-shrink:0}
+.who-dot.edit{background:var(--ok)}
+.who-signout{background:none;border:none;color:var(--ink-soft);font-family:inherit;font-size:.68rem;text-decoration:underline;cursor:pointer;padding:0;margin-left:.3rem}
+
+.notice{margin-top:1.75rem;padding:.85rem 1.1rem;border:1px solid var(--border-md);border-left:3px solid var(--navy);background:var(--surface);border-radius:4px;font-family:var(--fb);font-size:.76rem;color:var(--ink-soft);line-height:1.6;display:none}
+.notice.show{display:block}
+.notice strong{color:var(--ink);font-weight:600}
+
+/* LOGIN */
+.loginbox{max-width:360px;margin:5rem auto 0;padding:2.2rem;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+.loginbox h2{font-family:var(--fd);font-weight:500;font-size:1.3rem;margin:0 0 .3rem;color:var(--ink)}
+.loginbox p{font-family:var(--fb);font-size:.76rem;color:var(--ink-soft);margin:0 0 1.5rem;line-height:1.5}
+.field{margin-bottom:1rem}
+.field label{display:block;font-family:var(--fb);font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.4rem}
+.field input,.field select{width:100%;border:1px solid var(--border-md);border-radius:6px;background:var(--ground);padding:.7rem .85rem;font-family:var(--fb);font-size:.88rem;color:var(--ink);outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus{border-color:var(--navy-mid)}
+.loginbtn{width:100%;background:var(--navy);color:#fff;border:none;border-radius:6px;padding:.8rem;font-family:var(--fb);font-weight:600;font-size:.8rem;letter-spacing:.04em;cursor:pointer;transition:background .15s}
+.loginbtn:hover{background:var(--navy-mid)}
+.loginbtn:disabled{opacity:.6;cursor:default}
+.loginerr{font-family:var(--fb);font-size:.74rem;color:var(--err);margin-top:1rem;display:none}
+.loginerr.show{display:block}
+
+/* TOP NAV TABS */
+.tabs{display:flex;gap:.5rem;margin-top:2rem;border-bottom:1px solid var(--border)}
+.tab{font-family:var(--fb);font-weight:600;font-size:.74rem;letter-spacing:.04em;color:var(--muted);background:none;border:none;padding:.9rem 1.1rem;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--navy);border-bottom-color:var(--navy)}
+.tab-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 .3rem;margin-left:.4rem;border-radius:9px;background:var(--copper,#c08a4a);color:#fff;font-size:.62rem;font-weight:700}
+
+/* HOME GRID (pricing house picker) */
+.housegrid{margin-top:2rem;display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.housetile{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.4rem 1.5rem;border:1px solid var(--border);border-radius:10px;background:var(--surface);cursor:pointer;text-align:left;font:inherit;color:inherit;transition:border-color .15s,background .15s}
+.housetile:hover{border-color:var(--navy-mid);background:var(--ground-deep)}
+.housetile-name{font-family:var(--fd);font-weight:500;font-size:1.3rem;letter-spacing:-.005em;color:var(--ink);display:block}
+.housetile-meta{font-family:var(--fb);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:.3rem;display:block}
+.housetile-progress{font-family:var(--fb);font-size:.68rem;color:var(--ink-soft);white-space:nowrap;flex-shrink:0}
+.housetile-progress strong{color:var(--ink);font-weight:600}
+.housetile-arrow{color:var(--muted);font-size:1.1rem;flex-shrink:0}
+.housegrid-empty{padding:2rem;border:1px dashed var(--border-md);border-radius:10px;font-family:var(--fb);font-size:.8rem;color:var(--ink-soft);text-align:center}
+@media(max-width:640px){.housegrid{grid-template-columns:1fr}}
+
+/* DETAIL VIEW */
+.backlink{display:inline-flex;align-items:center;gap:.5rem;margin-top:2.2rem;font-family:var(--fb);font-weight:500;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);text-decoration:none;cursor:pointer;background:none;border:none;padding:0;font:inherit}
+.backlink:hover{color:var(--ink)}
+
+.detail-hd{margin-top:1.2rem;display:flex;align-items:baseline;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.detail-name{font-family:var(--fd);font-weight:300;font-size:clamp(2rem,4vw,2.6rem);letter-spacing:-.01em;color:var(--ink)}
+.detail-meta{font-family:var(--fb);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+.section{margin-top:2.5rem}
+.section-hd{display:flex;align-items:baseline;gap:.9rem;margin-bottom:.4rem}
+.section-num{font-family:var(--fd);font-weight:300;font-size:1.1rem;color:var(--muted)}
+.section-title{font-family:var(--fd);font-weight:500;font-size:1.2rem;letter-spacing:-.005em;color:var(--ink)}
+.section-note{font-family:var(--fb);font-weight:400;font-size:.74rem;color:var(--ink-soft);margin:0 0 1.2rem;max-width:62ch;line-height:1.6}
+
+.catalog{display:flex;flex-direction:column;gap:1.3rem}
+
+.card{border:1px solid var(--border);border-radius:10px;background:var(--surface);overflow:hidden}
+.card-hd{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;padding:.9rem 1.4rem;border-bottom:1px solid var(--border);background:var(--ground-deep)}
+.card-name{font-family:var(--fd);font-weight:500;font-size:1.05rem;letter-spacing:-.005em;color:var(--ink)}
+.card-meta{font-family:var(--fb);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:right}
+
+.row{display:grid;grid-template-columns:1.3fr 1fr auto;align-items:center;gap:1.2rem;padding:.9rem 1.4rem;border-bottom:1px solid var(--border)}
+.row:last-child{border-bottom:none}
+.sys{display:flex;flex-direction:column;gap:.18rem;min-width:0}
+.sys-name{font-family:var(--fb);font-weight:500;font-size:.86rem;color:var(--ink)}
+.sys-note{font-family:var(--fb);font-weight:400;font-size:.68rem;color:var(--muted)}
+
+.pricebox{display:flex;align-items:center;gap:.5rem;border:1px solid var(--border-md);border-radius:6px;background:var(--ground);padding:0 .2rem 0 .85rem;transition:border-color .15s}
+.pricebox:focus-within{border-color:var(--navy-mid)}
+.pricebox .cur{font-family:var(--fb);font-weight:500;font-size:.78rem;color:var(--muted)}
+.pricebox input{flex:1;min-width:0;border:none;background:none;outline:none;font-family:var(--fb);font-weight:500;font-size:.92rem;color:var(--ink);padding:.6rem .6rem .6rem .2rem;font-variant-numeric:tabular-nums}
+.pricebox input::placeholder{color:var(--muted);font-weight:400}
+.pricebox input:disabled{color:var(--ink-soft);cursor:not-allowed}
+
+.state{display:flex;align-items:center;gap:.45rem;font-family:var(--fb);font-size:.64rem;color:var(--muted);min-width:92px;justify-content:flex-end}
+.state-dot{width:6px;height:6px;border-radius:50%;background:var(--pending);flex-shrink:0;transition:background .2s}
+.state.saving .state-dot{background:var(--navy-mid);animation:pulse 1s ease-in-out infinite}
+.state.saved .state-dot{background:var(--ok)}
+.state.saved{color:var(--ok)}
+.state.err .state-dot{background:var(--err)}
+.state.err{color:var(--err)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+.formula{margin-top:2rem;padding:1rem 1.2rem;border:1px dashed var(--border-md);border-radius:8px;font-family:var(--fb);font-size:.72rem;color:var(--ink-soft);line-height:1.7;background:var(--surface)}
+.formula strong{color:var(--ink)}
+.formula code{font-family:var(--fb);background:var(--ground-deep);padding:.1rem .4rem;border-radius:3px;color:var(--navy-mid)}
+
+.foot{margin-top:3rem;font-family:var(--fb);font-size:.66rem;color:var(--muted);line-height:1.7}
+
+/* HOUSES LIST */
+.houselist{display:flex;flex-direction:column;gap:.7rem}
+.houserow{display:flex;align-items:center;gap:1rem;padding:1rem 1.3rem;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+.houserow-thumb{width:52px;height:52px;border-radius:7px;background:var(--ground-deep);object-fit:cover;flex-shrink:0;border:1px solid var(--border)}
+.houserow-info{flex:1;min-width:0}
+.houserow-name{font-family:var(--fd);font-weight:500;font-size:1.05rem;color:var(--ink)}
+.houserow-meta{font-family:var(--fb);font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:.2rem}
+.pill{display:inline-block;font-family:var(--fb);font-size:.6rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.25rem .55rem;border-radius:99px;background:var(--ground-deep);color:var(--ink-soft)}
+.pill.modular{background:#e7edf9;color:var(--navy)}
+.pill.panel{background:#f3e9e0;color:#7a4a1f}
+
+.addbtn{display:inline-flex;align-items:center;gap:.5rem;background:var(--navy);color:#fff;border:none;border-radius:7px;padding:.8rem 1.3rem;font-family:var(--fb);font-weight:600;font-size:.78rem;letter-spacing:.03em;cursor:pointer;transition:background .15s}
+.addbtn:hover{background:var(--navy-mid)}
+.addbtn:disabled{opacity:.6;cursor:default}
+.addbtn.secondary{background:var(--surface);color:var(--navy);border:1px solid var(--border-md)}
+.addbtn.secondary:hover{background:var(--ground-deep)}
+
+/* FORM */
+.form-card{border:1px solid var(--border);border-radius:10px;background:var(--surface);padding:1.6rem}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.form-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.facade-row{display:grid;grid-template-columns:1fr 1fr auto auto;gap:.8rem;align-items:end;padding:1rem;border:1px solid var(--border);border-radius:8px;background:var(--ground);margin-bottom:.8rem}
+.facade-row .field{margin-bottom:0}
+.filebtn{display:inline-flex;align-items:center;gap:.4rem;border:1px dashed var(--border-md);border-radius:6px;background:var(--surface);padding:.6rem .9rem;font-family:var(--fb);font-size:.74rem;color:var(--ink-soft);cursor:pointer;white-space:nowrap}
+.filebtn:hover{border-color:var(--navy-mid);color:var(--ink)}
+.filebtn input{display:none}
+.filebtn.has-file{border-style:solid;border-color:var(--ok);color:var(--ok)}
+.removebtn{background:none;border:none;color:var(--err);font-size:1.3rem;cursor:pointer;line-height:1;padding:.4rem}
+.formmsg{font-family:var(--fb);font-size:.78rem;margin-top:1rem;display:none}
+.formmsg.show{display:block}
+.formmsg.ok{color:var(--ok)}
+.formmsg.err{color:var(--err)}
+
+/* OPTION GROUPS / COMPAT RULES */
+.optgroup{margin-bottom:1.3rem}
+.optgroup-hd{font-family:var(--fb);font-weight:600;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.6rem}
+.optgroup-items{display:flex;flex-wrap:wrap;gap:.6rem}
+.optchip{display:inline-flex;align-items:center;gap:.5rem;border:1px solid var(--border);border-radius:20px;padding:.45rem .9rem;background:var(--surface);cursor:pointer;font-family:var(--fb);font-size:.76rem;color:var(--ink-soft);transition:border-color .15s,background .15s,color .15s}
+.optchip input{accent-color:var(--navy)}
+.optchip:has(input:checked){border-color:var(--navy);background:var(--ground-deep);color:var(--ink);font-weight:600}
+.compat-row{display:grid;grid-template-columns:1fr 1fr auto 1fr 1fr auto;gap:.6rem;align-items:end;padding:.9rem;border:1px solid var(--border);border-radius:8px;background:var(--ground);margin-bottom:.7rem}
+.compat-row select{width:100%}
+.compat-arrow{font-family:var(--fb);font-size:.9rem;color:var(--ink-soft);padding-bottom:.6rem;text-align:center}
+@media (max-width:900px){ .compat-row{grid-template-columns:1fr} .compat-arrow{display:none} }
+
+/* GALLERY */
+.gallerygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.8rem;margin-top:1.2rem}
+.galitem{position:relative;aspect-ratio:4/3;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.galitem img{width:100%;height:100%;object-fit:cover;display:block}
+.galitem .delbtn{position:absolute;top:.4rem;right:.4rem;width:24px;height:24px;border-radius:50%;background:rgba(5,29,73,.75);color:#fff;border:none;cursor:pointer;font-size:.8rem;line-height:1}
+.uploadzone{border:2px dashed var(--border-md);border-radius:10px;padding:2rem;text-align:center;font-family:var(--fb);font-size:.8rem;color:var(--ink-soft);cursor:pointer;transition:border-color .15s,background .15s}
+.uploadzone:hover{border-color:var(--navy-mid);background:var(--ground-deep)}
+.uploadzone input{display:none}
+
+@media (max-width:640px){
+  .row{grid-template-columns:1fr;align-items:flex-start;gap:.5rem}
+  .state{justify-content:flex-start}
+  .form-grid,.form-grid-4{grid-template-columns:1fr}
+  .facade-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="top">
+    <div>
+      <span class="brand">NP5.HOUSE &middot; Internal</span>
+      <h1>NP5 <strong>Admin</strong></h1>
+      <p class="sub" id="pageSub" data-i18n="admin.pageSub">Manage prices, houses and gallery photos &mdash; changes show up on the live site automatically.</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:1rem">
+      <div class="admin-lang-wrap" id="adminLangWrap" style="position:relative">
+        <button class="admin-lang-btn" id="adminLangBtn" type="button" style="font-family:var(--fb);font-size:.74rem;font-weight:600;border:1px solid var(--border);border-radius:20px;padding:.4rem .9rem;background:var(--surface);cursor:pointer;display:flex;align-items:center;gap:.4rem">
+          <span id="adminLangFlag">🇬🇧</span><span id="adminLangLabel">EN</span>
+        </button>
+        <div class="admin-lang-menu" id="adminLangMenu" hidden style="position:absolute;top:calc(100% + .4rem);right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.1);overflow:hidden;z-index:50;min-width:140px">
+          <button class="admin-lang-opt" data-lang="en" type="button" style="display:flex;align-items:center;gap:.5rem;width:100%;padding:.6rem .9rem;border:none;background:none;font-family:var(--fb);font-size:.78rem;cursor:pointer;text-align:left">🇬🇧 English</button>
+          <button class="admin-lang-opt" data-lang="lt" type="button" style="display:flex;align-items:center;gap:.5rem;width:100%;padding:.6rem .9rem;border:none;background:none;font-family:var(--fb);font-size:.78rem;cursor:pointer;text-align:left">🇱🇹 Lietuvi&scaron;kai</button>
+        </div>
+      </div>
+      <div class="who" id="whoBadge" hidden><span class="who-dot" id="whoDot"></span><span id="whoText"></span><button class="who-signout" id="signOutBtn" data-i18n="admin.signOut">Sign out</button></div>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="loginView">
+    <div class="loginbox">
+      <h2 data-i18n="admin.signIn">Sign in</h2>
+      <p data-i18n="admin.signInNote">Only people with an NP5 account can make changes.</p>
+      <div class="field">
+        <label for="loginEmail" data-i18n="admin.email">Email</label>
+        <input type="email" id="loginEmail" autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="loginPass" data-i18n="admin.password">Password</label>
+        <input type="password" id="loginPass" autocomplete="current-password">
+      </div>
+      <button class="loginbtn" id="loginBtn" data-i18n="admin.signIn">Sign In</button>
+      <p class="loginerr" id="loginErr"></p>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="appView" hidden>
+
+    <div class="tabs">
+      <button class="tab" data-tab="pricing" data-i18n="admin.tabPricing">Pricing</button>
+      <button class="tab" data-tab="houses" data-i18n="admin.tabHouses">Houses</button>
+      <button class="tab" data-tab="gallery" data-i18n="admin.tabGallery">Gallery</button>
+      <button class="tab" data-tab="quotes"><span data-i18n="admin.tabQuotes">Quote Requests</span><span class="tab-badge" id="quotesBadge" hidden></span></button>
+    </div>
+
+    <!-- ============ PRICING TAB ============ -->
+    <div id="tab-pricing" class="tabpanel" hidden>
+      <div id="pricingHome">
+        <div class="housegrid" id="housegrid"></div>
+      </div>
+
+      <div id="pricingDetail" hidden>
+        <button class="backlink" id="backBtn" data-i18n="admin.allHouses">&larr; All Houses</button>
+        <div class="detail-hd">
+          <h2 class="detail-name" id="detailName"></h2>
+          <span class="detail-meta" id="detailMeta"></span>
+        </div>
+
+        <div class="section">
+          <div class="section-hd"><span class="section-num">01</span><span class="section-title" data-i18n="admin.basePrice">Base Price</span></div>
+          <p class="section-note" data-i18n="admin.basePriceNote">The starting price for this house, by facade system.</p>
+          <div class="catalog" id="catalog-base"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-hd"><span class="section-num">02</span><span class="section-title" data-i18n="admin.facadeColour">Facade Colour</span></div>
+          <p class="section-note" data-i18n="admin.facadeColourNote">This house's facade colour options &mdash; added on top of the base price once a customer picks one.</p>
+          <div class="catalog" id="catalog-facade"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-hd"><span class="section-num">03</span><span class="section-title" data-i18n="admin.upgrades">Upgrades</span></div>
+          <p class="section-note" data-i18n="admin.upgradesNote">Shared across every house &mdash; editing a price here updates it everywhere it's used. Subframe only applies with a Ventilated facade.</p>
+          <div class="catalog" id="catalog-addon"></div>
+        </div>
+
+        <div class="formula" data-i18n-html="admin.formula">
+          <strong>How this house's total is built on its configurator:</strong> Base Price (by system) <code>+</code> Facade Colour <code>+</code> Subframe <em>(Ventilated only)</em> <code>+</code> Insulation Material <code>+</code> Insulation Thickness <code>+</code> Windows <code>+</code> Roof Type <code>+</code> Interior Finishing <code>+</code> Floor Assembly. The last two aren't customer choices &mdash; they're fixed specs, folded into every quote.
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ HOUSES TAB ============ -->
+    <div id="tab-houses" class="tabpanel" hidden>
+      <div id="housesHome">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2rem;gap:1rem;flex-wrap:wrap">
+          <p class="section-note" style="margin:0" data-i18n="admin.everyHouseNote">Every house on the site. Click one to edit its details, facade colours or images &mdash; or add a new one below.</p>
+          <button class="addbtn" id="addHouseBtn" data-i18n="admin.addHouse">+ Add House</button>
+        </div>
+        <div class="houselist" id="houselist" style="margin-top:1.5rem"></div>
+
+        <div id="deletedHousesSec" style="display:none;margin-top:2.5rem">
+          <div class="section-hd"><span class="section-title" data-i18n="admin.recentlyDeleted">Recently Deleted</span></div>
+          <p class="section-note" data-i18n="admin.recentlyDeletedNote">These houses are hidden from the website but not gone yet &mdash; restore them, or permanently delete to remove them for good.</p>
+          <div class="houselist" id="deletedHouseList" style="margin-top:1rem"></div>
+        </div>
+      </div>
+
+      <div id="houseForm" hidden>
+        <button class="backlink" id="houseFormBack" data-i18n="admin.allHouses">&larr; All Houses</button>
+        <div class="detail-hd"><h2 class="detail-name" id="houseFormHeading" data-i18n-html="admin.addAHouse">Add a <strong>House</strong></h2></div>
+
+        <div class="form-card" id="publishBanner" style="margin-top:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.4rem">
+          <div>
+            <strong id="publishStatusLabel" style="font-family:var(--fb);font-size:.85rem">Draft &mdash; hidden from the website</strong>
+            <p class="section-note" style="margin:.2rem 0 0" id="publishStatusNote">Nobody can see this house until you publish it. Finish setting up prices and images first, then go live.</p>
+          </div>
+          <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer;white-space:nowrap">
+            <input type="checkbox" id="hPublished" style="width:18px;height:18px">
+            <span style="font-family:var(--fb);font-size:.78rem;font-weight:600" data-i18n="admin.visibleOnWebsite">Visible on website</span>
+          </label>
+        </div>
+
+        <div class="form-card" style="margin-top:1.5rem">
+          <div class="form-grid">
+            <div class="field"><label data-i18n="admin.name">Name</label><input type="text" id="hName" placeholder="e.g. Jewel 6X"></div>
+            <div class="field"><label data-i18n="admin.type">Type</label>
+              <select id="hType">
+                <option value="modular" data-i18n="admin.modular">Modular</option>
+                <option value="panel" data-i18n="admin.panel">Panel (Panelised)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid" id="hModelWrap" style="margin-top:1rem">
+            <div class="field"><label data-i18n="admin.model">Model</label><input type="text" id="hModel" placeholder="e.g. Jewel, Cupcake"></div>
+          </div>
+          <p class="section-note" id="hModelNote" style="margin-top:-.6rem" data-i18n-html="admin.modelNote">Groups size variants together on the Houses page &mdash; e.g. all Jewel sizes (2X, 4X, 4X XL) show under one &ldquo;Jewel&rdquo; heading. Use the same model name for every size of this house family.</p>
+          <div class="form-grid-4" style="margin-top:1rem">
+            <div class="field"><label data-i18n="admin.livingArea">Living Area (m&sup2;)</label><input type="number" id="hLiving" placeholder="e.g. 44"></div>
+            <div class="field"><label data-i18n="admin.totalArea">Total Area (m&sup2;)</label><input type="number" id="hTotal" placeholder="e.g. 53"></div>
+            <div class="field"><label data-i18n="admin.floors">Floors</label><input type="number" id="hFloors" value="1"></div>
+            <div class="field"><label data-i18n="admin.modules">Modules</label><input type="number" id="hModules" placeholder="e.g. 4"></div>
+          </div>
+
+          <div class="section" style="margin-top:1.8rem">
+            <div class="section-hd"><span class="section-title" data-i18n="admin.facadeColours">Facade Colours</span></div>
+            <p class="section-note" data-i18n-html="admin.facadeColoursNote">Each colour needs its own name, facade system, and one or more images <strong>with the background removed</strong> &mdash; select several at once for different angles. These are what the customer sees switching views in the configurator.</p>
+            <div id="facadeRows"></div>
+            <button class="addbtn secondary" id="addFacadeRow" type="button" data-i18n="admin.addColour">+ Add Colour</button>
+          </div>
+
+          <div class="section" style="margin-top:1.8rem">
+            <div class="section-hd"><span class="section-title" data-i18n="admin.availableOptions">Available Options</span></div>
+            <p class="section-note" data-i18n="admin.availableOptionsNote">Tick every option this specific house is allowed to offer. Unticked options never appear in its configurator &mdash; they're not just unpriced, they're not offered at all.</p>
+            <div class="field" style="max-width:420px;margin-bottom:1.2rem">
+              <label data-i18n="admin.copyOptionsFrom">Copy options from another house</label>
+              <select id="copyOptionsFrom"><option value="" data-i18n="admin.startFromScratch">Start from scratch&hellip;</option></select>
+            </div>
+
+            <div class="form-grid" style="align-items:end;margin-bottom:1.3rem">
+              <div class="field"><label data-i18n="admin.addNewOption">Add a new option to the catalog</label>
+                <select id="newOptCategory"></select>
+              </div>
+              <div class="field" style="display:flex;gap:.6rem">
+                <input type="text" id="newOptName" placeholder="e.g. Timber-Aluminium Composite" style="flex:1">
+                <button type="button" class="addbtn secondary" id="addCatalogItemBtn" style="white-space:nowrap" data-i18n="admin.addShort">+ Add</button>
+              </div>
+            </div>
+            <p class="formmsg" id="newOptMsg"></p>
+
+            <div id="optionGroups"></div>
+          </div>
+
+          <div class="section" style="margin-top:1.8rem">
+            <div class="section-hd"><span class="section-title" data-i18n="admin.compatRules">Compatibility Rules</span></div>
+            <p class="section-note" data-i18n="admin.compatRulesNote">Optional. Use these when picking one option should exclude or require another &mdash; e.g. selecting the Non-Ventilated facade system excludes EPS insulation. Rules only use options ticked above.</p>
+            <div id="compatRules"></div>
+            <button class="addbtn secondary" id="addCompatRule" type="button" data-i18n="admin.addRule">+ Add Rule</button>
+          </div>
+
+          <button class="addbtn" id="saveHouseBtn" style="margin-top:1.8rem" data-i18n="admin.saveHouse">Save House</button>
+          <p class="formmsg" id="houseFormMsg"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ GALLERY TAB ============ -->
+    <div id="tab-gallery" class="tabpanel" hidden>
+      <p class="section-note" style="margin-top:2rem" data-i18n="admin.galleryNote">Pick a house, then upload its lifestyle photos &mdash; these keep their background and are used on the Gallery page, never in the configurator.</p>
+      <div class="field" style="max-width:360px;margin-top:1rem">
+        <label data-i18n="admin.house">House</label>
+        <select id="galHouseSelect"><option value="" data-i18n="admin.selectAHouse">Select a house&hellip;</option></select>
+      </div>
+
+      <div id="galUploadWrap" hidden>
+        <label class="uploadzone" id="galUploadZone" style="margin-top:1.3rem;display:block">
+          <input type="file" id="galFileInput" accept="image/*" multiple>
+          <strong id="galUploadLabel" data-i18n="admin.clickToUpload">Click to upload photos</strong><br><span data-i18n="admin.multipleImages">Multiple images at once &middot; keep backgrounds in</span>
+        </label>
+        <div class="gallerygrid" id="galGrid"></div>
+      </div>
+    </div>
+
+    <!-- ============ QUOTE REQUESTS TAB ============ -->
+    <div id="tab-quotes" class="tabpanel" hidden>
+      <p class="section-note" style="margin-top:2rem" data-i18n="admin.quotesNote">Every quote request submitted from a house's configurator, with the exact configuration the customer chose.</p>
+      <div class="houselist" id="quoteRequestList" style="margin-top:1.5rem"></div>
+    </div>
+
+    <p class="foot" data-i18n="admin.footNote">Everything here lives in a database connected directly to np5.house &mdash; changes show up on the live site automatically, no extra step needed.</p>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://cupuevlvbzcuzpfzgmuu.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_LLu929NAaOhX9wzVQVULNg_j1Zf-Nz9';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let HOUSES = [];          // [{id, key(slug), name, type, meta}]
+let FACADE_BY_HOUSE = {}; // slug -> [{key, name, note}]
+let HOUSES_RAW = [];      // raw rows from `houses` table
+
+const SYSTEMS = [
+  { key: 'ventilated', name: 'Ventilated', note: 'Termowood or WPC cladding' },
+  { key: 'non-ventilated', name: 'Non-Ventilated', note: 'Clinker finish' }
+];
+
+// The option catalog (which window types, insulation materials, etc. exist at all)
+// lives in the `catalog_items` table, not hardcoded here, so admins can add brand-new
+// options (e.g. a window type beyond Aluminium/Plastic) without a code change.
+// Category groupings themselves stay fixed — only the items within each are dynamic.
+const CATEGORY_META = {
+  'subframe': { name: 'Subframe', meta: 'Ventilated only' },
+  'insulation-material': { name: 'Insulation Material', meta: '' },
+  'insulation-thickness': { name: 'Insulation Thickness', meta: '' },
+  'windows': { name: 'Windows', meta: '' },
+  'roof': { name: 'Roof Type', meta: '' },
+  'included': { name: 'Included Specs', meta: 'Fixed, not a customer choice' }
+};
+const CATEGORY_ORDER = ['subframe', 'insulation-material', 'insulation-thickness', 'windows', 'roof', 'included'];
+
+let ADDON_GROUPS = [];
+
+async function loadCatalog() {
+  const { data, error } = await sb.from('catalog_items').select('*').order('sort_order', { ascending: true });
+  if (error) { console.error(error); return; }
+  const byCat = {};
+  (data || []).forEach(item => {
+    if (!byCat[item.category]) byCat[item.category] = [];
+    byCat[item.category].push({ key: item.item_key, name: item.name, note: item.note || '' });
+  });
+  ADDON_GROUPS = CATEGORY_ORDER.filter(cat => byCat[cat] && byCat[cat].length).map(cat => ({
+    cat, name: CATEGORY_META[cat].name, meta: CATEGORY_META[cat].meta, items: byCat[cat]
+  }));
+}
+
+function getCompatCategories() {
+  return [{ cat: 'facade-system', name: 'Facade System', items: SYSTEMS }].concat(
+    ADDON_GROUPS.map(g => ({ cat: g.cat, name: g.name, items: g.items }))
+  );
+}
+function categoryItems(cat) {
+  const g = getCompatCategories().find(c => c.cat === cat);
+  return g ? g.items : [];
+}
+
+async function addCatalogItem(category, name) {
+  const item_key = slugify(name);
+  if (!item_key) return { error: 'Give the option a name.' };
+  const existingMax = ADDON_GROUPS.find(g => g.cat === category);
+  const sort_order = existingMax ? existingMax.items.length : 0;
+  const { error } = await sb.from('catalog_items').insert({ category, item_key, name, sort_order });
+  if (error) return { error: error.message };
+  await loadCatalog();
+  return { item_key };
+}
+
+function renderOptionGroups(enabledSet) {
+  const root = document.getElementById('optionGroups');
+  root.innerHTML = '';
+  ADDON_GROUPS.forEach(group => {
+    const wrap = document.createElement('div');
+    wrap.className = 'optgroup';
+    const hd = document.createElement('div');
+    hd.className = 'optgroup-hd';
+    hd.textContent = group.name;
+    wrap.appendChild(hd);
+    const itemsWrap = document.createElement('div');
+    itemsWrap.className = 'optgroup-items';
+    group.items.forEach(it => {
+      const chip = document.createElement('label');
+      chip.className = 'optchip';
+      const checked = enabledSet ? enabledSet.has(group.cat + '::' + it.key) : true;
+      chip.innerHTML = '<input type="checkbox" data-cat="' + group.cat + '" data-key="' + it.key + '"' + (checked ? ' checked' : '') + '> ' + it.name;
+      itemsWrap.appendChild(chip);
+    });
+    wrap.appendChild(itemsWrap);
+    root.appendChild(wrap);
+  });
+}
+
+function populateNewOptCategorySelect() {
+  const sel = document.getElementById('newOptCategory');
+  sel.innerHTML = CATEGORY_ORDER.map(cat => '<option value="' + cat + '">' + CATEGORY_META[cat].name + '</option>').join('');
+}
+
+document.getElementById('addCatalogItemBtn').addEventListener('click', async () => {
+  const msg = document.getElementById('newOptMsg');
+  const category = document.getElementById('newOptCategory').value;
+  const name = document.getElementById('newOptName').value.trim();
+  msg.className = 'formmsg'; msg.textContent = '';
+  if (!name) { msg.className = 'formmsg show err'; msg.textContent = 'Give the option a name first.'; return; }
+  const btn = document.getElementById('addCatalogItemBtn');
+  btn.disabled = true;
+  const currentChecked = new Set(getEnabledOptionsFromForm().map(o => o.category + '::' + o.item_key));
+  const result = await addCatalogItem(category, name);
+  btn.disabled = false;
+  if (result.error) { msg.className = 'formmsg show err'; msg.textContent = result.error; return; }
+  currentChecked.add(category + '::' + result.item_key); // auto-enable the new one for this house
+  renderOptionGroups(currentChecked);
+  document.getElementById('newOptName').value = '';
+  msg.className = 'formmsg show ok';
+  msg.textContent = '"' + name + '" added to the catalog and enabled for this house. Tick it for other houses in their own Edit screen.';
+});
+
+function getEnabledOptionsFromForm() {
+  return Array.from(document.querySelectorAll('#optionGroups input[type="checkbox"]:checked'))
+    .map(cb => ({ category: cb.dataset.cat, item_key: cb.dataset.key }));
+}
+
+function compatCategorySelectHtml(selected) {
+  return getCompatCategories().map(c => '<option value="' + c.cat + '"' + (c.cat === selected ? ' selected' : '') + '>' + c.name + '</option>').join('');
+}
+function compatKeySelectHtml(cat, selected) {
+  return categoryItems(cat).map(it => '<option value="' + it.key + '"' + (it.key === selected ? ' selected' : '') + '>' + it.name + '</option>').join('');
+}
+
+function addCompatRuleRow(existing) {
+  const root = document.getElementById('compatRules');
+  const row = document.createElement('div');
+  row.className = 'compat-row';
+  if (existing && existing.id) row.dataset.ruleId = existing.id;
+  const ifCat = existing ? existing.if_category : 'facade-system';
+  const thenCat = existing ? existing.then_category : 'insulation-material';
+  row.innerHTML =
+    '<div class="field"><label>If</label><select class="cr-if-cat">' + compatCategorySelectHtml(ifCat) + '</select></div>' +
+    '<div class="field"><label>&nbsp;</label><select class="cr-if-key">' + compatKeySelectHtml(ifCat, existing && existing.if_key) + '</select></div>' +
+    '<div class="compat-arrow">&rarr;</div>' +
+    '<div class="field"><label>Relation</label><select class="cr-relation"><option value="excludes"' + (existing && existing.relation === 'excludes' ? ' selected' : '') + '>Excludes</option><option value="requires"' + (existing && existing.relation === 'requires' ? ' selected' : '') + '>Requires</option></select></div>' +
+    '<div class="field"><label>Then</label><select class="cr-then-cat">' + compatCategorySelectHtml(thenCat) + '</select></div>' +
+    '<div style="display:flex;align-items:end;gap:.4rem">' +
+      '<select class="cr-then-key" style="flex:1">' + compatKeySelectHtml(thenCat, existing && existing.then_key) + '</select>' +
+      '<button type="button" class="removebtn cr-remove" title="Remove rule">&times;</button>' +
+    '</div>';
+  row.querySelector('.cr-if-cat').addEventListener('change', e => {
+    row.querySelector('.cr-if-key').innerHTML = compatKeySelectHtml(e.target.value, null);
+  });
+  row.querySelector('.cr-then-cat').addEventListener('change', e => {
+    row.querySelector('.cr-then-key').innerHTML = compatKeySelectHtml(e.target.value, null);
+  });
+  row.querySelector('.cr-remove').addEventListener('click', () => row.remove());
+  root.appendChild(row);
+}
+document.getElementById('addCompatRule').addEventListener('click', () => addCompatRuleRow());
+
+function getCompatRulesFromForm() {
+  return Array.from(document.querySelectorAll('#compatRules .compat-row')).map(row => ({
+    if_category: row.querySelector('.cr-if-cat').value,
+    if_key: row.querySelector('.cr-if-key').value,
+    relation: row.querySelector('.cr-relation').value,
+    then_category: row.querySelector('.cr-then-cat').value,
+    then_key: row.querySelector('.cr-then-key').value
+  }));
+}
+
+async function populateCopyOptionsDropdown(excludeHouseId) {
+  const sel = document.getElementById('copyOptionsFrom');
+  sel.innerHTML = '<option value="">Start from scratch&hellip;</option>' +
+    HOUSES_RAW.filter(h => h.id !== excludeHouseId).map(h => '<option value="' + h.id + '">' + h.name + '</option>').join('');
+}
+
+document.getElementById('copyOptionsFrom').addEventListener('change', async (e) => {
+  const sourceId = e.target.value;
+  if (!sourceId) { renderOptionGroups(null); document.getElementById('compatRules').innerHTML = ''; return; }
+  const { data: opts } = await sb.from('house_option_enabled').select('*').eq('house_id', sourceId);
+  const enabledSet = new Set((opts || []).map(o => o.category + '::' + o.item_key));
+  renderOptionGroups(enabledSet);
+  const { data: rules } = await sb.from('house_compat_rules').select('*').eq('house_id', sourceId);
+  document.getElementById('compatRules').innerHTML = '';
+  (rules || []).forEach(r => addCompatRuleRow(r));
+});
+
+function fmtNumber(n) {
+  if (n === null || n === undefined || n === '') return '';
+  return Number(n).toLocaleString('en-GB');
+}
+function parseNumber(str) {
+  const digits = str.replace(/[^\d]/g, '');
+  return digits ? parseInt(digits, 10) : null;
+}
+function timeAgo(iso) {
+  if (!iso) return '';
+  const s = Math.max(1, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
+  if (s < 60) return 'just now';
+  const m = Math.floor(s / 60);
+  if (m < 60) return m + 'm ago';
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + 'h ago';
+  return Math.floor(h / 24) + 'd ago';
+}
+function slugify(s) {
+  return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '');
+}
+
+/* ======================================================================
+   LANGUAGE (EN / LT) — admin UI chrome only. Admin-entered data (house
+   names, facade names, catalog item names) stays as typed, same as the
+   public site's i18n doesn't translate user content either.
+   ====================================================================== */
+const ADMIN_I18N = {
+  'admin.pageSub': { en: 'Manage prices, houses and gallery photos — changes show up on the live site automatically.', lt: 'Tvarkykite kainas, namus ir galerijos nuotraukas — pakeitimai automatiškai atsiranda svetainėje.' },
+  'admin.signOut': { en: 'Sign out', lt: 'Atsijungti' },
+  'admin.signIn': { en: 'Sign In', lt: 'Prisijungti' },
+  'admin.signInNote': { en: 'Only people with an NP5 account can make changes.', lt: 'Tik NP5 paskyrą turintys žmonės gali atlikti pakeitimus.' },
+  'admin.email': { en: 'Email', lt: 'El. paštas' },
+  'admin.password': { en: 'Password', lt: 'Slaptažodis' },
+  'admin.tabPricing': { en: 'Pricing', lt: 'Kainos' },
+  'admin.tabHouses': { en: 'Houses', lt: 'Namai' },
+  'admin.tabGallery': { en: 'Gallery', lt: 'Galerija' },
+  'admin.tabQuotes': { en: 'Quote Requests', lt: 'Užklausos' },
+  'admin.allHouses': { en: '← All Houses', lt: '← Visi namai' },
+  'admin.basePrice': { en: 'Base Price', lt: 'Bazinė kaina' },
+  'admin.basePriceNote': { en: 'The starting price for this house, by facade system.', lt: 'Pradinė šio namo kaina pagal fasado sistemą.' },
+  'admin.facadeColour': { en: 'Facade Colour', lt: 'Fasado spalva' },
+  'admin.facadeColourNote': { en: "This house's facade colour options — added on top of the base price once a customer picks one.", lt: 'Šio namo fasado spalvų pasirinkimai — pridedami prie bazinės kainos, kai klientas pasirenka.' },
+  'admin.upgrades': { en: 'Upgrades', lt: 'Papildomos parinktys' },
+  'admin.upgradesNote': { en: 'Shared across every house — editing a price here updates it everywhere it\'s used. Subframe only applies with a Ventilated facade.', lt: 'Bendra visiems namams — kainos pakeitimas čia atnaujina ją visur, kur ji naudojama. Potinklis taikomas tik su vėdinamu fasadu.' },
+  'admin.formula': { en: 'How this house\'s total is built on its configurator: Base Price (by system) <code>+</code> Facade Colour <code>+</code> Subframe <em>(Ventilated only)</em> <code>+</code> Insulation Material <code>+</code> Insulation Thickness <code>+</code> Windows <code>+</code> Roof Type <code>+</code> Interior Finishing <code>+</code> Floor Assembly. The last two aren\'t customer choices — they\'re fixed specs, folded into every quote.', lt: 'Kaip skaičiuojama šio namo bendra kaina konfigūratoriuje: Bazinė kaina (pagal sistemą) <code>+</code> Fasado spalva <code>+</code> Potinklis <em>(tik vėdinamam)</em> <code>+</code> Izoliacijos medžiaga <code>+</code> Izoliacijos storis <code>+</code> Langai <code>+</code> Stogo tipas <code>+</code> Vidaus apdaila <code>+</code> Grindų konstrukcija. Pastarieji du nėra kliento pasirinkimai — tai fiksuotos specifikacijos, įtrauktos į kiekvieną pasiūlymą.' },
+  'admin.everyHouseNote': { en: 'Every house on the site. Click one to edit its details, facade colours or images — or add a new one below.', lt: 'Visi svetainės namai. Spustelėkite, kad redaguotumėte detales, fasado spalvas ar nuotraukas — arba pridėkite naują žemiau.' },
+  'admin.addHouse': { en: '+ Add House', lt: '+ Pridėti namą' },
+  'admin.recentlyDeleted': { en: 'Recently Deleted', lt: 'Neseniai ištrinti' },
+  'admin.recentlyDeletedNote': { en: 'These houses are hidden from the website but not gone yet — restore them, or permanently delete to remove them for good.', lt: 'Šie namai paslėpti svetainėje, bet dar neištrinti visam laikui — galite juos atkurti arba ištrinti negrįžtamai.' },
+  'admin.addAHouse': { en: 'Add a <strong>House</strong>', lt: 'Pridėti <strong>namą</strong>' },
+  'admin.editHouse': { en: 'Edit <strong>{name}</strong>', lt: 'Redaguoti <strong>{name}</strong>' },
+  'admin.visibleOnWebsite': { en: 'Visible on website', lt: 'Matomas svetainėje' },
+  'admin.name': { en: 'Name', lt: 'Pavadinimas' },
+  'admin.type': { en: 'Type', lt: 'Tipas' },
+  'admin.modular': { en: 'Modular', lt: 'Modulinis' },
+  'admin.panel': { en: 'Panel (Panelised)', lt: 'Panelinis' },
+  'admin.model': { en: 'Model', lt: 'Modelis' },
+  'admin.modelNote': { en: 'Groups size variants together on the Houses page — e.g. all Jewel sizes (2X, 4X, 4X XL) show under one "Jewel" heading. Use the same model name for every size of this house family.', lt: 'Sugrupuoja dydžių variantus Namų puslapyje — pvz., visi Jewel dydžiai (2X, 4X, 4X XL) rodomi po viena "Jewel" antrašte. Naudokite tą patį modelio pavadinimą visiems šios namų šeimos dydžiams.' },
+  'admin.livingArea': { en: 'Living Area (m²)', lt: 'Gyvenamasis plotas (m²)' },
+  'admin.totalArea': { en: 'Total Area (m²)', lt: 'Bendras plotas (m²)' },
+  'admin.floors': { en: 'Floors', lt: 'Aukštai' },
+  'admin.modules': { en: 'Modules', lt: 'Moduliai' },
+  'admin.facadeColours': { en: 'Facade Colours', lt: 'Fasado spalvos' },
+  'admin.facadeColoursNote': { en: 'Each colour needs its own name, facade system, and one or more images <strong>with the background removed</strong> — select several at once for different angles. These are what the customer sees switching views in the configurator.', lt: 'Kiekviena spalva turi turėti pavadinimą, fasado sistemą ir vieną ar daugiau nuotraukų <strong>be fono</strong> — pasirinkite kelias vienu metu skirtingiems rakursams. Būtent jas klientas mato keisdamas vaizdus konfigūratoriuje.' },
+  'admin.addColour': { en: '+ Add Colour', lt: '+ Pridėti spalvą' },
+  'admin.availableOptions': { en: 'Available Options', lt: 'Galimos parinktys' },
+  'admin.availableOptionsNote': { en: "Tick every option this specific house is allowed to offer. Unticked options never appear in its configurator — they're not just unpriced, they're not offered at all.", lt: 'Pažymėkite kiekvieną parinktį, kurią šis namas gali siūlyti. Nepažymėtos parinktys niekada nerodomos jo konfigūratoriuje — jos ne tik be kainos, jos iš viso nesiūlomos.' },
+  'admin.copyOptionsFrom': { en: 'Copy options from another house', lt: 'Kopijuoti parinktis iš kito namo' },
+  'admin.startFromScratch': { en: 'Start from scratch…', lt: 'Pradėti nuo nulio…' },
+  'admin.addNewOption': { en: 'Add a new option to the catalog', lt: 'Pridėti naują parinktį į katalogą' },
+  'admin.addShort': { en: '+ Add', lt: '+ Pridėti' },
+  'admin.compatRules': { en: 'Compatibility Rules', lt: 'Suderinamumo taisyklės' },
+  'admin.compatRulesNote': { en: 'Optional. Use these when picking one option should exclude or require another — e.g. selecting the Non-Ventilated facade system excludes EPS insulation. Rules only use options ticked above.', lt: 'Neprivaloma. Naudokite, kai vienos parinkties pasirinkimas turėtų atmesti arba reikalauti kitos — pvz., pasirinkus nevėdinamą fasado sistemą atmetama EPS izoliacija. Taisyklės naudoja tik aukščiau pažymėtas parinktis.' },
+  'admin.addRule': { en: '+ Add Rule', lt: '+ Pridėti taisyklę' },
+  'admin.saveHouse': { en: 'Save House', lt: 'Išsaugoti namą' },
+  'admin.saveChanges': { en: 'Save Changes', lt: 'Išsaugoti pakeitimus' },
+  'admin.saving': { en: 'Saving…', lt: 'Saugoma…' },
+  'admin.signingIn': { en: 'Signing In…', lt: 'Jungiamasi…' },
+  'admin.galleryNote': { en: 'Pick a house, then upload its lifestyle photos — these keep their background and are used on the Gallery page, never in the configurator.', lt: 'Pasirinkite namą ir įkelkite jo gyvenimo būdo nuotraukas — jos išlaiko foną ir naudojamos Galerijos puslapyje, niekada konfigūratoriuje.' },
+  'admin.house': { en: 'House', lt: 'Namas' },
+  'admin.selectAHouse': { en: 'Select a house…', lt: 'Pasirinkite namą…' },
+  'admin.clickToUpload': { en: 'Click to upload photos', lt: 'Spustelėkite, kad įkeltumėte nuotraukas' },
+  'admin.multipleImages': { en: 'Multiple images at once · keep backgrounds in', lt: 'Kelios nuotraukos vienu metu · išlaikykite foną' },
+  'admin.quotesNote': { en: "Every quote request submitted from a house's configurator, with the exact configuration the customer chose.", lt: 'Kiekviena užklausa, pateikta iš namo konfigūratoriaus, su tiksliai ta konfigūracija, kurią pasirinko klientas.' },
+  'admin.footNote': { en: 'Everything here lives in a database connected directly to np5.house — changes show up on the live site automatically, no extra step needed.', lt: 'Viskas čia saugoma duomenų bazėje, tiesiogiai susietoje su np5.house — pakeitimai automatiškai atsiranda svetainėje, jokių papildomų žingsnių nereikia.' },
+  'admin.draftHidden': { en: 'Draft — hidden from the website', lt: 'Juodraštis — paslėptas svetainėje' },
+  'admin.liveVisible': { en: 'Live — visible on the website', lt: 'Paskelbta — matoma svetainėje' },
+  'admin.draftNote': { en: 'Nobody can see this house until you publish it. Finish setting up prices and images first, then go live.', lt: 'Niekas nematys šio namo, kol jo nepaskelbsite. Pirmiausia nustatykite kainas ir nuotraukas, tada skelbkite.' },
+  'admin.liveNote': { en: 'Customers can see and configure this house right now.', lt: 'Klientai šiuo metu gali matyti ir konfigūruoti šį namą.' }
+};
+
+let ADMIN_LANG = 'en';
+try { ADMIN_LANG = localStorage.getItem('np5-admin-lang') || 'en'; } catch (e) {}
+
+function t(key, vars) {
+  const entry = ADMIN_I18N[key];
+  let str = entry ? (entry[ADMIN_LANG] || entry.en) : key;
+  if (vars) Object.keys(vars).forEach(k => { str = str.replace('{' + k + '}', vars[k]); });
+  return str;
+}
+
+function applyAdminLang(lang) {
+  ADMIN_LANG = lang;
+  try { localStorage.setItem('np5-admin-lang', lang); } catch (e) {}
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n-html')); });
+  document.getElementById('adminLangFlag').textContent = lang === 'lt' ? '🇱🇹' : '🇬🇧';
+  document.getElementById('adminLangLabel').textContent = lang === 'lt' ? 'LT' : 'EN';
+  document.querySelectorAll('.admin-lang-opt').forEach(opt => opt.style.fontWeight = opt.dataset.lang === lang ? '700' : '400');
+  // Re-sync dynamic text that depends on state, not just static markup.
+  if (typeof updatePublishBanner === 'function' && document.getElementById('hPublished')) updatePublishBanner();
+  if (typeof editingHouseId !== 'undefined' && !document.getElementById('houseForm').hidden) {
+    document.getElementById('saveHouseBtn').textContent = editingHouseId ? t('admin.saveChanges') : t('admin.saveHouse');
+    const heading = document.querySelector('#houseForm .detail-name');
+    if (editingHouseId) {
+      const h = HOUSES_RAW.find(x => x.id === editingHouseId);
+      heading.innerHTML = t('admin.editHouse', { name: h ? h.name : '' });
+    } else {
+      heading.innerHTML = t('admin.addAHouse');
+    }
+  }
+}
+
+document.getElementById('adminLangBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  document.getElementById('adminLangMenu').hidden = !document.getElementById('adminLangMenu').hidden;
+});
+document.querySelectorAll('.admin-lang-opt').forEach(opt => {
+  opt.addEventListener('click', () => {
+    applyAdminLang(opt.dataset.lang);
+    document.getElementById('adminLangMenu').hidden = true;
+  });
+});
+document.addEventListener('click', () => { document.getElementById('adminLangMenu').hidden = true; });
+
+let canWrite = false;
+
+/* ======================================================================
+   TAB SWITCHING
+   ====================================================================== */
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.querySelectorAll('.tabpanel').forEach(p => p.hidden = (p.id !== 'tab-' + name));
+  window.location.hash = name;
+  if (name === 'houses') { renderHouseList(); renderDeletedHouseList(); }
+  if (name === 'gallery') renderGalleryHouseSelect();
+  if (name === 'quotes') renderQuoteRequests();
+}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
+
+/* ======================================================================
+   QUOTE REQUESTS TAB
+   ====================================================================== */
+async function updateQuotesBadge() {
+  const { count } = await sb.from('quote_requests').select('id', { count: 'exact', head: true }).eq('handled', false);
+  const badge = document.getElementById('quotesBadge');
+  if (count) { badge.textContent = count; badge.hidden = false; } else { badge.hidden = true; }
+}
+
+function escapeHtml(str) {
+  return String(str == null ? '' : str).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+async function renderQuoteRequests() {
+  const root = document.getElementById('quoteRequestList');
+  const { data, error } = await sb.from('quote_requests').select('*').order('created_at', { ascending: false });
+  if (error) { root.innerHTML = '<div class="housegrid-empty">' + escapeHtml(error.message) + '</div>'; return; }
+  if (!data || !data.length) { root.innerHTML = '<div class="housegrid-empty">No quote requests yet.</div>'; return; }
+  root.innerHTML = '';
+  data.forEach(q => {
+    const row = document.createElement('div');
+    row.className = 'houserow';
+    row.style.cssText = 'flex-direction:column;align-items:stretch;cursor:default;padding:1.1rem 1.3rem';
+
+    // Every field below comes from an untrusted public form submission — escape it
+    // before it ever touches innerHTML, or a malicious submission could run script
+    // in the admin's browser the moment this list renders (stored XSS).
+    const configLines = (q.configuration || []).map(r => '<div style="display:flex;justify-content:space-between;gap:1rem;padding:.3rem 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted)">' + escapeHtml(r[0]) + '</span><span style="font-weight:600">' + escapeHtml(r[1]) + '</span></div>').join('');
+
+    row.innerHTML =
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:.8rem">' +
+        '<div>' +
+          '<span class="houserow-name">' + escapeHtml(q.name) + (q.handled ? '' : ' <span style="font-family:var(--fb);font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--copper,#c08a4a);border:1px solid currentColor;border-radius:3px;padding:.1rem .4rem;vertical-align:middle;margin-left:.5rem">New</span>') + '</span>' +
+          '<div class="houserow-meta">' + escapeHtml(q.house_name || 'Unknown house') + ' &middot; ' + timeAgo(q.created_at) + (q.estimated_price ? ' &middot; &euro;' + fmtNumber(q.estimated_price) : '') + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="font-family:var(--fb);font-size:.8rem;margin-bottom:.6rem">' +
+        '<a href="mailto:' + encodeURIComponent(q.email) + '" style="color:var(--navy)">' + escapeHtml(q.email) + '</a>' + (q.phone ? ' &middot; ' + escapeHtml(q.phone) : '') +
+      '</div>' +
+      (q.message ? '<p class="section-note" style="margin:0 0 .8rem;font-style:italic">&ldquo;' + escapeHtml(q.message) + '&rdquo;</p>' : '') +
+      (configLines ? '<div style="margin-bottom:.9rem">' + configLines + '</div>' : '') +
+      '<div style="display:flex;gap:.6rem">' +
+        '<button class="addbtn secondary" data-action="handled">' + (q.handled ? 'Mark as New' : 'Mark as Handled') + '</button>' +
+        '<button class="removebtn" data-action="delete" style="font-size:.75rem;border:1px solid var(--err);border-radius:6px;padding:.4rem .7rem;color:var(--err)">Delete</button>' +
+      '</div>';
+
+    row.querySelector('[data-action="handled"]').addEventListener('click', async () => {
+      await sb.from('quote_requests').update({ handled: !q.handled }).eq('id', q.id);
+      renderQuoteRequests();
+      updateQuotesBadge();
+    });
+    row.querySelector('[data-action="delete"]').addEventListener('click', async () => {
+      if (!confirm('Delete this quote request permanently?')) return;
+      await sb.from('quote_requests').delete().eq('id', q.id);
+      renderQuoteRequests();
+      updateQuotesBadge();
+    });
+
+    root.appendChild(row);
+  });
+}
+
+/* ======================================================================
+   SHARED: load houses + facades from DB
+   ====================================================================== */
+async function loadHouses() {
+  let { data, error } = await sb.from('houses').select('*').is('deleted_at', null).order('created_at', { ascending: true });
+  if (error) {
+    // deleted_at migration not run yet — fall back so the admin tool keeps working.
+    ({ data, error } = await sb.from('houses').select('*').order('created_at', { ascending: true }));
+    if (error) { console.error(error); return; }
+  }
+  HOUSES_RAW = data || [];
+  HOUSES = HOUSES_RAW.map(h => ({
+    id: h.id,
+    key: h.slug,
+    name: h.name,
+    type: h.type,
+    meta: (h.type === 'modular' ? 'Modular' : 'Panelised') + (h.living_area ? ' &middot; ' + h.living_area + ' m&sup2; living' : '')
+  }));
+
+  const { data: facadeRows, error: fErr } = await sb.from('house_facades').select('*').order('sort_order', { ascending: true });
+  if (fErr) { console.error(fErr); return; }
+  FACADE_BY_HOUSE = {};
+  const idToSlug = {};
+  HOUSES_RAW.forEach(h => { idToSlug[h.id] = h.slug; });
+  (facadeRows || []).forEach(f => {
+    const slug = idToSlug[f.house_id];
+    if (!slug) return;
+    if (!FACADE_BY_HOUSE[slug]) FACADE_BY_HOUSE[slug] = [];
+    FACADE_BY_HOUSE[slug].push({ key: f.key, name: f.name, note: f.system === 'ventilated' ? 'Ventilated' : 'Non-Ventilated', imageUrl: f.image_url });
+  });
+}
+
+/* ======================================================================
+   PRICING TAB  (mirrors previous Price Desk behaviour, houses now dynamic)
+   ====================================================================== */
+let currentHouse = null;
+const priceCache = {};
+
+function houseOwnDocIds(house) {
+  const ids = SYSTEMS.map(s => house.key + '__' + s.key);
+  (FACADE_BY_HOUSE[house.key] || []).forEach(c => ids.push('facade__' + house.key + '__' + c.key));
+  return ids;
+}
+
+function buildHomeGrid() {
+  const root = document.getElementById('housegrid');
+  root.innerHTML = '';
+  if (!HOUSES.length) {
+    root.innerHTML = '<div class="housegrid-empty">No houses yet &mdash; add one in the Houses tab first.</div>';
+    return;
+  }
+  HOUSES.forEach(house => {
+    const btn = document.createElement('button');
+    btn.className = 'housetile';
+    btn.id = 'tile-' + house.key;
+    btn.innerHTML =
+      '<div><span class="housetile-name">' + house.name + '</span><span class="housetile-meta">' + house.meta + '</span></div>' +
+      '<div style="display:flex;align-items:center;gap:1rem">' +
+      '<span class="housetile-progress" id="progress-' + house.key + '">&hellip;</span>' +
+      '<span class="housetile-arrow">&rarr;</span></div>';
+    btn.addEventListener('click', () => openHouse(house.key));
+    root.appendChild(btn);
+  });
+}
+
+function updateTileProgress(house) {
+  const el = document.getElementById('progress-' + house.key);
+  if (!el) return;
+  const ids = houseOwnDocIds(house);
+  const priced = ids.filter(id => priceCache[id] && priceCache[id].price).length;
+  el.innerHTML = '<strong>' + priced + '</strong> of ' + ids.length + ' priced';
+}
+
+function makeCard(containerId, title, meta, rows) {
+  const root = document.getElementById(containerId);
+  const card = document.createElement('div');
+  card.className = 'card';
+  let html = '<div class="card-hd"><span class="card-name">' + title + '</span>' +
+    (meta ? '<span class="card-meta">' + meta + '</span>' : '') + '</div>';
+  rows.forEach(r => {
+    html += '<div class="row">' +
+      '<div class="sys"><span class="sys-name">' + r.name + '</span>' + (r.note ? '<span class="sys-note">' + r.note + '</span>' : '') + '</div>' +
+      '<div class="pricebox"><span class="cur">&euro;</span><input type="text" inputmode="numeric" placeholder="e.g. 45,000" id="input-' + r.docId + '"></div>' +
+      '<div class="state" id="state-' + r.docId + '"><span class="state-dot"></span><span class="state-text">&mdash;</span></div>' +
+      '</div>';
+  });
+  card.innerHTML = html;
+  root.appendChild(card);
+}
+
+function setState(docId, mode, text) {
+  const el = document.getElementById('state-' + docId);
+  if (!el) return;
+  el.className = 'state' + (mode ? ' ' + mode : '');
+  el.querySelector('.state-text').textContent = text;
+}
+
+async function commitRow(docId) {
+  const input = document.getElementById('input-' + docId);
+  if (!input) return;
+  const price = parseNumber(input.value);
+  input.value = fmtNumber(price);
+  setState(docId, 'saving', 'Saving…');
+  const nowIso = new Date().toISOString();
+  const { error } = await sb.from('prices').upsert({ id: docId, price: price, currency: 'EUR', updated_at: nowIso });
+  if (error) {
+    setState(docId, 'err', 'Couldn’t save');
+    console.error(error);
+    return;
+  }
+  priceCache[docId] = { price: price, updated_at: nowIso };
+  setState(docId, 'saved', 'Saved ' + timeAgo(nowIso));
+  HOUSES.forEach(h => { if (houseOwnDocIds(h).includes(docId)) updateTileProgress(h); });
+}
+
+function bindInput(docId) {
+  const input = document.getElementById('input-' + docId);
+  if (!input) return;
+  input.addEventListener('focus', () => input.value = input.value.replace(/,/g, ''));
+  input.addEventListener('blur', () => commitRow(docId));
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') input.blur(); });
+  const cached = priceCache[docId];
+  if (cached) {
+    input.value = fmtNumber(cached.price);
+    setState(docId, cached.price ? 'saved' : '', cached.price ? ('Saved ' + timeAgo(cached.updated_at)) : 'No price yet');
+  } else {
+    setState(docId, '', 'No price yet');
+  }
+  if (canWrite) input.disabled = false;
+}
+
+function openHouse(houseKey) {
+  const house = HOUSES.find(h => h.key === houseKey);
+  if (!house) return;
+  currentHouse = house;
+
+  document.getElementById('pricingHome').hidden = true;
+  document.getElementById('pricingDetail').hidden = false;
+  document.getElementById('detailName').innerHTML = house.name;
+  document.getElementById('detailMeta').innerHTML = house.meta;
+
+  ['catalog-base', 'catalog-facade', 'catalog-addon'].forEach(id => document.getElementById(id).innerHTML = '');
+
+  const baseIds = [];
+  makeCard('catalog-base', house.name, house.meta,
+    SYSTEMS.map(sys => { const id = house.key + '__' + sys.key; baseIds.push(id); return { docId: id, name: sys.name, note: sys.note }; }));
+
+  const facadeIds = [];
+  makeCard('catalog-facade', house.name, house.meta,
+    (FACADE_BY_HOUSE[house.key] || []).map(c => { const id = 'facade__' + house.key + '__' + c.key; facadeIds.push(id); return { docId: id, name: c.name, note: c.note }; }));
+
+  const addonIds = [];
+  ADDON_GROUPS.forEach(group => {
+    makeCard('catalog-addon', group.name, group.meta,
+      group.items.map(it => { const id = 'addon__' + group.cat + '__' + it.key; addonIds.push(id); return { docId: id, name: it.name, note: it.note }; }));
+  });
+
+  baseIds.concat(facadeIds, addonIds).forEach(bindInput);
+  window.scrollTo({ top: 0 });
+}
+
+function goHome() {
+  currentHouse = null;
+  document.getElementById('pricingDetail').hidden = true;
+  document.getElementById('pricingHome').hidden = false;
+}
+document.getElementById('backBtn').addEventListener('click', goHome);
+
+async function loadAllPrices() {
+  const { data, error } = await sb.from('prices').select('*');
+  if (error) { console.error(error); return; }
+  data.forEach(row => { priceCache[row.id] = { price: row.price, updated_at: row.updated_at }; });
+  HOUSES.forEach(updateTileProgress);
+}
+
+/* ======================================================================
+   HOUSES TAB
+   ====================================================================== */
+let facadeRowCount = 0;
+let editingHouseId = null; // null = Add mode; set = Editing that house's id
+
+function addFacadeRow(existing) {
+  facadeRowCount++;
+  const id = facadeRowCount;
+  const wrap = document.getElementById('facadeRows');
+  const row = document.createElement('div');
+  row.className = 'facade-row';
+  row.dataset.rowId = id;
+  if (existing && existing.id) row.dataset.facadeId = existing.id;
+
+  const thumbsHtml = (existing && existing.images && existing.images.length)
+    ? '<div class="fc-thumbs" style="grid-column:1/-1;display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.6rem">' +
+        existing.images.map(img =>
+          '<div class="fc-thumb" data-image-id="' + img.id + '" style="position:relative;width:56px;height:56px;border-radius:6px;overflow:hidden;border:1px solid var(--border)">' +
+            '<img src="' + img.url + '" style="width:100%;height:100%;object-fit:cover;display:block">' +
+            '<button type="button" class="fc-thumb-del" style="position:absolute;top:1px;right:1px;width:18px;height:18px;border-radius:50%;background:rgba(5,29,73,.75);color:#fff;border:none;cursor:pointer;font-size:.7rem;line-height:1">&times;</button>' +
+          '</div>'
+        ).join('') +
+      '</div>'
+    : '';
+
+  row.innerHTML = thumbsHtml +
+    '<div class="field"><label>Colour Name</label><input type="text" class="fc-name" placeholder="e.g. Termowood" value="' + (existing ? existing.name.replace(/"/g, '&quot;') : '') + '"></div>' +
+    '<div class="field"><label>System</label><select class="fc-system">' +
+      '<option value="ventilated"' + (existing && existing.system === 'ventilated' ? ' selected' : '') + '>Ventilated</option>' +
+      '<option value="non-ventilated"' + (existing && existing.system === 'non-ventilated' ? ' selected' : '') + '>Non-Ventilated</option>' +
+    '</select></div>' +
+    '<label class="filebtn fc-filebtn">' + (existing ? 'Add More Images' : 'Choose Images (multiple angles)') + '<input type="file" class="fc-file" accept="image/*" multiple></label>' +
+    '<button type="button" class="removebtn fc-remove" title="Remove this colour">&times;</button>';
+  wrap.appendChild(row);
+
+  row.querySelector('.fc-file').addEventListener('change', e => {
+    const btn = row.querySelector('.fc-filebtn');
+    const n = e.target.files.length;
+    if (n) { btn.classList.add('has-file'); btn.firstChild.textContent = n + ' new image' + (n > 1 ? 's' : '') + ' selected'; }
+  });
+
+  row.querySelectorAll('.fc-thumb-del').forEach(delBtn => {
+    delBtn.addEventListener('click', async () => {
+      if (!confirm('Delete this image?')) return;
+      const thumb = delBtn.closest('.fc-thumb');
+      const imageId = thumb.dataset.imageId;
+      delBtn.disabled = true;
+      const { error } = await sb.from('house_facade_images').delete().eq('id', imageId);
+      if (error) { alert('Could not delete image: ' + error.message); delBtn.disabled = false; return; }
+      thumb.remove();
+    });
+  });
+
+  row.querySelector('.fc-remove').addEventListener('click', async () => {
+    const facadeId = row.dataset.facadeId;
+    if (facadeId) {
+      if (!confirm('Delete this whole facade colour and its images? This cannot be undone.')) return;
+      const { error } = await sb.from('house_facades').delete().eq('id', facadeId);
+      if (error) { alert('Could not delete: ' + error.message); return; }
+    }
+    row.remove();
+  });
+
+  return row;
+}
+
+function updatePublishBanner() {
+  const published = document.getElementById('hPublished').checked;
+  const banner = document.getElementById('publishBanner');
+  const label = document.getElementById('publishStatusLabel');
+  const note = document.getElementById('publishStatusNote');
+  banner.style.background = published ? 'var(--ok-bg, #eafaf0)' : 'var(--err-bg, #fff6e9)';
+  banner.style.borderColor = published ? 'var(--ok)' : 'var(--copper, #c08a4a)';
+  label.textContent = published ? t('admin.liveVisible') : t('admin.draftHidden');
+  label.style.color = published ? 'var(--ok)' : 'var(--copper, #c08a4a)';
+  note.textContent = published ? t('admin.liveNote') : t('admin.draftNote');
+}
+document.getElementById('hPublished').addEventListener('change', updatePublishBanner);
+
+function resetHouseForm() {
+  document.getElementById('facadeRows').innerHTML = '';
+  facadeRowCount = 0;
+  document.getElementById('hName').value = '';
+  document.getElementById('hLiving').value = '';
+  document.getElementById('hTotal').value = '';
+  document.getElementById('hFloors').value = '1';
+  document.getElementById('hModules').value = '';
+  document.getElementById('hType').value = 'modular';
+  document.getElementById('hModel').value = '';
+  updateModelFieldVisibility();
+  document.getElementById('hPublished').checked = false; // new houses start as Draft
+  updatePublishBanner();
+  populateNewOptCategorySelect();
+  renderOptionGroups(null); // null = everything ticked by default, admin unchecks what doesn't apply
+  document.getElementById('compatRules').innerHTML = '';
+  document.getElementById('newOptName').value = '';
+  document.getElementById('newOptMsg').className = 'formmsg'; document.getElementById('newOptMsg').textContent = '';
+  document.getElementById('copyOptionsFrom').value = '';
+  const msg = document.getElementById('houseFormMsg');
+  msg.className = 'formmsg'; msg.textContent = '';
+}
+
+function updateModelFieldVisibility() {
+  const isModular = document.getElementById('hType').value === 'modular';
+  document.getElementById('hModelWrap').style.display = isModular ? '' : 'none';
+  document.getElementById('hModelNote').style.display = isModular ? '' : 'none';
+}
+document.getElementById('hType').addEventListener('change', updateModelFieldVisibility);
+
+document.getElementById('addHouseBtn').addEventListener('click', () => {
+  editingHouseId = null;
+  document.querySelector('#houseForm .detail-name').innerHTML = t('admin.addAHouse');
+  document.getElementById('saveHouseBtn').textContent = t('admin.saveHouse');
+  document.getElementById('housesHome').hidden = true;
+  document.getElementById('houseForm').hidden = false;
+  resetHouseForm();
+  addFacadeRow();
+  addFacadeRow();
+  populateCopyOptionsDropdown(null);
+});
+
+async function openEditHouse(h) {
+  editingHouseId = h.id;
+  document.querySelector('#houseForm .detail-name').innerHTML = t('admin.editHouse', { name: h.name });
+  document.getElementById('saveHouseBtn').textContent = t('admin.saveChanges');
+  document.getElementById('housesHome').hidden = true;
+  document.getElementById('houseForm').hidden = false;
+  resetHouseForm();
+  document.getElementById('hPublished').checked = h.published !== false;
+  updatePublishBanner();
+
+  document.getElementById('hName').value = h.name;
+  document.getElementById('hType').value = h.type;
+  document.getElementById('hLiving').value = h.living_area || '';
+  document.getElementById('hTotal').value = h.total_area || '';
+  document.getElementById('hFloors').value = h.floors || 1;
+  document.getElementById('hModules').value = h.modules || '';
+  document.getElementById('hModel').value = h.model || '';
+  updateModelFieldVisibility();
+  populateCopyOptionsDropdown(h.id);
+
+  const { data: enabledOpts } = await sb.from('house_option_enabled').select('*').eq('house_id', h.id);
+  const enabledSet = new Set((enabledOpts || []).map(o => o.category + '::' + o.item_key));
+  renderOptionGroups(enabledOpts && enabledOpts.length ? enabledSet : new Set()); // existing house with no rows yet = nothing enabled, admin must opt in
+
+  const { data: rules } = await sb.from('house_compat_rules').select('*').eq('house_id', h.id);
+  document.getElementById('compatRules').innerHTML = '';
+  (rules || []).forEach(r => addCompatRuleRow(r));
+
+  const { data: facades, error } = await sb.from('house_facades')
+    .select('*, house_facade_images(*)')
+    .eq('house_id', h.id)
+    .order('sort_order', { ascending: true });
+  if (error) { console.error(error); return; }
+
+  (facades || []).forEach(f => {
+    const images = (f.house_facade_images || []).sort((a, b) => a.sort_order - b.sort_order);
+    addFacadeRow({ id: f.id, name: f.name, system: f.system, images: images });
+  });
+  if (!facades || !facades.length) addFacadeRow();
+}
+
+document.getElementById('houseFormBack').addEventListener('click', () => {
+  document.getElementById('houseForm').hidden = true;
+  document.getElementById('housesHome').hidden = false;
+  renderHouseList();
+});
+document.getElementById('addFacadeRow').addEventListener('click', () => addFacadeRow());
+
+async function uploadImage(bucket, path, file) {
+  const { error } = await sb.storage.from(bucket).upload(path, file, { upsert: true, contentType: file.type });
+  if (error) throw error;
+  const { data } = sb.storage.from(bucket).getPublicUrl(path);
+  return data.publicUrl;
+}
+
+document.getElementById('saveHouseBtn').addEventListener('click', async () => {
+  const msg = document.getElementById('houseFormMsg');
+  const btn = document.getElementById('saveHouseBtn');
+  const name = document.getElementById('hName').value.trim();
+  const type = document.getElementById('hType').value;
+  const living = document.getElementById('hLiving').value || null;
+  const total = document.getElementById('hTotal').value || null;
+  const floors = document.getElementById('hFloors').value || null;
+  const modules = document.getElementById('hModules').value || null;
+  const model = type === 'modular' ? (document.getElementById('hModel').value.trim() || null) : null;
+  const published = document.getElementById('hPublished').checked;
+
+  if (!name) { msg.className = 'formmsg show err'; msg.textContent = 'Give the house a name first.'; return; }
+
+  const facadeRowEls = Array.from(document.querySelectorAll('.facade-row'));
+  const facadeData = facadeRowEls.map(row => ({
+    facadeId: row.dataset.facadeId || null,
+    name: row.querySelector('.fc-name').value.trim(),
+    system: row.querySelector('.fc-system').value,
+    files: Array.from(row.querySelector('.fc-file').files || []),
+    hasExistingImages: row.querySelectorAll('.fc-thumb').length > 0
+  })).filter(f => f.name);
+
+  if (!facadeData.length) { msg.className = 'formmsg show err'; msg.textContent = 'Add at least one facade colour.'; return; }
+  if (facadeData.some(f => !f.files.length && !f.hasExistingImages)) { msg.className = 'formmsg show err'; msg.textContent = 'Every facade colour needs at least one image.'; return; }
+
+  btn.disabled = true; btn.textContent = t('admin.saving');
+  msg.className = 'formmsg'; msg.textContent = '';
+
+  try {
+    let houseId, slug;
+
+    if (editingHouseId) {
+      houseId = editingHouseId;
+      const existingHouse = HOUSES_RAW.find(h => h.id === editingHouseId);
+      slug = existingHouse ? existingHouse.slug : slugify(name);
+      const { error: hErr } = await sb.from('houses').update({
+        name, type, model, published, living_area: living, total_area: total, floors: floors, modules: modules
+      }).eq('id', houseId);
+      if (hErr) throw hErr;
+    } else {
+      slug = slugify(name);
+      const { data: houseRow, error: hErr } = await sb.from('houses').insert({
+        slug, name, type, model, published,
+        living_area: living, total_area: total, floors: floors, modules: modules
+      }).select().single();
+      if (hErr) throw hErr;
+      houseId = houseRow.id;
+    }
+
+    for (let i = 0; i < facadeData.length; i++) {
+      const f = facadeData[i];
+      const fKey = slugify(f.name);
+
+      const newUrls = [];
+      for (let j = 0; j < f.files.length; j++) {
+        const file = f.files[j];
+        const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+        const path = slug + '/' + fKey + '-' + Date.now() + '-' + j + '.' + ext;
+        newUrls.push(await uploadImage('house-images', path, file));
+      }
+
+      let facadeId = f.facadeId;
+      if (facadeId) {
+        const { error: updErr } = await sb.from('house_facades').update({ name: f.name, system: f.system, sort_order: i }).eq('id', facadeId);
+        if (updErr) throw updErr;
+      } else {
+        const { data: facadeRow, error: fErr2 } = await sb.from('house_facades').insert({
+          house_id: houseId, key: fKey, name: f.name, system: f.system, image_url: newUrls[0] || null, sort_order: i
+        }).select().single();
+        if (fErr2) throw fErr2;
+        facadeId = facadeRow.id;
+      }
+
+      if (newUrls.length) {
+        const { count: existingCount } = await sb.from('house_facade_images').select('id', { count: 'exact', head: true }).eq('facade_id', facadeId);
+        const startIdx = existingCount || 0;
+        const imageRows = newUrls.map((url, idx) => ({ facade_id: facadeId, url: url, sort_order: startIdx + idx }));
+        const { error: imgErr } = await sb.from('house_facade_images').insert(imageRows);
+        if (imgErr) throw imgErr;
+        if (!f.facadeId) {
+          // brand new facade row: make sure image_url (thumbnail) is set
+          await sb.from('house_facades').update({ image_url: newUrls[0] }).eq('id', facadeId);
+        }
+      }
+    }
+
+    // Available options + compatibility rules: simplest safe approach is delete-then-reinsert
+    // for this house, since there's no per-row editing UI to track individual ids.
+    const enabled = getEnabledOptionsFromForm();
+    await sb.from('house_option_enabled').delete().eq('house_id', houseId);
+    if (enabled.length) {
+      const { error: optErr } = await sb.from('house_option_enabled').insert(
+        enabled.map(o => ({ house_id: houseId, category: o.category, item_key: o.item_key }))
+      );
+      if (optErr) throw optErr;
+    }
+
+    const rules = getCompatRulesFromForm();
+    await sb.from('house_compat_rules').delete().eq('house_id', houseId);
+    if (rules.length) {
+      const { error: ruleErr } = await sb.from('house_compat_rules').insert(
+        rules.map(r => ({ house_id: houseId, if_category: r.if_category, if_key: r.if_key, relation: r.relation, then_category: r.then_category, then_key: r.then_key }))
+      );
+      if (ruleErr) throw ruleErr;
+    }
+
+    msg.className = 'formmsg show ok';
+    msg.textContent = '"' + name + '" saved — changes are live now.';
+    await loadHouses();
+    buildHomeGrid();
+    await loadAllPrices();
+    setTimeout(() => {
+      document.getElementById('houseForm').hidden = true;
+      document.getElementById('housesHome').hidden = false;
+      renderHouseList();
+    }, 1200);
+  } catch (err) {
+    console.error(err);
+    msg.className = 'formmsg show err';
+    msg.textContent = 'Something went wrong: ' + (err.message || err);
+  } finally {
+    btn.disabled = false; btn.textContent = editingHouseId ? t('admin.saveChanges') : t('admin.saveHouse');
+  }
+});
+
+function renderHouseList() {
+  const root = document.getElementById('houselist');
+  root.innerHTML = '';
+  if (!HOUSES_RAW.length) {
+    root.innerHTML = '<div class="housegrid-empty">No houses yet. Click "+ Add House" to create the first one.</div>';
+    return;
+  }
+  HOUSES_RAW.forEach(h => {
+    const facades = FACADE_BY_HOUSE[h.slug] || [];
+    const thumbUrl = facades.find(f => f.imageUrl) ? facades.find(f => f.imageUrl).imageUrl : null;
+    const row = document.createElement('div');
+    row.className = 'houserow';
+    row.style.cursor = 'pointer';
+    row.addEventListener('click', () => openEditHouse(h));
+    if (thumbUrl) {
+      const img = document.createElement('img');
+      img.className = 'houserow-thumb';
+      img.src = thumbUrl;
+      row.appendChild(img);
+    } else {
+      const img = document.createElement('div');
+      img.className = 'houserow-thumb';
+      img.style.cssText = 'display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--muted)';
+      img.textContent = '🏠';
+      row.appendChild(img);
+    }
+    const info = document.createElement('div');
+    info.className = 'houserow-info';
+    info.innerHTML = '<span class="houserow-name">' + h.name + (h.published === false ? ' <span style="font-family:var(--fb);font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--copper, #c08a4a);border:1px solid currentColor;border-radius:3px;padding:.1rem .4rem;vertical-align:middle;margin-left:.5rem">Draft</span>' : '') + '</span>' +
+      '<div class="houserow-meta"><span class="pill ' + h.type + '">' + (h.type === 'modular' ? 'Modular' : 'Panel') + '</span> &nbsp; ' +
+      (h.type === 'modular' ? (h.model ? 'Model: ' + h.model + ' &middot; ' : '<span style="color:#b00">No model set &middot; </span> ') : '') +
+      facades.length + ' facade colour' + (facades.length === 1 ? '' : 's') +
+      (h.living_area ? ' &middot; ' + h.living_area + ' m&sup2;' : '') + '</div>';
+    row.appendChild(info);
+    if (h.published === false) {
+      const pubBtn = document.createElement('button');
+      pubBtn.className = 'addbtn secondary';
+      pubBtn.textContent = 'Publish';
+      pubBtn.title = 'Make this house visible on the website';
+      pubBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        pubBtn.disabled = true; pubBtn.textContent = 'Publishing…';
+        const { error } = await sb.from('houses').update({ published: true }).eq('id', h.id);
+        if (error) { alert('Could not publish: ' + error.message); pubBtn.disabled = false; pubBtn.textContent = 'Publish'; return; }
+        await loadHouses();
+        renderHouseList();
+      });
+      row.appendChild(pubBtn);
+    }
+    const delBtn = document.createElement('button');
+    delBtn.className = 'removebtn';
+    delBtn.title = 'Delete house';
+    delBtn.textContent = '×';
+    delBtn.style.fontSize = '1.6rem';
+    delBtn.addEventListener('click', (e) => { e.stopPropagation(); deleteHouse(h); });
+    row.appendChild(delBtn);
+    root.appendChild(row);
+  });
+}
+
+async function deleteHouse(h) {
+  if (!confirm('Delete "' + h.name + '"? It moves to Recently Deleted and can be restored from there — it only disappears for good once you permanently delete it.')) return;
+  try {
+    const { error } = await sb.from('houses').update({ deleted_at: new Date().toISOString() }).eq('id', h.id);
+    if (error) throw error;
+    await loadHouses();
+    buildHomeGrid();
+    await loadAllPrices();
+    renderHouseList();
+    renderGalleryHouseSelect();
+    renderDeletedHouseList();
+  } catch (err) {
+    console.error(err);
+    alert('Could not delete: ' + (err.message || err));
+  }
+}
+
+async function restoreHouse(h) {
+  try {
+    const { error } = await sb.from('houses').update({ deleted_at: null }).eq('id', h.id);
+    if (error) throw error;
+    await loadHouses();
+    buildHomeGrid();
+    await loadAllPrices();
+    renderHouseList();
+    renderGalleryHouseSelect();
+    renderDeletedHouseList();
+  } catch (err) {
+    console.error(err);
+    alert('Could not restore: ' + (err.message || err));
+  }
+}
+
+async function permanentlyDeleteHouse(h) {
+  if (!confirm('Permanently delete "' + h.name + '"? This removes all its facades, images, gallery photos and prices for good — there is no more undo after this.')) return;
+  if (!confirm('Really sure? Type nothing needed — just confirm again to permanently delete "' + h.name + '".')) return;
+  try {
+    await sb.from('house_facades').delete().eq('house_id', h.id);
+    await sb.from('gallery_images').delete().eq('house_id', h.id);
+    await sb.from('house_option_enabled').delete().eq('house_id', h.id);
+    await sb.from('house_compat_rules').delete().eq('house_id', h.id);
+    await sb.from('prices').delete().like('id', h.slug + '\_\_%');
+    await sb.from('prices').delete().like('id', 'facade\_\_' + h.slug + '\_\_%');
+    const { error } = await sb.from('houses').delete().eq('id', h.id);
+    if (error) throw error;
+    renderDeletedHouseList();
+  } catch (err) {
+    console.error(err);
+    alert('Could not permanently delete: ' + (err.message || err));
+  }
+}
+
+async function renderDeletedHouseList() {
+  const root = document.getElementById('deletedHouseList');
+  const wrap = document.getElementById('deletedHousesSec');
+  if (!root || !wrap) return;
+  const { data, error } = await sb.from('houses').select('*').not('deleted_at', 'is', null).order('deleted_at', { ascending: false });
+  if (error) { console.error(error); return; }
+  wrap.style.display = (data && data.length) ? '' : 'none';
+  root.innerHTML = '';
+  (data || []).forEach(h => {
+    const row = document.createElement('div');
+    row.className = 'houserow';
+    const info = document.createElement('div');
+    info.className = 'houserow-info';
+    info.innerHTML = '<span class="houserow-name">' + h.name + '</span>' +
+      '<div class="houserow-meta">Deleted ' + timeAgo(h.deleted_at) + '</div>';
+    row.appendChild(info);
+    const actions = document.createElement('div');
+    actions.style.cssText = 'display:flex;gap:.6rem;align-items:center';
+    const restoreBtn = document.createElement('button');
+    restoreBtn.className = 'addbtn secondary';
+    restoreBtn.textContent = 'Restore';
+    restoreBtn.addEventListener('click', () => restoreHouse(h));
+    const permDelBtn = document.createElement('button');
+    permDelBtn.className = 'removebtn';
+    permDelBtn.title = 'Delete permanently';
+    permDelBtn.textContent = '× Forever';
+    permDelBtn.style.cssText = 'font-size:.75rem;border:1px solid var(--err);border-radius:6px;padding:.4rem .7rem;color:var(--err)';
+    permDelBtn.addEventListener('click', () => permanentlyDeleteHouse(h));
+    actions.appendChild(restoreBtn);
+    actions.appendChild(permDelBtn);
+    row.appendChild(actions);
+    root.appendChild(row);
+  });
+}
+
+/* ======================================================================
+   GALLERY TAB
+   ====================================================================== */
+let currentGalleryHouse = null;
+
+function renderGalleryHouseSelect() {
+  const sel = document.getElementById('galHouseSelect');
+  const current = sel.value;
+  sel.innerHTML = '<option value="">Select a house&hellip;</option>';
+  HOUSES_RAW.forEach(h => {
+    const opt = document.createElement('option');
+    opt.value = h.id;
+    opt.textContent = h.name;
+    sel.appendChild(opt);
+  });
+  if (current) sel.value = current;
+}
+
+document.getElementById('galHouseSelect').addEventListener('change', async (e) => {
+  currentGalleryHouse = e.target.value || null;
+  const wrap = document.getElementById('galUploadWrap');
+  if (!currentGalleryHouse) { wrap.hidden = true; return; }
+  wrap.hidden = false;
+  await loadGalleryImages();
+});
+
+document.getElementById('galFileInput').addEventListener('change', async (e) => {
+  const files = Array.from(e.target.files || []);
+  if (!files.length || !currentGalleryHouse) return;
+  const label = document.getElementById('galUploadLabel');
+  const house = HOUSES_RAW.find(h => h.id === currentGalleryHouse);
+  const slug = house ? house.slug : 'house';
+  label.textContent = 'Uploading ' + files.length + ' photo' + (files.length > 1 ? 's' : '') + '…';
+  try {
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+      const path = slug + '/' + Date.now() + '-' + i + '.' + ext;
+      const url = await uploadImage('gallery-images', path, file);
+      await sb.from('gallery_images').insert({ house_id: currentGalleryHouse, url: url, sort_order: i });
+    }
+    label.textContent = 'Click to upload photos';
+    await loadGalleryImages();
+  } catch (err) {
+    console.error(err);
+    label.textContent = 'Upload failed — try again';
+  }
+  e.target.value = '';
+});
+
+async function loadGalleryImages() {
+  const grid = document.getElementById('galGrid');
+  grid.innerHTML = '';
+  if (!currentGalleryHouse) return;
+  const { data, error } = await sb.from('gallery_images').select('*').eq('house_id', currentGalleryHouse).order('sort_order', { ascending: true });
+  if (error) { console.error(error); return; }
+  (data || []).forEach(img => {
+    const item = document.createElement('div');
+    item.className = 'galitem';
+    item.innerHTML = '<img src="' + img.url + '" loading="lazy"><button class="delbtn" title="Delete">&times;</button>';
+    item.querySelector('.delbtn').addEventListener('click', async () => {
+      await sb.from('gallery_images').delete().eq('id', img.id);
+      loadGalleryImages();
+    });
+    grid.appendChild(item);
+  });
+}
+
+/* ======================================================================
+   AUTH
+   ====================================================================== */
+async function showApp(session) {
+  document.getElementById('loginView').hidden = true;
+  document.getElementById('appView').hidden = false;
+  const whoBadge = document.getElementById('whoBadge');
+  whoBadge.hidden = false;
+  document.getElementById('whoDot').classList.add('edit');
+  document.getElementById('whoText').textContent = session.user.email;
+  canWrite = true;
+  document.getElementById('addHouseBtn').disabled = false;
+
+  await loadCatalog();
+  await loadHouses();
+  buildHomeGrid();
+  await loadAllPrices();
+  updateQuotesBadge();
+
+  const startTab = (window.location.hash || '#pricing').replace('#', '');
+  showTab(['pricing', 'houses', 'gallery', 'quotes'].includes(startTab) ? startTab : 'pricing');
+}
+
+function showLogin() {
+  document.getElementById('loginView').hidden = false;
+  document.getElementById('appView').hidden = true;
+  document.getElementById('whoBadge').hidden = true;
+}
+
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const btn = document.getElementById('loginBtn');
+  const err = document.getElementById('loginErr');
+  err.classList.remove('show');
+  btn.disabled = true;
+  btn.textContent = t('admin.signingIn');
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  btn.disabled = false;
+  btn.textContent = t('admin.signIn');
+  if (error) {
+    err.textContent = error.message;
+    err.classList.add('show');
+    return;
+  }
+  await showApp(data.session);
+});
+
+document.getElementById('loginPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+});
+
+document.getElementById('signOutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  showLogin();
+});
+
+(async function init() {
+  applyAdminLang(ADMIN_LANG);
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) await showApp(session);
+  else showLogin();
+})();
+</script>
+</body>
+</html>
